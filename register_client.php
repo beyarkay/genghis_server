@@ -23,7 +23,7 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
             header('Content-type:application/json;charset=utf-8');
             $return_status = [
                 'status' => 'error',
-                'cause' => 'username already taken'
+                'cause' => 'username'
             ];
             break;
         }
@@ -34,8 +34,8 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
 
         array_push($server_state["clients"], $decoded_params);
 
-        file_put_contents($file, json_encode($server_state));
+        file_put_contents($file, json_encode($server_state, JSON_PRETTY_PRINT));
     }
-    echo json_encode( $return_status );
+    echo json_encode( $return_status , JSON_PRETTY_PRINT);
 }
 ?>

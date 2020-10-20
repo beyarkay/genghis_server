@@ -28,7 +28,7 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
             break;
         } 
     }
-    echo json_encode( $return_status );
+    echo json_encode( $return_status , JSON_PRETTY_PRINT);
 }
 
 ?>
