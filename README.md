@@ -11,4 +11,4 @@ SOME_GAME/
 * NODE_1/
     * layout.txt    -- The current state of the node's battleground
 * NODE_2/
-    * ...           -- Similar as for NODE_1
+    * ...           -- Similar as for NODE_1.
