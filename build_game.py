@@ -46,7 +46,8 @@ def main():
     # Add in all the bots to the game
     for bot_url, root_url in zip(config['bot_urls'], config['root_urls']):
         bot_request = requests.get(bot_url)
-        bot_path_str = bot_url.replace(root_url + '/', '')
+        bot_path_str = bot_url.replace(root_url + '/', '').replace('/', '_')
+        
         if bot_request.ok:
             bot_path = os.path.join(game_dir, bot_path_str)
             if not os.path.exists('/'.join(bot_path.split('/')[:-1])):
