@@ -1,5 +1,4 @@
 <?php
-echo "started";
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -19,8 +18,7 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
     $server_json_str = file_get_contents('server_state.json');
     $server_json = json_decode($server_json_str, true);
     $return_state = ['state' => 'good'];
-    foreach ($server_json['clients'] as $client) {
-//         echo $client, "\n";
+    foreach ((array) $server_json['clients'] as $client) {
         if($client['username'] == $username) {
             header('Content-type:application/json;charset=utf-8');
             $return_state = [
@@ -28,7 +26,7 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
                 'cause' => 'username already taken'
             ];
             break;
-        }
+        } 
     }
     echo json_encode( $return_state );
 }

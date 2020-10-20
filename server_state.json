@@ -1,7 +1,7 @@
 {
   "clients": [
     {
-      "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/"
+      "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/",
       "username": "brk",
       "abbreviations": ["b", "k"]
     }
