@@ -7,26 +7,22 @@ class Client:
         self.username = username
         self.url = url
         self.abbreviations = abbreviations[:]
-        r = requests.get(self.root_url + "/config.json")
-        if r.ok:
-            self.bots = []
-            for item in r.json()['bots']:
-                path = self.root_url + '/' + item['path']
-                if requests.get(path).ok:
-                    self.bots.append(self.root_url + '/' + item['path'])
-                else:
-                    print(r.text)
+        r = requests.get(self.url + "/config.json")
+        assert r.ok, self.url + "/config.json\n" + r.text
+        self.bots = []
+        json_result = r.json() 
+        for item in json_result['bots']:
+            path = self.url + '/' + item['path']
+            r = requests.get(path)
+            assert r.ok, path + r.text
+            self.bots.append(self.url + '/' + item['path'])
 
-            self.battlegrounds = []
-            for item in r.json()['battlegrounds']:
-                path = self.root_url + '/' + item['path']
-                if requests.get(path).ok:
-                    self.battlegrounds.append(self.root_url + '/' + item['path'])
-                else:
-                    print(r.text)
-        else:
-            print(r.text)
-            print(r.status_code)
+        self.battlegrounds = []
+        for item in json_result['battlegrounds']:
+            path = self.url + '/' + item['path']
+            r = requests.get(path)
+            assert r.ok, path + r.text
+            self.battlegrounds.append(self.url + '/' + item['path'])
 
 
 class Bot:
