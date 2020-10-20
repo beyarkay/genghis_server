@@ -1,1 +1,11 @@
-{"clients":[{"url":"https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client\/","username":"brk","abbreviations":["b","k"]},{"username":"boyd","abbreviations":["b"],"url":"https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"},{"username":"boyd2","abbreviations":["b"],"url":"https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"},{"username":"b","abbreviations":["b"],"url":"https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"}]}
+{
+    "clients": [
+        {
+            "username": "boyd",
+            "abbreviations": [
+                "b"
+            ],
+            "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
+        }
+    ]
+}
