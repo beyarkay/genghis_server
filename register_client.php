@@ -17,18 +17,18 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
     // Get existing usernames
     $server_json_str = file_get_contents('server_state.json');
     $server_json = json_decode($server_json_str, true);
-    $return_state = ['state' => 'good'];
+    $return_status = ['status' => 'good'];
     foreach ((array) $server_json['clients'] as $client) {
         if($client['username'] == $username) {
             header('Content-type:application/json;charset=utf-8');
-            $return_state = [
-                'state' => 'error',
+            $return_status = [
+                'status' => 'error',
                 'cause' => 'username already taken'
             ];
             break;
         }
     }
-    if ($return_state["state"] == "good") {
+    if ($return_status["status"] == "good") {
         $file = "server_state.json";
         $server_state = json_decode(file_get_contents($file), TRUE);
 
@@ -36,6 +36,6 @@ if (strlen($json_params) > 0 && isValidJSON($json_params)){
 
         file_put_contents($file, json_encode($server_state));
     }
-    echo json_encode( $return_state );
+    echo json_encode( $return_status );
 }
 ?>
