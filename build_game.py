@@ -34,7 +34,8 @@ def main():
         clients.append(util.Client(
             client_obj['username'],
             client_obj['url'],
-            client_obj['abbreviations']
+            client_obj['abbreviations'],
+            game.game_dir
         ))
 
         # Add in the battlegrounds to the game

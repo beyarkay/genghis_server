@@ -16,19 +16,14 @@ class Game:
         self.bots = []
         self.battlegrounds = []
         self.game_dir = game_dir
+        print("c mkdir {}".format(self.game_dir))
         os.mkdir(self.game_dir)
 
-    def add_user_dir(self, username):
-        if not os.path.exists(os.path.join(self.game_dir, username)):
-            os.mkdir(os.path.join(self.game_dir, username))
-
     def add_bot(self, bot):
-        self.add_user_dir(bot.username)
         bot.game_dir = self.game_dir
         self.bots.append(bot)
 
     def add_battleground(self, battleground):
-        self.add_user_dir(battleground.username)
         battleground.game_dir = self.game_dir
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
@@ -109,6 +104,7 @@ class Bot:
         self.bot_path = os.path.join(self.game_dir, username, bot_filename)
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
+            print("a mkdir {}".format(os.path.join(self.game_dir, username)))
             os.mkdir(os.path.join(self.game_dir, username))
         self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
         self.bot_url = bot_url
@@ -117,8 +113,6 @@ class Bot:
         self.bot_icon = ""
         r = requests.get(self.bot_url)
         assert r.ok, "request for {} not ok: {}".format(self.bot_url, r.text)
-        if not os.path.exists(os.path.join(self.game_dir, self.username)):
-            os.mkdir(os.path.join(self.game_dir, username))
         # add in the bot file to the local system
         with open(self.bot_path, 'w+') as bot_file:
             bot_file.write(r.text)
@@ -133,6 +127,7 @@ class Battleground:
         self.battleground_path = os.path.join(self.game_dir, username, battleground_filename)
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
+            print("b mkdir {}".format(os.path.join(self.game_dir, username)))
             os.mkdir(os.path.join(self.game_dir, username))
         self.battleground_url = battleground_url
         self.name = name
@@ -221,7 +216,7 @@ class Battleground:
                 self.bg_map[x][y] = IC_AIR
 
 class Client:
-    def __init__(self, username, url, abbreviations):
+    def __init__(self, username, url, abbreviations, game_dir):
         self.username = username
         self.url = url
         self.abbreviations = abbreviations[:]
@@ -234,7 +229,7 @@ class Client:
             r = requests.get(path)
             assert r.ok, path + r.text
             self.bots.append(Bot(
-                "", self.username, item['path'],
+                game_dir, self.username, item['path'],
                 self.url + '/' + item['path'], item['name'],
                 json_result['abbreviations']
             ))
@@ -245,7 +240,7 @@ class Client:
             r = requests.get(path)
             assert r.ok, path + r.text
             self.battlegrounds.append(Battleground(
-                "", self.username,
+                game_dir, self.username,
                 item['path'], self.url + '/' + item['path'],
                 item['name'],
             ))
