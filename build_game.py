@@ -1,5 +1,5 @@
+#!/usr/bin/python3
 import requests
-import sys
 from pprint import pprint
 import os
 import datetime
