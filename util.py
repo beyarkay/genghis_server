@@ -33,6 +33,7 @@ class Game:
         self.coin_icons = []
         self.bot_icons = []
         self.port_icons = []
+        self.iteration = 0
         os.mkdir(self.game_dir)
 
     def add_bot(self, bot):
@@ -44,21 +45,29 @@ class Game:
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
 
-    def log_state(self, directory=""):
+    def log_state(self):
         """ Log the entire gamestate for debugging
+        This is called from the game directory so needs no prefix other
+        than the filename
         """
-        if not directory:
-            directory = self.game_dir
         # write out the current state of every bg map to a file
         for bg in self.battlegrounds:
-            with open(os.path.join(directory, bg.port_icon) + ".log", "w+") as bg_file:
-                bg_file.writelines([''.join(list(i)) + '\n' for i in zip(*bg.bg_map)])
+            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
+            lines.append(bg.json())
+            with open(bg.port_icon + ".log", "w+") as bg_file:
+                bg_file.writelines(lines)
 
         # write out the current state of every bot to a file
         for bot in self.bots:
-            with open(os.path.join(directory, bot.bot_icon) + ".log", "w+") as bot_file:
+            with open(bot.bot_icon + ".log", "w+") as bot_file:
                 # write out the current state of the bg map to a file
                 json.dump(bot.json(), bot_file, indent=2)
+
+    def print_battlegrounds(self):
+        # print out the current state of every bg map to stdout
+        for bg in self.battlegrounds:
+            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
+            print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines))) 
 
     def init_game(self):
         # setup the ports network
@@ -78,12 +87,15 @@ class Game:
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
+        print("num_bg", num_battlegrounds)
         for i, bot in enumerate(self.bots):
-            for bg in [bg for bg in self.battlegrounds if len(bg.bots)]:
+            print("i ", i, "bot icon: ", bot.bot_icon)
+            for bg in [bg for bg in self.battlegrounds if len(bg.bots) == 0]:
+                print("Added to empty battleground")
                 bg.add_bot(bot)
                 break
             else:
-                # all battlegrounds 
+                print("added to occupied battleground")
                 random_bg = random.choice(self.battlegrounds)
                 random_bg.add_bot(bot)
 
@@ -102,14 +114,17 @@ class Game:
         for bot1 in [bot for bot in self.bots if not bot.bot_icon]:
             index = 0
             while len(bot1.abbreviations) > index:
+                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
                 for bot2 in [bot for bot in self.bots if bot.bot_icon]:
                     # if this icon is already taken, increment index
                     if bot2.bot_icon == bot1.abbreviations[index]:
+                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
                         index += 1
                         break
                 else:  # no other bot has this icon, so use it
                     bot1.bot_icon = bot1.abbreviations[index]
                     bot1.coin_icon = bot1.abbreviations[index].lower()
+                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
                     break
             else:
                 # we've gone through all the abbreviations and they're all taken.
@@ -118,6 +133,7 @@ class Game:
                 assert remaining_icons
                 bot1.bot_icon = remaining_icons[0]
                 bot1.coin_icon = remaining_icons[0].lower()
+                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
         # now that we know which bots are where & which ports go where,
@@ -127,19 +143,19 @@ class Game:
             battleground.init_bg_map(self.port_graph, self.battlegrounds)
 
         # Log the graph network to a json file for graphing
-        with open(os.path.join(self.game_dir, "port_graph.json", "w+")) as graphfile:
+        with open(os.path.join(self.game_dir, "port_graph.json"), "w+") as graphfile:
             json.dump(self.port_graph, graphfile)
 
         # Pickle the game object so it can be used by the judge system
-        with open(os.path.join(self.game_dir, "game.pkl", "w+")) as game_pkl:
-            json.dump(self, game_pkl)
+        with open(os.path.join(self.game_dir, "game.pickle"),"wb") as game_pkl:
+            pickle.dump(self, game_pkl)
 
 
 class Bot:
     def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations):
         self.game_dir = game_dir
         self.username = username
-
+        self.bot_filename = bot_filename
         self.bot_path = os.path.join(self.game_dir, username, bot_filename)
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
@@ -173,6 +189,7 @@ class Bot:
         json['stdout'] = self.stdout
         json['len(coins)'] = len(self.coins)
         return json
+
     def add_coins(self, new_coins):
         """ Add new coins to the bot.
         If coins from that originating bot already exist, simply increment
@@ -198,8 +215,8 @@ class Bot:
 
         # Get the bot's current location on the battleground
         bot_locs = curr_bg.find_icon(self.bot_icon)
-        assert len(bot_locs) == 1
-        bot_loc = bot_locs[0]
+        assert len(bot_locs) == 1, ", ".join(bot_locs) + " icon: " + self.bot_icon
+        bot_loc = list(bot_locs[0])
 
         # If the bot is just walking around (possibly into a port or air)
         if bot_move['action'] == ACTION_WALK:
@@ -348,8 +365,24 @@ class Battleground:
             battleground_file.write(r.text)
 
         self.bg_map = [[]]
-        self.iteration = 0
         self.bots = []
+
+    def json(self):
+        jstring= {}
+        jstring['game_dir'] = self.game_dir
+        jstring['username'] = self.username
+        jstring['battleground_path'] = self.battleground_path
+        jstring['battleground_url'] = self.battleground_url
+        jstring['name'] = self.name
+        jstring['spawn_locations'] = self.spawn_locations
+        jstring['port_locations'] = self.port_locations
+        jstring['port_icon'] = self.port_icon
+        jstring['bot_icons'] = [bot.bot_icon for bot in self.bots]
+
+        return json.dumps(jstring, indent=2)
+
+
+
 
     def find_icon(self, icon):
         returner = []
@@ -360,7 +393,7 @@ class Battleground:
         return returner
 
     def get_cell(self, bot_loc, cmd):
-        pos = bot_loc[:]
+        pos = list(bot_loc[:])
         if type(cmd) is str:
             # cmd is a string made up of l, r, u, d characters
             cmd = ''.join(set(cmd))  # Remove all duplicated characters

@@ -1,0 +1,15 @@
+{
+  "game_dir": "games/2020-10-24T00:51:39.057422",
+  "username": "andy",
+  "bot_path": "games/2020-10-24T00:51:39.057422/andy/template_bot.py",
+  "abbreviations": [
+    "C"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+  "name": "my bot",
+  "coin_icon": "b",
+  "bot_icon": "B",
+  "stderr": "",
+  "stdout": "",
+  "len(coins)": 0
+}
