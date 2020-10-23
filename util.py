@@ -5,6 +5,9 @@ import pickle
 import random
 
 PORT_ICONS = [str(i) for i in range(1, 10)] + ["!", "@", "$", "%", "^", "&", "*", "(", ")"]
+ACTION_WALK = "walk"
+ACTION_DROP = "drop"
+ACTION_ATTACK = "attack"
 IC_SPAWN = '_'
 IC_PORT = '0'
 IC_WALLS = '#'
@@ -40,6 +43,22 @@ class Game:
         battleground.game_dir = self.game_dir
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
+
+    def log_state(self, directory=""):
+        """ Log the entire gamestate for debugging
+        """
+        if not directory:
+            directory = self.game_dir
+        # write out the current state of every bg map to a file
+        for bg in self.battlegrounds:
+            with open(os.path.join(directory, bg.port_icon) + ".log", "w+") as bg_file:
+                bg_file.writelines([''.join(list(i)) + '\n' for i in zip(*bg.bg_map)])
+
+        # write out the current state of every bot to a file
+        for bot in self.bots:
+            with open(os.path.join(directory, bot.bot_icon) + ".log", "w+") as bot_file:
+                # write out the current state of the bg map to a file
+                json.dump(bot.json(), bot_file, indent=2)
 
     def init_game(self):
         # setup the ports network
@@ -138,13 +157,38 @@ class Bot:
         # Give a stderr, stdout for debugging
         self.stderr = ""
         self.stdout = ""
-        self.coins = {
+        self.coins = []  # an array of Coin objects
 
-        }
+    def json(self):
+        json = {}
+        json['game_dir'] = self.game_dir
+        json['username'] = self.username
+        json['bot_path'] = self.bot_path
+        json['abbreviations'] = self.abbreviations
+        json['bot_url'] = self.bot_url
+        json['name'] = self.name
+        json['coin_icon'] = self.coin_icon
+        json['bot_icon'] = self.bot_icon
+        json['stderr'] = self.stderr
+        json['stdout'] = self.stdout
+        json['len(coins)'] = len(self.coins)
+        return json
+    def add_coins(self, new_coins):
+        """ Add new coins to the bot.
+        If coins from that originating bot already exist, simply increment
+        that existing coins object. Otherwise add a new coins object
+        """
+        for coin in self.coins:
+            if coin.originator == new_coins.originator:
+                coin.value += new_coins.value
+                break
+        else:
+            self.coins.append(coins)
 
-    def move(self, bot_move, game):
-        return
-        # TODO figure out how to move the bot properly
+    def perform_action(self, bot_move, game):
+        """ Given a requested bot move and game state,
+        attempt to perform that move (if it's legal)
+        """
         # Figure out which battleground the bot is on
         curr_bg = None
         for bg in game.battlegrounds:
@@ -157,7 +201,7 @@ class Bot:
         assert len(bot_locs) == 1
         bot_loc = bot_locs[0]
 
-        # Evaluate the bot's requested move
+        # If the bot is just walking around (possibly into a port or air)
         if bot_move['action'] == ACTION_WALK:
             cell = curr_bg.get_cell(bot_loc, bot_move['direction'])
 
@@ -175,40 +219,110 @@ class Bot:
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = bot.bot_icon
 
             # If the bot is walking into a coin
-            elif cell in state['coin_map'].values():
+            elif cell in game.coin_icons:
                 # Figure out what the coin associated with the given coin_icon is
-                index = list(state['coin_map'].values()).index(icon)
-                coin_id = list(state['coin_map'].keys())[index]
+                for bot in game.bots:
+                    if bot.coin_icon == cell:
+                        self.add_coins(Coin(bot, 1))
+                        break
+                # Replace the current spot with air
+                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
+                # Calculate the new location
+                cmd = ''.join(set(bot_move['direction']))  # Remove all duplicated characters
+                for c in cmd:
+                    bot_loc[0] += CMD_DICT[c][0]
+                    bot_loc[1] += CMD_DICT[c][1]
 
-                if 'coins' not in state['bots'][sn].keys():
-                    state['bots'][sn]['coins'] = {}
-
-                if coin_id in state['bots'][sn]['coins'].keys():
-                    state['bots'][sn]['coins'][coin_id] += 1
-                else:
-                    state['bots'][sn]['coins'][coin_id] = 1
-
-                # utils.grab_coin(sn, cell, state)
-                utils.move_bot(bot_loc, bot_move['direction'], bot_icon, state['map'])
+                # Replace the new spot with the bot's icon
+                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = bot.bot_icon
 
             # If the bot is walking into a port
-            elif cell in state['port_map'].values():
-                from_sn = node_dir.split('/')[-1]
-                to_sn = [k for k, v in state['port_map'].items() if v == cell][0]
-                port_bot(sn, from_sn, to_sn)
-                with open(os.path.join(node_dir, 'state.json'), 'r+') as state_file:
-                    state = json.load(state_file)
+            elif cell in game.port_icons:
+                # Figure out the next battleground
+                for bg in game.battlegrounds:
+                    if bg.port_icon == cell:
+                        next_bg = bg
+                        break
+                # Figure out the index of the current bot so as to pop it from the
+                # Current battlegrounds list of bots
+                for i, bot in enumerate(curr_bg.bots):
+                    if bot.bot_path == self.bot_path:
+                        remove_idx = i
+                        break
+                # Remove the current bot from the current battleground, and add
+                # it to the next battleground.
+                next_bg.append(curr_bg.bots.pop(remove_idx))
             else:
-                # If the bot tries to walk anywhere else, don't allow it and
+                # If the bot tries to walk anywhere illegal, don't allow it and
                 # just stay still
                 pass
 
-
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] is not '':
-            bot_icons = [bot['icon'] for bot in state['bots'].values()]
-            if utils.get_cell(bot_loc, bot_move['direction'], state['map']) in bot_icons:
-                state = utils.attack(bot_loc, bot_move['direction'], bot_move['weapon'], state)
+            defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
+            attacker_icon = curr_bg.get_cell(bot_loc, '')
+
+            is_hit = random.random() < 0.5
+            #  check that there's actually a bot at the defending location
+            if is_hit and defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
+                attacker, defender = None, None
+                for bot in curr_bg.bots:
+                    if bot.bot_icon == defender_icon:
+                        defender = bot
+
+                    elif bot.bot_icon == attacker_icon:
+                        attacker = bot
+                    if attacker and defender:
+                        break
+                # Check that the defender actually has coins to give
+                if defender.coins and sum([coin.value for coin in defender.coins]):
+                    # Choose a random coin to remove
+                    dropped = None
+                    random.shuffle(defender.coins)
+                    for coin in defender.coins:
+                        if coin.value > 0:
+                            coin.value -= 1
+                            dropped = Coin(coin.originator, 1)
+                            break
+                    # Add that dropped coin onto the map
+                    all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
+                    defender_location = curr_bg.find_icon(defender_icon)
+                    assert len(defender_location) == 1
+                    defender_location = defender_location[0]
+
+                    legal_locations = []
+                    droppable_icons = [bot.bot_icon for bot in curr_bg.bots] + [IC_AIR]
+                    for delta in all_deltas:
+                        if curr_bg.get_cell(defender_location, delta) in droppable_icons:
+                            legal_locations.append(delta)
+                    coin_loc = random.choice(legal_locations)
+
+                    landed_icon = curr_bg.get_cell(defender_location, coin_loc)
+                    # Check to see if the coin landed on a bot
+                    if landed_icon is not IC_AIR:
+                        # Add the coin immediately to the bot that it landed on
+                        for bot in curr_bg.bots:
+                            if bot.bot_icon == landed_icon:
+                                bot.add_coins(Coin(dropped.originator, 1))
+                                break
+                    else:
+                        # The coin landed on air, so just add it to the map
+                        curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
+
+                else:
+                    # The defender doesn't have any coins to drop...
+                    pass
+
+        # If the bot is dropping a coin on the floor (to trade possibly)
+        elif bot_move['action'] == ACTION_DROP and bot_move['direction'] is not '':
+            # TODO implement this
+            pass
+
+
+class Coin:
+    def __init__(self, originator, value):
+        self.originator = originator
+        self.value = value
 
 
 class Battleground:
@@ -246,11 +360,17 @@ class Battleground:
         return returner
 
     def get_cell(self, bot_loc, cmd):
-        cmd = ''.join(set(cmd))  # Remove all duplicated characters
         pos = bot_loc[:]
-        for c in cmd:
-            pos[0] += CMD_DICT[c][0]
-            pos[1] += CMD_DICT[c][1]
+        if type(cmd) is str:
+            # cmd is a string made up of l, r, u, d characters
+            cmd = ''.join(set(cmd))  # Remove all duplicated characters
+            for c in cmd:
+                pos[0] += CMD_DICT[c][0]
+                pos[1] += CMD_DICT[c][1]
+        elif type(cmd) is tuple and len(cmd) == 2:
+            # cmd is a 2-tuple indicating the change in position from bot_loc
+            pos[0] += cmd[0]
+            pos[1] += cmd[1]
 
         if not (0 <= pos[0] < len(self.bg_map) or 0 <= pos[1] < len(self.bg_map[0])):
             return None  # trying to walk off the map
