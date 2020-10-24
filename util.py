@@ -489,7 +489,8 @@ class Battleground:
                 rand_col = random.randrange(len(self.bg_map[0]))
                 #print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
                 if self.bg_map[rand_row][rand_col] == IC_AIR:
-                    self.bg_map[rand_row][rand_col] == random.choice(coin_icons)
+                    print("added coin at {}, {}".format(rand_row, rand_col))
+                    self.bg_map[rand_row][rand_col] = random.choice(coin_icons)
                     break
 
 
