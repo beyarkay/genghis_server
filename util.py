@@ -210,6 +210,7 @@ class Bot:
         """ Given a requested bot move and game state,
         attempt to perform that move (if it's legal)
         """
+        print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
         curr_bg = None
         for bg in game.battlegrounds:
@@ -228,6 +229,7 @@ class Bot:
 
             # If the bot is walking into air
             if cell == IC_AIR:
+                print("\tBot is walking to air")
                 # Replace the current spot with air
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
                 # Calculate the new location
@@ -237,10 +239,11 @@ class Bot:
                     bot_loc[1] += CMD_DICT[c][1]
 
                 # Replace the new spot with the bot's icon
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = bot.bot_icon
+                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = self.bot_icon
 
             # If the bot is walking into a coin
             elif cell in game.coin_icons:
+                print("\tBot is walking to a coin")
                 # Figure out what the coin associated with the given coin_icon is
                 for bot in game.bots:
                     if bot.coin_icon == cell:
@@ -255,10 +258,11 @@ class Bot:
                     bot_loc[1] += CMD_DICT[c][1]
 
                 # Replace the new spot with the bot's icon
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = bot.bot_icon
+                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = self.bot_icon
 
             # If the bot is walking into a port
             elif cell in game.port_icons:
+                print("\tBot is walking to a port")
                 # Figure out the next battleground
                 for bg in game.battlegrounds:
                     if bg.port_icon == cell:
@@ -272,6 +276,7 @@ class Bot:
                         break
                 # Remove the current bot from the current battleground, and add
                 # it to the next battleground.
+                # TODO the game doesn't actually check for new bots that arenot on the bg
                 next_bg.append(curr_bg.bots.pop(remove_idx))
             else:
                 # If the bot tries to walk anywhere illegal, don't allow it and
@@ -280,6 +285,7 @@ class Bot:
 
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] is not '':
+            print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
 
