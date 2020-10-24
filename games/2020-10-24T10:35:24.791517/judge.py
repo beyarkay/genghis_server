@@ -34,7 +34,7 @@ def main():
     # Start stepping through the bots
     while game_continues():
         print("Game {}, iteration {}".format(os.getcwd(), game.iteration))
-        game.print_battlegrounds()
+        game.print_logs()
         step(game)
         game.iteration += 1
         time.sleep(2)

@@ -63,11 +63,15 @@ class Game:
                 # write out the current state of the bg map to a file
                 json.dump(bot.json(), bot_file, indent=2)
 
-    def print_battlegrounds(self):
+    def print_logs(self):
         # print out the current state of every bg map to stdout
         for bg in self.battlegrounds:
             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
             print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines))) 
+
+        for bot in self.bots:
+            print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.json(), indent=2)))
+
 
     def init_game(self):
         # setup the ports network

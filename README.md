@@ -63,3 +63,10 @@ while :; do
     tput rc
 done
 ```
+
+
+## TODO
+* Ports aren't getting spawned in
+* Bots are loosing their icons
+* When bots port to another bg, they might not get respawned in, and
+are only added to the bg.bots list
