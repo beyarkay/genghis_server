@@ -1,3 +1,4 @@
+from pprint import pprint
 import json
 import requests
 import os
@@ -34,6 +35,7 @@ class Game:
         self.bot_icons = []
         self.port_icons = []
         self.iteration = 0
+        self.coins_per_bg = 10
         os.mkdir(self.game_dir)
 
     def add_bot(self, bot):
@@ -74,32 +76,19 @@ class Game:
 
 
     def init_game(self):
-        # setup the ports network
-        for i, battleground in enumerate(self.battlegrounds):
-            self.port_graph['nodes'].append({
-                "id": i,
-                "label": battleground.username + "/" + battleground.name
-            })
-        # and connect the individual nodes together with links in a way that d3.js will work with
-        for i, node in enumerate(self.port_graph['nodes']):
-            self.port_graph['links'].append({
-                "source": i,
-                "target": (i + 1) % len(self.port_graph['nodes']),
-                "value": 1
-            })
 
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
-        print("num_bg", num_battlegrounds)
+#        print("num_bg", num_battlegrounds)
         for i, bot in enumerate(self.bots):
-            print("i ", i, "bot icon: ", bot.bot_icon)
+#            print("i ", i, "bot icon: ", bot.bot_icon)
             for bg in [bg for bg in self.battlegrounds if len(bg.bots) == 0]:
-                print("Added to empty battleground")
+#                print("Added to empty battleground")
                 bg.add_bot(bot)
                 break
             else:
-                print("added to occupied battleground")
+#                print("added to occupied battleground")
                 random_bg = random.choice(self.battlegrounds)
                 random_bg.add_bot(bot)
 
@@ -111,6 +100,18 @@ class Game:
         for i, battleground in enumerate(self.battlegrounds):
             battleground.port_icon = PORT_ICONS[i]
             self.port_icons.append(PORT_ICONS[i])
+            self.port_graph['nodes'].append({
+                "id": PORT_ICONS[i],
+                "label": battleground.username + "/" + battleground.name
+            })
+
+        # connect the individual nodes together with links in a way that d3.js will work with
+        for i, port_icon in enumerate(self.port_icons):
+            self.port_graph['links'].append({
+                "source": port_icon,
+                "target": self.port_icons[(i + 1) % len(self.port_icons)],
+                "value": 1
+            })
 
         # assign bot icons
         self.bot_icons = []
@@ -118,17 +119,17 @@ class Game:
         for bot1 in [bot for bot in self.bots if not bot.bot_icon]:
             index = 0
             while len(bot1.abbreviations) > index:
-                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
+#                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
                 for bot2 in [bot for bot in self.bots if bot.bot_icon]:
                     # if this icon is already taken, increment index
                     if bot2.bot_icon == bot1.abbreviations[index]:
-                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
+#                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
                         index += 1
                         break
                 else:  # no other bot has this icon, so use it
                     bot1.bot_icon = bot1.abbreviations[index]
                     bot1.coin_icon = bot1.abbreviations[index].lower()
-                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
+#                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
                     break
             else:
                 # we've gone through all the abbreviations and they're all taken.
@@ -137,7 +138,7 @@ class Game:
                 assert remaining_icons
                 bot1.bot_icon = remaining_icons[0]
                 bot1.coin_icon = remaining_icons[0].lower()
-                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
+#                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
         # now that we know which bots are where & which ports go where,
@@ -210,7 +211,7 @@ class Bot:
         """ Given a requested bot move and game state,
         attempt to perform that move (if it's legal)
         """
-        print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
+        #print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
         curr_bg = None
         for bg in game.battlegrounds:
@@ -229,7 +230,7 @@ class Bot:
 
             # If the bot is walking into air
             if cell == IC_AIR:
-                print("\tBot is walking to air")
+                #print("\tBot is walking to air")
                 # Replace the current spot with air
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
                 # Calculate the new location
@@ -243,7 +244,7 @@ class Bot:
 
             # If the bot is walking into a coin
             elif cell in game.coin_icons:
-                print("\tBot is walking to a coin")
+                #print("\tBot is walking to a coin")
                 # Figure out what the coin associated with the given coin_icon is
                 for bot in game.bots:
                     if bot.coin_icon == cell:
@@ -262,7 +263,7 @@ class Bot:
 
             # If the bot is walking into a port
             elif cell in game.port_icons:
-                print("\tBot is walking to a port")
+                #print("\tBot is walking to a port")
                 # Figure out the next battleground
                 for bg in game.battlegrounds:
                     if bg.port_icon == cell:
@@ -277,7 +278,7 @@ class Bot:
                 # Remove the current bot from the current battleground, and add
                 # it to the next battleground.
                 # TODO the game doesn't actually check for new bots that arenot on the bg
-                next_bg.append(curr_bg.bots.pop(remove_idx))
+                next_bg.bots.append(curr_bg.bots.pop(remove_idx))
             else:
                 # If the bot tries to walk anywhere illegal, don't allow it and
                 # just stay still
@@ -285,7 +286,7 @@ class Bot:
 
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] is not '':
-            print("\tBot is attacking")
+            #print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
 
@@ -364,6 +365,7 @@ class Battleground:
             os.mkdir(os.path.join(self.game_dir, username))
         self.battleground_url = battleground_url
         self.name = name
+        self.num_coins = 10
         self.spawn_locations = []
         self.port_locations = []
         self.port_icon = ""
@@ -444,16 +446,21 @@ class Battleground:
         """
         take the raw template input of the battleground, the bots and ports,
         and replace instances of ic_spawn with bots and ic_port with ports.
+        Also add in coins
         """
+        
+        # Go through the entire map and cache the interesting locations
         for x, col in enumerate(self.bg_map):
             for y, item in enumerate(col):
                 if item == IC_SPAWN:
                     self.spawn_locations.append((x, y))
                 elif item == IC_PORT:
                     self.port_locations.append((x, y))
+                    self.bg_map[x][y] = IC_AIR
                 elif item not in [IC_SPAWN, IC_PORT, IC_WALLS, IC_AIR]:
-                    item = IC_AIR
-
+                    self.bg_map[x][y] = IC_AIR
+        
+        # Add in bots to some random spawning locations
         bot_index = 0
         random.shuffle(self.spawn_locations)
         for x, y in self.spawn_locations:
@@ -463,27 +470,27 @@ class Battleground:
             else:
                 self.bg_map[x][y] = IC_AIR
 
-        port_index = 0
+        # Add in ports to the map at random locations
         random.shuffle(self.port_locations)
-        bg_label = self.username + "/" + self.name
-        relevant_ports = [port for port in port_graph['links'] if port['source'] == bg_label]
-        for x, y in self.port_locations:
-            if port_index < len(relevant_ports):
-                target_node = [node for node in port_graph['nodes'] if node['id'] == relevant_ports['target']][0]
-                username, name = target_node['label'].split('/')
-                # FIXME assert that battleground username/name combos are unique in a game
-                icon = ""
-                for battleground in battlegrounds:
-                    if battleground.name == name and battleground.username == username:
-                        icon = battleground.port_icon
-                        break
-                else:
-                    assert False, "Battleground for {}/{} not found".format(username, name)
-                self.bg_map[x][y] = icon
-                print("port icon {} for battleground {}".format(icon, self.battleground_url))
-                port_index += 1
-            else:
-                self.bg_map[x][y] = IC_AIR
+        #pprint(port_graph)
+        relevant_targets = [port['target'] for port in port_graph['links'] if port['source'] == self.port_icon]
+        assert len(self.port_locations) >= len(relevant_targets)
+        for i, target in enumerate(relevant_targets):
+            x, y == self.port_locations[i]
+            self.bg_map[x][y] = target
+        
+        # FIXME the coins aren't getting added
+        # Add in some coins at random air locations:
+        coin_icons = [bot.coin_icon for bot in self.bots]
+        print("num coins: " + str(self.num_coins))
+        for i in range(self.num_coins):
+            while True:
+                rand_row = random.randrange(len(self.bg_map))
+                rand_col = random.randrange(len(self.bg_map[0]))
+                #print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
+                if self.bg_map[rand_row][rand_col] == IC_AIR:
+                    self.bg_map[rand_row][rand_col] == random.choice(coin_icons)
+                    break
 
 
 class Client:
