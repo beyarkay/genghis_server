@@ -53,7 +53,7 @@ class Game:
         # write out the current state of every bg map to a file
         for bg in self.battlegrounds:
             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
-            lines.append(bg.json())
+            #lines.append(bg.json())
             with open(bg.port_icon + ".log", "w+") as bg_file:
                 bg_file.writelines(lines)
 

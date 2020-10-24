@@ -24,7 +24,6 @@ import util
 # game_dir = ''
 # SLEEP_DURATION = 0.5
 
-
 def main():
     # Read in the Game object from game.pickle
     with open("game.pickle", "rb") as gamefile:
