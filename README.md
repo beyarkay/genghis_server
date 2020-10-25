@@ -48,23 +48,15 @@ or onto other bots
     "direction": One of l, u, r, d or a combination of two of them
 }
 ```
-## File structure
-TODO
-
 
 ## Future Features
-* Include an in-terminal viewing window with
-```
-tput sc
-while :; do
-    tput ed
-    echo -e "$SECONDS\n$SECONDS\n$SECONDS"
-    sleep 1
-    tput rc
-done
-```
 
 
-## TODO
-* When bots port to another bg, they might not get respawned in, and
-are only added to the bg.bots list
+## TODOs
+* TODO get the coin dropping working
+* TODO test the bot fighting system
+* TODO Revamp the front end
+* TODO add nice instructions for beginners to the console
+* TODO Add more maps to the default bot client
+* TODO Program your own bot
+* TODO Make a client version of the monitoring system

@@ -10,7 +10,7 @@
   "coin_icon": "d",
   "bot_icon": "D",
   "stderr": "",
-  "stdout": "Making motion GREEDY, bot is at (3, 19)\nMaking motion CURIOUS, bot is at (3, 19)\nclosest port is at 17, 19\n",
+  "stdout": "Making motion GREEDY, bot is at (10, 19)\nMaking motion CURIOUS, bot is at (10, 19)\nclosest port is at 16, 19\n",
   "move_dict": {
     "action": "walk",
     "direction": "r"
