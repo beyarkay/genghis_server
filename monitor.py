@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 TODO Add colours based on what the icon is
 TODO Add keycodes, so pressing 'A' will give better details on the bot with icon A
@@ -127,6 +128,16 @@ def main(stdscr):
             # Figure out which battleground the bot is on
             bg_lines = []
             for game_bg in game.battlegrounds:
+                """
+                Traceback (most recent call last):
+                    File "monitor.py", line 188, in <module>
+                        wrapper(main)
+                    File "/usr/lib/python3.6/curses/__init__.py", line 94, in wrapper
+                        return func(stdscr, *args, **kwds)
+                    File "monitor.py", line 131, in main
+                        if bot.bot_icon in [bg_bot.bot_icon for bg_bot in game_bg.bots]:
+                    AttributeError: 'NoneType' object has no attribute 'bot_icon'
+                """
                 if bot.bot_icon in [bg_bot.bot_icon for bg_bot in game_bg.bots]:
                     bg_lines = [''.join(row) for row in zip(*game_bg.bg_map)]
                     break

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from pprint import pprint
 import json
 import requests
@@ -35,7 +36,7 @@ class Game:
         self.bot_icons = []
         self.port_icons = []
         self.iteration = 0
-        self.coins_per_bg = 10
+        self.turn_time = 0.1
         os.mkdir(self.game_dir)
 
     def add_bot(self, bot):
@@ -144,6 +145,7 @@ class Game:
 #                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
+
         # now that we know which bots are where & which ports go where,
         # initialise the bg_maps with actual bot icons
         # instead of the placeholder icons
@@ -196,6 +198,7 @@ class Bot:
         json['bot_icon'] = self.bot_icon
         json['stderr'] = self.stderr
         json['stdout'] = self.stdout
+        json['move_dict'] = self.move_dict
         json['len(coins)'] = len(self.coins)
         return json
 
@@ -209,7 +212,7 @@ class Bot:
                 coin.value += new_coins.value
                 break
         else:
-            self.coins.append(coins)
+            self.coins.append(new_coins)
 
     def perform_action(self, bot_move, game):
         """ Given a requested bot move and game state,
@@ -249,7 +252,7 @@ class Bot:
 
             # If the bot is walking into a coin
             elif cell in game.coin_icons:
-                #print("\tBot is walking to a coin")
+                print("\tBot is walking into a coin")
                 # Figure out what the coin associated with the given coin_icon is
                 for bot in game.bots:
                     if bot.coin_icon == cell:
@@ -268,12 +271,13 @@ class Bot:
 
             # If the bot is walking into a port
             elif cell in game.port_icons:
-                #print("\tBot is walking to a port")
                 # Figure out the next battleground
+                next_bg = None
                 for bg in game.battlegrounds:
                     if bg.port_icon == cell:
                         next_bg = bg
                         break
+                print("\tBot is walking into a port going to {}".format(next_bg.port_icon))
                 # Figure out the index of the current bot so as to pop it from the
                 # Current battlegrounds list of bots
                 for i, bot in enumerate(curr_bg.bots):
@@ -282,8 +286,9 @@ class Bot:
                         break
                 # Remove the current bot from the current battleground, and add
                 # it to the next battleground.
-                # TODO the game doesn't actually check for new bots that arenot on the bg
-                next_bg.bots.append(curr_bg.bots.pop(remove_idx))
+                next_bg.spawn_bot(curr_bg.bots.pop(remove_idx))
+                # And remove the bot's icon from the current battleground
+                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
             else:
                 # If the bot tries to walk anywhere illegal, don't allow it and
                 # just stay still
@@ -370,8 +375,9 @@ class Battleground:
             os.mkdir(os.path.join(self.game_dir, username))
         self.battleground_url = battleground_url
         self.name = name
-        self.num_coins = 10
+        self.num_coins = 1
         self.spawn_locations = []
+        self.port_spawn_locations = []
         self.port_locations = []
         self.port_icon = ""
 
@@ -392,14 +398,12 @@ class Battleground:
         json_dict['battleground_url'] = self.battleground_url
         json_dict['name'] = self.name
         json_dict['spawn_locations'] = self.spawn_locations
+        json_dict['port_spawn_locations'] = self.port_spawn_locations
         json_dict['port_locations'] = self.port_locations
         json_dict['port_icon'] = self.port_icon
         json_dict['bot_icons'] = [bot.bot_icon for bot in self.bots]
 
         return json_dict
-
-
-
 
     def find_icon(self, icon):
         returner = []
@@ -432,8 +436,16 @@ class Battleground:
         to the actual map
         """
         self.bots.append(bot)
-        pass
 
+    def spawn_bot(self, bot):
+        self.bots.append(bot)
+        random.shuffle(self.spawn_locations)
+        for x, y in self.spawn_locations:
+            if self.bg_map[x][y] == IC_AIR:
+                self.bg_map[x][y] = bot.bot_icon
+                break
+
+        
     def parse_battleground_path(self, path=""):
         """
         convert the raw text of the battleground at the location of
@@ -460,7 +472,7 @@ class Battleground:
                 if item == IC_SPAWN:
                     self.spawn_locations.append((x, y))
                 elif item == IC_PORT:
-                    self.port_locations.append((x, y))
+                    self.port_spawn_locations.append((x, y))
                     self.bg_map[x][y] = IC_AIR
                 elif item not in [IC_SPAWN, IC_PORT, IC_WALLS, IC_AIR]:
                     self.bg_map[x][y] = IC_AIR
@@ -476,14 +488,14 @@ class Battleground:
                 self.bg_map[x][y] = IC_AIR
 
         # Add in ports to the map at random locations
-        random.shuffle(self.port_locations)
+        random.shuffle(self.port_spawn_locations)
         #pprint(port_graph)
         relevant_targets = [port['target'] for port in port_graph['links'] if port['source'] == self.port_icon]
-        assert len(self.port_locations) >= len(relevant_targets)
+        assert len(self.port_spawn_locations) >= len(relevant_targets)
         for i, target in enumerate(relevant_targets):
-            x, y == self.port_locations[i]
+            x, y == self.port_spawn_locations[i]
             self.bg_map[x][y] = target
-        
+            self.port_locations.append((x, y)) 
         # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
         #print("num coins: " + str(self.num_coins))
