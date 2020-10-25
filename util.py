@@ -55,15 +55,18 @@ class Game:
         # write out the current state of every bg map to a file
         for bg in self.battlegrounds:
             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
-            #lines.append(bg.json())
             with open(bg.port_icon + ".log", "w+") as bg_file:
                 bg_file.writelines(lines)
 
         # write out the current state of every bot to a file
         for bot in self.bots:
-            with open(bot.bot_icon + ".log", "w+") as bot_file:
+            with open(bot.bot_icon + ".json", "w+") as bot_file:
                 # write out the current state of the bg map to a file
                 json.dump(bot.json(), bot_file, indent=2)
+
+        # Pickle the game object so it can be used by the monitoring system
+        with open("game.pickle", "wb") as game_pkl:
+            pickle.dump(self, game_pkl)
 
     def print_logs(self):
         # print out the current state of every bg map to stdout
@@ -178,6 +181,7 @@ class Bot:
         # Give a stderr, stdout for debugging
         self.stderr = ""
         self.stdout = ""
+        self.move_dict = {}
         self.coins = []  # an array of Coin objects
 
     def json(self):
@@ -211,6 +215,7 @@ class Bot:
         """ Given a requested bot move and game state,
         attempt to perform that move (if it's legal)
         """
+        self.move_dict = bot_move
         #print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
         curr_bg = None
@@ -380,18 +385,18 @@ class Battleground:
         self.bots = []
 
     def json(self):
-        jstring= {}
-        jstring['game_dir'] = self.game_dir
-        jstring['username'] = self.username
-        jstring['battleground_path'] = self.battleground_path
-        jstring['battleground_url'] = self.battleground_url
-        jstring['name'] = self.name
-        jstring['spawn_locations'] = self.spawn_locations
-        jstring['port_locations'] = self.port_locations
-        jstring['port_icon'] = self.port_icon
-        jstring['bot_icons'] = [bot.bot_icon for bot in self.bots]
+        json_dict= {}
+        json_dict['game_dir'] = self.game_dir
+        json_dict['username'] = self.username
+        json_dict['battleground_path'] = self.battleground_path
+        json_dict['battleground_url'] = self.battleground_url
+        json_dict['name'] = self.name
+        json_dict['spawn_locations'] = self.spawn_locations
+        json_dict['port_locations'] = self.port_locations
+        json_dict['port_icon'] = self.port_icon
+        json_dict['bot_icons'] = [bot.bot_icon for bot in self.bots]
 
-        return json.dumps(jstring, indent=2)
+        return json_dict
 
 
 
