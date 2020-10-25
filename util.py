@@ -479,7 +479,6 @@ class Battleground:
             x, y == self.port_locations[i]
             self.bg_map[x][y] = target
         
-        # FIXME the coins aren't getting added
         # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
         print("num coins: " + str(self.num_coins))

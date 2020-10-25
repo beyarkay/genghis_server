@@ -48,7 +48,7 @@ def main():
 
     game.init_game()
 
-    # copy over the judge system script and the util script
+    # copy over the judge system script
     shutil.copy2(JUDGE_SYSTEM_SCRIPT, game.game_dir)
 
     # start the game going
