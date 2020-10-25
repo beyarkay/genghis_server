@@ -481,14 +481,14 @@ class Battleground:
         
         # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
-        print("num coins: " + str(self.num_coins))
+        #print("num coins: " + str(self.num_coins))
         for i in range(self.num_coins):
             while True:
                 rand_row = random.randrange(len(self.bg_map))
                 rand_col = random.randrange(len(self.bg_map[0]))
                 #print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
                 if self.bg_map[rand_row][rand_col] == IC_AIR:
-                    print("added coin at {}, {}".format(rand_row, rand_col))
+                    #print("added coin at {}, {}".format(rand_row, rand_col))
                     self.bg_map[rand_row][rand_col] = random.choice(coin_icons)
                     break
 

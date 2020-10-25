@@ -23,7 +23,7 @@ def main(stdscr):
                 parsed = [line.strip() for line in file.readlines()]
                 if len(parsed) > max_cols:
                     max_cols = len(parsed)
-            bgs.append([''.join(list(i)) for i in zip(*parsed)])
+            bgs.append([''.join(list(i)) for i in parsed])
             if len(bgs[-1]) > max_rows:
                 max_rows = len(bgs[-1])
 
