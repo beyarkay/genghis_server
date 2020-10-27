@@ -121,76 +121,89 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         return defaultvalue;
     }
 
-    console.log(get_param("game", ""));
-    console.log(get_param("follow", ""));
+    // Update the list of running games
     $.ajax({
         url: "../server_state.json"
     }).done(data => {
         if (data && data['games']) {
-            console.log("Data found: ", data['games']);
-            // Update the list of games
-            // let ul = document.getElementById("games_list");
-            // ul.innerHTML = "";
-            // // Attempt to get the files for the bots / battlegrounds
-            // for (let i = 0; i < data['games'].length; i++) {
-            //     let game = data['games'][i];
-            //     let li = document.createElement("li");
-            //     let a = document.createElement("a");
-            //     a.setAttribute("href", "www/follow.html?game=" + game['game_dir'] + "&follow=none");
-            //     a.innerHTML = game['game_dir'].replace('games/', '');
-            //     li.appendChild(a);
-            //     ul.appendChild(li);
-            // }
-
             // Populate the list of games available
             let games_list = ["Overview"];
             data['games'].forEach((game) => {
                 games_list.push(game['game_dir']);
             });
             let cmb_game = document.getElementById("cmb_game");
-            cmb_game.setAttribute("onchange", "update_following(this.value)")
+            cmb_game.setAttribute("onchange", "update_following()")
             cmb_game.innerHTML = "";
 
+            let game_is_selected = false;
             for (let i = 0; i < games_list.length; i++) {
                 let option = document.createElement("option");
                 option.value = games_list[i];
                 option.text = games_list[i];
                 if (get_param("game", "") === games_list[i]) {
                     option.setAttribute("selected", "selected")
+                    game_is_selected = true
                 }
                 cmb_game.appendChild(option);
+            }
+            if (!game_is_selected) {
+                window.location.href = '../index.html';
             }
         }
     });
 
-    function update_following(selected_game_path) {
-        console.log("Updating from " + selected_game_path)
-        let cmb_following = document.getElementById("cmb_following");
-        if (selected_game_path.includes('games/')) {
-            $.ajax({
-                url: "../" + selected_game_path + "/game.json"
-            }).done(game => {
-                console.log("Got data: " + game)
-                // Populate the list of games available
-                let following_list = ["Overview"];
-                game['bots'].forEach((bot) => {
-                    following_list.push("Bot " + bot['bot_icon']);
-                });
-                game['battlegrounds'].forEach((bg) => {
-                    following_list.push("Battleground " + bg['port_icon']);
-                });
+    let selected_game_path = get_param("game", "");
+    $.ajax({
+        url: "../" + selected_game_path + "/game.json"
+    }).done(game => {
+        let following_list = ["Overview"];
+        game['bots'].sort((a, b) => a['bot_icon'] > b['bot_icon'] ? 1 : -1);
+        game['bots'].forEach((bot) => {
+            following_list.push(bot['bot_icon']);
+        });
 
-                cmb_following.innerHTML = "";
-                for (let i = 0; i < following_list.length; i++) {
-                    let option = document.createElement("option");
-                    option.value = following_list[i];
-                    option.text = following_list[i];
-                    cmb_following.appendChild(option);
+        game['battlegrounds'].sort((a, b) => a['port_icon'] > b['port_icon'] ? 1 : -1);
+        game['battlegrounds'].forEach((bg) => {
+            following_list.push(bg['port_icon']);
+        });
+
+        let cmb_following = document.getElementById("cmb_following");
+        cmb_following.setAttribute("onchange", "update_following()");
+        cmb_following.innerHTML = "";
+        for (let i = 0; i < following_list.length; i++) {
+            let option = document.createElement("option");
+            option.value = following_list[i];
+
+            if (i !== 0) {
+                if (i - 1 < game['bots'].length) {
+                    option.text = "Bot " + following_list[i];
+                } else {
+                    option.text = "Battleground " + following_list[i];
                 }
-            });
-        } else {
-            window.location.href = '../index.html';
+            } else {
+                option.text = following_list[i];
+            }
+            if (get_param("following", "") === following_list[i]) {
+                option.setAttribute("selected", "selected")
+            }
+            cmb_following.appendChild(option);
         }
+    });
+
+
+    function update_following() {
+        let cmb_following = document.getElementById("cmb_following");
+        let cmb_game = document.getElementById("cmb_game");
+        let forwarding_url;
+        if (cmb_game.value !== 'Overview') {
+            forwarding_url = 'follow.html?game=' + cmb_game.value;
+            if (cmb_following.value !== 'Overview') {
+                forwarding_url += '&following=' + cmb_following.value;
+            }
+        } else {
+            forwarding_url = '../index.html';
+        }
+        window.location.href = forwarding_url;
     }
 
     // $(document).ready(function () {

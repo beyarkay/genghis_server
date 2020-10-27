@@ -28,7 +28,8 @@ a {
 a:hover {
     text-decoration: underline;
 }
-a.silent{
+
+a.silent {
     text-decoration: inherit;
     font-weight: inherit;
     color: inherit;
@@ -83,4 +84,12 @@ code {
     border-color: gray;
     border-width: thin;
     vertical-align: middle;
+}
+
+pre {
+    white-space: pre-wrap; /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+
 }
