@@ -35,7 +35,7 @@
             <div class="pure-g">
                 <div class="pure-u-8-24">
                     <h2>Live now</h2>
-                    <ul>
+                    <ul id="games_list">
                         <li><a href="index.html">Game 1</a></li>
                         <li><a href="index.html">Game 2</a></li>
                         <li><a href="index.html">Game 3</a></li>
@@ -129,11 +129,40 @@
 <!--    </div>-->
 <!--</div>-->
 <script>
+    function get_param(param, defaultvalue) {
+        var urlparameter = defaultvalue;
+        if(window.location.href.indexOf(param) > -1){
+            let vars = {};
+            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, 
+                    function(m, key, value) {
+                vars[key] = value;
+            });
+            return vars[param]
+        }
+        return defaultvalue;
+    }
 
+    console.log(get_param("game", "None"));
+    console.log(get_param("follow", "None"));
     $.ajax({
         url: "server_state.json"
     }).done(data => {
-        console.log("Data found: ", data);
+        if (data && data['games']) {
+            console.log("Data found: ", data['games']);
+            // Update the list of games
+            let ul = document.getElementById("games_list");
+            ul.innerHTML = "";
+            // Attempt to get the files for the bots / battlegrounds
+            for (let i = 0; i < data['games'].length; i++) {
+                let game = data['games'][i];
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                a.setAttribute("href", "www/follow.html?game=" + game['game_dir'] + "&follow=none");
+                a.innerHTML = game['game_dir'].replace('games/','');
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+        }
     });
 
     // $(document).ready(function () {

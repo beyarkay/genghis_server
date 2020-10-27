@@ -40,6 +40,8 @@ class Game:
         os.mkdir(self.game_dir)
         with open('server_state.json', 'r+') as ss_file:
             server_state = json.load(ss_file)
+        if not server_state.get('games'):
+            server_state['games'] = []
         server_state['games'].append(self.json())
         with open('server_state.json', 'w+') as ss_file:
             json.dump(server_state, ss_file)

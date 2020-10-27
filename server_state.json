@@ -1,18 +1,1 @@
-{
-    "clients": [
-        {
-            "username": "andy",
-            "abbreviations": [
-                "a"
-            ],
-            "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
-        },
-        {
-            "username": "abby",
-            "abbreviations": [
-                "a"
-            ],
-            "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
-        }
-    ]
-}
+{"clients": [{"username": "andy", "abbreviations": ["a"], "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"}, {"username": "abby", "abbreviations": ["a"], "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"}], "games": [{"port_graph": {"links": [], "nodes": []}, "bots": [], "battlegrounds": [], "game_dir": "games/2020-10-27T22:37:58.873938", "coin_icons": [], "bot_icons": [], "port_icons": [], "iteration": 0, "turn_time": 0.1}]}

@@ -21,6 +21,7 @@ def main():
     copy over the judge system script
     start the game going
     """
+    # TODO Every time this runs, reset the file permissions to 0o755 where needed
 
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)

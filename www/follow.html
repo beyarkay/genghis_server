@@ -12,6 +12,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="./styles.css" rel="stylesheet" type="text/css"/>
 
+    <!--    Get jQuery-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
     <title>Genghis</title>
 </head>
 <body>
@@ -115,5 +119,72 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         </div>
     </div>
 </div>
+<script>
+    function get_param(param, defaultvalue) {
+        var urlparameter = defaultvalue;
+        if(window.location.href.indexOf(param) > -1){
+            let vars = {};
+            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, 
+                    function(m, key, value) {
+                vars[key] = value;
+            });
+            return vars[param]
+        }
+        return defaultvalue;
+    }
+
+    console.log(get_param("game", "None"));
+    console.log(get_param("follow", "None"));
+    $.ajax({
+        url: "server_state.json"
+    }).done(data => {
+        if (data && data['games']) {
+            console.log("Data found: ", data['games']);
+            // Update the list of games
+            let ul = document.getElementById("games_list");
+            ul.innerHTML = "";
+            // Attempt to get the files for the bots / battlegrounds
+            for (let i = 0; i < data['games'].length; i++) {
+                let game = data['games'][i];
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                a.setAttribute("href", "www/follow.html?game=" + game['game_dir'] + "&follow=none");
+                a.innerHTML = game['game_dir'].replace('games/','');
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+        }
+    });
+
+    // $(document).ready(function () {
+    //     $.ajaxSetup({cache: false});
+    //     let interval = 250;
+    //
+    //     function update() {
+    //         $.when($.ajax('games/*'))
+    //             .then(function (stateResponse) {
+    //                 //console.log(stateResponse);
+    //
+    //                 updateWithState(stateResponse);
+    //
+    //             }, function () {
+    //                 console.log('Error while loading gamestate/layout');
+    //             });
+    //         setTimeout(update, interval);
+    //     }
+    //
+    //     setTimeout(update, interval);
+    //
+    //
+    // });
+    // Update the Games list
+    // Update the bots/battlegrounds list
+    // Update the Live Now card
+    // Update the Preview map
+    // Go to the top and update it all again
+
+
+</script>
+
 </body>
 </html>
