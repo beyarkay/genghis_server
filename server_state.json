@@ -13,6 +13,27 @@
                 "a"
             ],
             "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
+        },
+        {
+            "username": "stu",
+            "abbreviations": [
+                "s"
+            ],
+            "url": "https:\/\/people.cs.uct.ac.za\/~MSHSTU001\/genghis\/genghis_server"
+        },
+        {
+            "username": "stu2",
+            "abbreviations": [
+                "s"
+            ],
+            "url": "https:\/\/people.cs.uct.ac.za\/~MSHSTU001\/genghis\/genghis_server"
+        },
+        {
+            "username": "stu3",
+            "abbreviations": [
+                "s"
+            ],
+            "url": "https:\/\/people.cs.uct.ac.za\/~MSHSTU001\/genghis\/genghis_server"
         }
     ]
 }
