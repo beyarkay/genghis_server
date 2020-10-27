@@ -55,7 +55,7 @@ class Game:
         """
         # write out the current state of every bg map to a file
         for bg in self.battlegrounds:
-            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
+            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
             with open(bg.port_icon + ".log", "w+") as bg_file:
                 bg_file.writelines(lines)
 
@@ -72,27 +72,26 @@ class Game:
     def print_logs(self):
         # print out the current state of every bg map to stdout
         for bg in self.battlegrounds:
-            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)] 
-            print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines))) 
+            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
+            print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines)))
 
         for bot in self.bots:
             print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.json(), indent=2)))
-
 
     def init_game(self):
 
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
-#        print("num_bg", num_battlegrounds)
+        #        print("num_bg", num_battlegrounds)
         for i, bot in enumerate(self.bots):
-#            print("i ", i, "bot icon: ", bot.bot_icon)
+            #            print("i ", i, "bot icon: ", bot.bot_icon)
             for bg in [bg for bg in self.battlegrounds if len(bg.bots) == 0]:
-#                print("Added to empty battleground")
+                #                print("Added to empty battleground")
                 bg.add_bot(bot)
                 break
             else:
-#                print("added to occupied battleground")
+                #                print("added to occupied battleground")
                 random_bg = random.choice(self.battlegrounds)
                 random_bg.add_bot(bot)
 
@@ -123,17 +122,17 @@ class Game:
         for bot1 in [bot for bot in self.bots if not bot.bot_icon]:
             index = 0
             while len(bot1.abbreviations) > index:
-#                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
+                #                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
                 for bot2 in [bot for bot in self.bots if bot.bot_icon]:
                     # if this icon is already taken, increment index
                     if bot2.bot_icon == bot1.abbreviations[index]:
-#                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
+                        #                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
                         index += 1
                         break
                 else:  # no other bot has this icon, so use it
                     bot1.bot_icon = bot1.abbreviations[index]
                     bot1.coin_icon = bot1.abbreviations[index].lower()
-#                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
+                    #                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
                     break
             else:
                 # we've gone through all the abbreviations and they're all taken.
@@ -142,7 +141,7 @@ class Game:
                 assert remaining_icons
                 bot1.bot_icon = remaining_icons[0]
                 bot1.coin_icon = remaining_icons[0].lower()
-#                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
+            #                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
 
@@ -157,7 +156,7 @@ class Game:
             json.dump(self.port_graph, graphfile)
 
         # Pickle the game object so it can be used by the judge system
-        with open(os.path.join(self.game_dir, "game.pickle"),"wb") as game_pkl:
+        with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
 
@@ -219,7 +218,7 @@ class Bot:
         attempt to perform that move (if it's legal)
         """
         self.move_dict = bot_move
-        #print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
+        # print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
         curr_bg = None
         for bg in game.battlegrounds:
@@ -238,7 +237,7 @@ class Bot:
 
             # If the bot is walking into air
             if cell == IC_AIR:
-                #print("\tBot is walking to air")
+                # print("\tBot is walking to air")
                 # Replace the current spot with air
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
                 # Calculate the new location
@@ -296,7 +295,7 @@ class Bot:
 
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] is not '':
-            #print("\tBot is attacking")
+            # print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
 
@@ -347,14 +346,39 @@ class Bot:
                         # The coin landed on air, so just add it to the map
                         curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
 
-                else:
-                    # The defender doesn't have any coins to drop...
-                    pass
-
         # If the bot is dropping a coin on the floor (to trade possibly)
-        elif bot_move['action'] == ACTION_DROP and bot_move['direction'] is not '':
-            # TODO implement this
-            pass
+        elif bot_move.get('action') == ACTION_DROP and \
+                bot_move.get('direction') is not '' and \
+                bot_move.get('type') is not '':
+            """Drop the coin specified in bot_move['type'] onto the ground in the 
+            direction of bot_move['direction']
+            """
+            coin_type = bot_move.get('type')
+            # Check that there is empty space / a bot in the direction of bot_move['direction']
+            cell = curr_bg.get_cell(bot_loc, bot_move['direction'])
+            droppable_icons = [IC_AIR] + [bg_bot.bot_icon for bg_bot in curr_bg.bots]
+            if cell in droppable_icons:
+                for coin in self.coins:
+                    # Check that the bot actually has the coin they want to drop
+                    if coin.originator.coin_icon == coin_type and coin.value > 0:
+                        # Remove the coin from the bot's inventory
+                        coin.value -= 1
+                        # Add the bot to the ground / to the adjacent bot
+                        for bg_bot in curr_bg.bots:
+                            if bg_bot.bot_icon == cell:
+                                bg_bot.add_coins(Coin(coin.originator.coin_icon, 1))
+                                break
+                        else:  # cell is IC_AIR
+                            # Calculate the new location
+                            cmd = ''.join(set(bot_move['direction']))  # Remove all duplicated characters
+                            coin_position = bot_loc[:]
+                            for c in cmd:
+                                coin_position[0] += CMD_DICT[c][0]
+                                coin_position[1] += CMD_DICT[c][1]
+                            # Replace the new spot with the coin's icon
+                            curr_bg.bg_map[coin_position[0]][coin_position[1]] = coin.originator.coin_icon
+
+                        break
 
 
 class Coin:
@@ -391,7 +415,7 @@ class Battleground:
         self.bots = []
 
     def json(self):
-        json_dict= {}
+        json_dict = {}
         json_dict['game_dir'] = self.game_dir
         json_dict['username'] = self.username
         json_dict['battleground_path'] = self.battleground_path
@@ -445,7 +469,6 @@ class Battleground:
                 self.bg_map[x][y] = bot.bot_icon
                 break
 
-        
     def parse_battleground_path(self, path=""):
         """
         convert the raw text of the battleground at the location of
@@ -465,7 +488,7 @@ class Battleground:
         and replace instances of ic_spawn with bots and ic_port with ports.
         Also add in coins
         """
-        
+
         # Go through the entire map and cache the interesting locations
         for x, col in enumerate(self.bg_map):
             for y, item in enumerate(col):
@@ -476,7 +499,7 @@ class Battleground:
                     self.bg_map[x][y] = IC_AIR
                 elif item not in [IC_SPAWN, IC_PORT, IC_WALLS, IC_AIR]:
                     self.bg_map[x][y] = IC_AIR
-        
+
         # Add in bots to some random spawning locations
         bot_index = 0
         random.shuffle(self.spawn_locations)
@@ -489,23 +512,23 @@ class Battleground:
 
         # Add in ports to the map at random locations
         random.shuffle(self.port_spawn_locations)
-        #pprint(port_graph)
+        # pprint(port_graph)
         relevant_targets = [port['target'] for port in port_graph['links'] if port['source'] == self.port_icon]
         assert len(self.port_spawn_locations) >= len(relevant_targets)
         for i, target in enumerate(relevant_targets):
             x, y == self.port_spawn_locations[i]
             self.bg_map[x][y] = target
-            self.port_locations.append((x, y)) 
-        # Add in some coins at random air locations:
+            self.port_locations.append((x, y))
+            # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
-        #print("num coins: " + str(self.num_coins))
+        # print("num coins: " + str(self.num_coins))
         for i in range(self.num_coins):
             while True:
                 rand_row = random.randrange(len(self.bg_map))
                 rand_col = random.randrange(len(self.bg_map[0]))
-                #print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
+                # print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
                 if self.bg_map[rand_row][rand_col] == IC_AIR:
-                    #print("added coin at {}, {}".format(rand_row, rand_col))
+                    # print("added coin at {}, {}".format(rand_row, rand_col))
                     self.bg_map[rand_row][rand_col] = random.choice(coin_icons)
                     break
 
