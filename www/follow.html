@@ -12,118 +12,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="./styles.css" rel="stylesheet" type="text/css"/>
 
-    <title>Genghis - </title>
+    <title>Genghis</title>
 </head>
 <body>
 <!--Genghis Header-->
 <div class="pure-g">
     <div class="pure-u-1-1">
-        <!--        <div class="shadow">-->
-        <h1>Genghis</h1>
-        <h4>Bot Battle System</h4>
-        <!--        </div>-->
-    </div>
-</div>
-<!--Live now Card-->
-<div class="pure-g">
-    <div class="pure-u-1-1">
-        <div class="shadow">
-            <!--            Group for the left list-->
-            <div class="pure-g">
-                <div class="pure-u-8-24">
-                    <h2>Live now</h2>
-                    <ul>
-                        <li><a href="follow.html">Game 1</a></li>
-                        <li><a href="follow.html">Game 2</a></li>
-                        <li><a href="follow.html">Game 3</a></li>
-                    </ul>
-                </div>
-                <!--                Group for the RHS preview-->
-                <div class="pure-u-16-24">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="lightgrey"/>
-                    </svg>
-                </div>
+        <div style="display:flex">
+            <div>
+                <a class="silent" href="../index.html">
+                    <h1>Genghis</h1>
+                    <h4>Bot Battle System</h4>
+                </a>
+            </div>
+            <div id="header-info">
+                <label for="game">Game:</label>
+                <select name="game" id="game">
+                    <option value="home">Home</option>
+                    <option value="Game-1">Game 1</option>
+                    <option value="Game-2">Game 2</option>
+                    <option value="Game-3">Game 3</option>
+                </select>
+                <br>
+                <br>
+                <label for="following">Following:</label>
+                <select name="following" id="following">
+                    <option value="none">None</option>
+                    <option value="bot_a">Bot A</option>
+                    <option value="bot_b">Bot B</option>
+                    <option value="bot_c">Bot C</option>
+                    <option value="bot_1">Battleground 1</option>
+                    <option value="bot_2">Battleground 2</option>
+                    <option value="bot_3">Battleground 3</option>
+                </select>
             </div>
         </div>
     </div>
 </div>
-<!--What's this Card-->
+<!--Battleground Card-->
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>What's this?</h2>
-            <p>Using the Genghis Battle System by
-                <a href="https://github.com/beyarkay">Boyd Kane</a>,
-                bots built by Computer Science students compete for
-                resources, trade, and fight each other across
-                multiple different battlegrounds.</p>
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <rect width="100%" height="100%" fill="lightgrey"/>
+                <text x="20" y="30">Battleground</text>
+            </svg>
         </div>
     </div>
 </div>
-<!--Make a bot Card-->
+<!--Graph 1 Card-->
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>Make Your Own Bot</h2>
-            To get started, you will need to copy some code from a
-            <a href="https://github.com/beyarkay/genghis_client">GitHub
-                repository</a> into an internet-connected sever (like UCT's
-            nightmare server that all second-year students have access to). <br>
-            <ol>
-                <li>ssh into the UCT server:
-                    <code>ssh &lt;YOUR_STUDENT_NUMBER&gt;@nightmare.cs.uct.ac.za</code>
-                </li>
-                <li>Make a public directory to host the bot script, and change into it:
-                    <code>mkdir ~/public_html && cd ~/public_html</code>
-                </li>
-                <li>Get a copy of the scripts needed to setup your bot, and then
-                    change into the newly created directory:
-                    <code>git clone https://github.com/beyarkay/genghis_client.git && cd genghis_client</code>
-                </li>
-                <li>Run a script to get you started:
-                    <code>python3 get_started.py</code>
-                </li>
-                <li>At the prompts, enter the server's URL:
-                    <code>https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/</code>
-                    your URL:
-                    <code>https://people.cs.uct.ac.za/~&lt;YOUR_STUDENT_NUMBER&gt;/genghis_client/</code>
-                    and what you want your username to be:
-                    <code>Username: &lt;CHOOSE A USERNAME&gt;</code>
-                </li>
-                <li>All done! Your bot will be included in the next game:
-                </li>
-            </ol>
+            <h2>Graph 1</h2>
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <rect width="100%" height="100%" fill="lightgrey"/>
+                <text x="20" y="30">Graph 1</text>
+            </svg>
         </div>
     </div>
 </div>
-<!--TODO Host a server Card-->
-<!--<div class="pure-g">-->
-<!--    <div class="pure-u-1-1">-->
-<!--        <div class="shadow">-->
-<!--            <h2>Host your own server</h2>-->
-<!--            Anyone can host a genghis-based server, although this-->
-<!--            requires a lot more knowledge of Python3 / Unix scripting -->
-<!--            than just building a bot:-->
-<!--            <ol>-->
-<!--                <li>In a public directory, clone the git repo:-->
-<!--                    <code>git clone https://github.com/beyarkay/genghis_server.git</code>-->
-<!--                </li>-->
-<!--                <li>Take note of the publicly accessible URL:-->
-<!--                    <code>python3 get_started.py</code>-->
-<!--                </li>-->
-<!--                <li>At the prompts, enter the server's URL:-->
-<!--                    <code>https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/</code>-->
-<!--                    your URL:-->
-<!--                    <code>https://people.cs.uct.ac.za/~&lt;YOUR_STUDENT_NUMBER&gt;/genghis_client/</code>-->
-<!--                    and what you want your username to be:-->
-<!--                    <code>Username: &lt;CHOOSE A USERNAME&gt;</code>-->
-<!--                </li>-->
-<!--                <li>All done! Your bot will be included in the next game:-->
-<!--                </li>-->
-<!--            </ol>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<!--Graph 2 Card-->
+<div class="pure-g">
+    <div class="pure-u-1-1">
+        <div class="shadow">
+            <h2>Graph 2</h2>
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <rect width="100%" height="100%" fill="lightgrey"/>
+                <text x="20" y="30">Graph 2</text>
+            </svg>
+        </div>
+    </div>
+</div>
+<!--Entity Info Card-->
+<div class="pure-g">
+    <div class="pure-u-1-1">
+        <div class="shadow">
+            <h2>Info about Followed Entity</h2>
+            <pre>
+{
+  "game_dir": "games/2020-10-27T12:25:57.605449",
+  "username": "adam",
+  "bot_path": "games/2020-10-27T12:25:57.605449/adam/template_bot.py",
+  "abbreviations": [
+    "A"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+  "name": "my bot",
+  "coin_icon": "a",
+  "bot_icon": "A",
+  "stderr": "Traceback (most recent call last):\n  File \"template_bot.py\", line 180, in
+            \n    main()\n  File \"template_bot.py\", line 75, in main\n    loc = this_battleground.find
+_icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
+  "stdout": "Making motion BLOODTHIRSTY, bot is at (8, 19)\n",
+  "move_dict": {
+    "action": "walk",
+    "direction": "r"
+  },
+  "len(coins)": 0
+}
+            </pre>
+        </div>
+    </div>
+</div>
 </body>
 </html>

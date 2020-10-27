@@ -28,6 +28,11 @@ a {
 a:hover {
     text-decoration: underline;
 }
+a.silent{
+    text-decoration: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
 
 p {
     color: #3e3e3e;
@@ -69,4 +74,13 @@ code {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     padding: 0.5em;
+}
+
+#header-info {
+    border-style: none none none solid;
+    padding-left: 0.5em;
+    margin-left: 0.5em;
+    border-color: gray;
+    border-width: thin;
+    vertical-align: middle;
 }
