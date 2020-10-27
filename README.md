@@ -58,6 +58,7 @@ or onto other bots
 * TODO test the bot fighting system
 
 ## Nice to have
+* Allow NN training
 * TODO Revamp the front end
 * TODO add nice instructions for beginners to the console
 * TODO Add more maps to the default bot client

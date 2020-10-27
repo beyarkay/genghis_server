@@ -1,89 +1,72 @@
-h1, h2, h3, h4, h5, h6, p, table, span {
-    text-align: center;
-}
 body {
-    color: black;
+    margin: 1em;
+    font-family: sans-serif;
+    font-weight: lighter;
+    color: #181818;
+    line-height: 1.2;
+
 }
 
-.shadow {
-    text-align: center;
-    margin: 0.5em;
+h1, h2, h3, h4, h5, h6 {
+    /*font-family: sans-serif;*/
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
 }
 
-.shadow-1 {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+p, ul, ol, li, a {
+    margin: 0;
+    padding: 0;
 }
 
 a {
-    color: inherit;
-}
-.linkActive {
-    color: darkslategrey;
+    font-weight: normal;
+    text-decoration: none;
+    color: #3e3e3e;
 }
 
-.battleground {
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    color: #3e3e3e;
+}
+
+ul, ol {
+    padding-left: 20px;
+}
+
+li {
+    margin-top: 1em;
+}
+
+
+svg {
+    height: 100%;
     width: 100%;
 }
 
-.battleCell {
-    padding: 0;
-    border-style: solid;
-    border-color: lightgrey;
-    border-width: 1px;
-    text-align: center;
-    vertical-align: center;
-    white-space: nowrap;
-    width: 1vw;
-    height: 1vw;
-}
-
-
-.battleTime {
-}
-
-.current {
-    font-weight: bold;
-}
-
-.strikeout {
-    text-decoration: line-through;
-    color: grey;
-}
-
-.port {
-}
-.ongoing {
-    font-weight: bold;
-}
-
-.notWorking {
-    text-decoration: line-through;
-    color: darkred;
-}
-.tab {
-    margin: 1em;
-}
-
-.monospace {
+code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    color: #666;
+    page-break-inside: avoid;
     font-family: monospace;
+    max-width: 100%;
+    overflow: auto;
+    padding: 0.5em;
+    display: block;
+    word-wrap: break-word;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+
 }
 
-.left-align {
-    text-align: left;
-}
 
-#gamestateCard {
-    white-space: pre;
-    text-align: left;
-    font-family: monospace;
-}
-
-#badgeLive {
-  color: red;
-  text-align: center;
-  border-radius: 5px;
-  border: 2px solid red;
-  background: white;
-  padding-left: 10px;
-  padding-right: 10px;
+.shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
 }
