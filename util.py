@@ -38,7 +38,25 @@ class Game:
         self.iteration = 0
         self.turn_time = 0.1
         os.mkdir(self.game_dir)
-
+        with open('server_state.json', 'r+') as ss_file:
+            server_state = json.load(ss_file)
+        server_state['games'].append(self.json())
+        with open('server_state.json', 'w+') as ss_file:
+            json.dump(server_state, ss_file)
+            
+    def json(self):
+        json = {}
+        json['port_graph'] = self.port_graph
+        json['bots'] = [bot.json() for bot in self.bots]
+        json['battlegrounds'] = [bg.json() for bg in self.battlegrounds]
+        json['game_dir'] = self.game_dir
+        json['coin_icons'] = self.coin_icons 
+        json['bot_icons'] = self.bot_icons 
+        json['port_icons'] = self.port_icons 
+        json['iteration'] = self.iteration
+        json['turn_time'] = self.turn_time 
+        return json
+    
     def add_bot(self, bot):
         bot.game_dir = self.game_dir
         self.bots.append(bot)
@@ -53,11 +71,14 @@ class Game:
         This is called from the game directory so needs no prefix other
         than the filename
         """
-        # write out the current state of every bg map to a file
         for bg in self.battlegrounds:
+            # write out the visual representation of every bg map to a file
             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
             with open(bg.port_icon + ".log", "w+") as bg_file:
                 bg_file.writelines(lines)
+            # write out the current state of every bg json to a file
+            with open(bg.port_icon + ".json", "w+") as bg_file:
+                json.dump(bg.json(), bg_file)
 
         # write out the current state of every bot to a file
         for bot in self.bots:

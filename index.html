@@ -12,6 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="www/styles.css" rel="stylesheet" type="text/css"/>
 
+    <!--    Get jQuery-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+
     <title>Genghis Bot Battle System</title>
 </head>
 <body>
@@ -50,7 +55,7 @@
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>What's this?</h2>
+            <h2>What is This?</h2>
             <p>Using the Genghis Battle System by
                 <a href="https://github.com/beyarkay">Boyd Kane</a>,
                 bots built by Computer Science students compete for
@@ -89,7 +94,7 @@
                     and what you want your username to be:
                     <code>Username: &lt;CHOOSE A USERNAME&gt;</code>
                 </li>
-                <li>All done! Your bot will be included in the next game:
+                <li>All done! Your bot will be included in the next game.
                 </li>
             </ol>
         </div>
@@ -124,6 +129,40 @@
 <!--    </div>-->
 <!--</div>-->
 <script>
+
+    $.ajax({
+        url: "server_state.json"
+    }).done(data => {
+        console.log("Data found: ", data);
+    });
+
+    // $(document).ready(function () {
+    //     $.ajaxSetup({cache: false});
+    //     let interval = 250;
+    //
+    //     function update() {
+    //         $.when($.ajax('games/*'))
+    //             .then(function (stateResponse) {
+    //                 //console.log(stateResponse);
+    //
+    //                 updateWithState(stateResponse);
+    //
+    //             }, function () {
+    //                 console.log('Error while loading gamestate/layout');
+    //             });
+    //         setTimeout(update, interval);
+    //     }
+    //
+    //     setTimeout(update, interval);
+    //
+    //
+    // });
+    // Update the Games list
+    // Update the bots/battlegrounds list
+    // Update the Live Now card
+    // Update the Preview map
+    // Go to the top and update it all again
+
 
 </script>
 </body>
