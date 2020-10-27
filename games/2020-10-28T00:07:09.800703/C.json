@@ -1,0 +1,19 @@
+{
+  "game_dir": "games/2020-10-28T00:07:09.800703",
+  "username": "abby",
+  "bot_path": "games/2020-10-28T00:07:09.800703/abby/template_bot.py",
+  "abbreviations": [
+    "A"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+  "name": "template",
+  "coin_icon": "c",
+  "bot_icon": "C",
+  "stderr": "",
+  "stdout": "Making motion GREEDY, bot is at (10, 19)",
+  "move_dict": {
+    "action": "walk",
+    "direction": "lu"
+  },
+  "len(coins)": 0
+}

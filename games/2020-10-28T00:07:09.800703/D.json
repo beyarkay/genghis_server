@@ -1,0 +1,16 @@
+{
+  "game_dir": "games/2020-10-28T00:07:09.800703",
+  "username": "abby",
+  "bot_path": "games/2020-10-28T00:07:09.800703/abby/bot_aggressive.py",
+  "abbreviations": [
+    "A"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/bot_aggressive.py",
+  "name": "agressive",
+  "coin_icon": "d",
+  "bot_icon": "D",
+  "stderr": "",
+  "stdout": "",
+  "move_dict": {},
+  "len(coins)": 0
+}
