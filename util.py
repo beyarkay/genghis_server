@@ -298,10 +298,12 @@ class Bot:
             # print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
+            print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
             is_hit = random.random() < 0.5
             #  check that there's actually a bot at the defending location
             if is_hit and defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
+                print("\t\t {} hits  {}".format(attacker_icon, defender_icon))
                 attacker, defender = None, None
                 for bot in curr_bg.bots:
                     if bot.bot_icon == defender_icon:
@@ -320,6 +322,7 @@ class Bot:
                         if coin.value > 0:
                             coin.value -= 1
                             dropped = Coin(coin.originator, 1)
+                            print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon, defender_icon))
                             break
                     # Add that dropped coin onto the map
                     all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
@@ -327,14 +330,18 @@ class Bot:
                     assert len(defender_location) == 1
                     defender_location = defender_location[0]
 
-                    legal_locations = []
+                    legal_deltas = []
                     droppable_icons = [bot.bot_icon for bot in curr_bg.bots] + [IC_AIR]
                     for delta in all_deltas:
                         if curr_bg.get_cell(defender_location, delta) in droppable_icons:
-                            legal_locations.append(delta)
-                    coin_loc = random.choice(legal_locations)
-
-                    landed_icon = curr_bg.get_cell(defender_location, coin_loc)
+                            legal_deltas.append(delta)
+                    coin_delta = random.choice(legal_deltas)
+                    coin_loc = [
+                        defender_location[0] + coin_delta[0],
+                        defender_location[1] + coin_delta[1]
+                    ]
+                    landed_icon = curr_bg.get_cell(defender_location, coin_delta)
+                    print("\t\t coin({}) lands at {}".format(coin.originator.coin_icon, coin_loc))
                     # Check to see if the coin landed on a bot
                     if landed_icon is not IC_AIR:
                         # Add the coin immediately to the bot that it landed on

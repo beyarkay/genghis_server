@@ -1,20 +1,6 @@
 {
     "clients": [
         {
-            "username": "anne",
-            "abbreviations": [
-                "a"
-            ],
-            "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
-        },
-        {
-            "username": "adam",
-            "abbreviations": [
-                "a"
-            ],
-            "url": "https:\/\/people.cs.uct.ac.za\/~KNXBOY001\/genghis_client"
-        },
-        {
             "username": "andy",
             "abbreviations": [
                 "a"

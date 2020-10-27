@@ -1,0 +1,452 @@
+--== Starting game at 2020-10-27T13:23:56.937759 ==--
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 0
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (19, 19)'
+Bot E says: 'Making motion GREEDY, bot is at (14, 19)'
+Bot C says: 'Making motion GREEDY, bot is at (12, 19)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (17, 19)
+	Making motion CURIOUS, bot is at (17, 19)
+	closest port is at 16, 19'
+	Bot is walking into a port going to 1
+Bot B says: 'Making motion GREEDY, bot is at (5, 19)'
+Bot D says: 'Making motion GREEDY, bot is at (13, 19)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 1
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (18, 19)'
+Bot E says: 'Making motion GREEDY, bot is at (13, 18)'
+Bot C says: 'Making motion GREEDY, bot is at (11, 18)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (17, 19)'
+Bot B says: 'Making motion GREEDY, bot is at (4, 18)'
+Bot D says: 'Making motion GREEDY, bot is at (12, 18)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 2
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (17, 18)'
+Bot E says: 'Making motion GREEDY, bot is at (12, 17)'
+Bot C says: 'Making motion GREEDY, bot is at (10, 17)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (16, 18)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (11, 17)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 3
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (16, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (11, 16)'
+Bot C says: 'Making motion GREEDY, bot is at (9, 16)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (15, 17)'
+Bot B says: 'Making motion GREEDY, bot is at (2, 16)'
+Bot D says: 'Making motion GREEDY, bot is at (10, 16)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 4
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (15, 16)'
+Bot E says: 'Making motion GREEDY, bot is at (10, 15)'
+Bot C says: 'Making motion GREEDY, bot is at (8, 15)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (14, 16)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 15)'
+Bot D says: 'Making motion GREEDY, bot is at (9, 15)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 5
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (14, 15)'
+Bot E says: 'Making motion GREEDY, bot is at (9, 14)'
+Bot C says: 'Making motion GREEDY, bot is at (7, 14)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (13, 15)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 14)'
+Bot D says: 'Making motion GREEDY, bot is at (8, 14)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 6
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (13, 14)'
+Bot E says: 'Making motion GREEDY, bot is at (8, 13)'
+Bot C says: 'Making motion GREEDY, bot is at (6, 13)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (12, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 13)'
+Bot D says: 'Making motion GREEDY, bot is at (7, 13)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 7
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (12, 13)'
+Bot E says: 'Making motion GREEDY, bot is at (7, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (5, 12)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (11, 13)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 12)'
+Bot D says: 'Making motion GREEDY, bot is at (6, 12)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 8
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (11, 12)'
+Bot E says: 'Making motion GREEDY, bot is at (6, 11)'
+Bot C says: 'Making motion GREEDY, bot is at (4, 11)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (10, 12)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 11)'
+Bot D says: 'Making motion GREEDY, bot is at (5, 11)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 9
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (10, 11)'
+Bot E says: 'Making motion GREEDY, bot is at (5, 10)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 10)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (9, 11)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 10)'
+Bot D says: 'Making motion GREEDY, bot is at (4, 10)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 10
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (9, 10)'
+Bot E says: 'Making motion GREEDY, bot is at (4, 9)'
+Bot C says: 'Making motion GREEDY, bot is at (2, 9)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (8, 10)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 9)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 9)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 11
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (8, 9)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 8)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 8)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (7, 9)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 9)'
+Bot D says: 'Making motion GREEDY, bot is at (2, 8)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 12
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (8, 9)'
+Bot E says: 'Making motion GREEDY, bot is at (2, 7)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 7)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (6, 9)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 8)'
+Bot D says: 'Making motion GREEDY, bot is at (2, 8)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 13
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (7, 8)'
+Bot E says: 'Making motion GREEDY, bot is at (1, 6)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 7)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (5, 8)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 8)'
+Bot D says: 'Making motion GREEDY, bot is at (2, 8)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 14
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (6, 8)'
+Bot E says: 'Making motion GREEDY, bot is at (1, 5)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 6)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (4, 8)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 7)'
+Bot D says: 'Making motion GREEDY, bot is at (2, 8)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 15
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (5, 7)'
+Bot E says: 'Making motion GREEDY, bot is at (1, 4)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 5)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 7)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 6)'
+Bot D says: 'Making motion GREEDY, bot is at (1, 7)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 16
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (4, 6)'
+Bot E says: 'Making motion GREEDY, bot is at (1, 3)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 4)'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+		 F attacks  B
+		 F hits  B
+Bot B says: 'Making motion GREEDY, bot is at (1, 5)'
+Bot D says: 'Making motion GREEDY, bot is at (1, 6)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 17
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 5)'
+Bot E says: 'Making motion GREEDY, bot is at (1, 2)'
+	Bot is walking into a coin
+Bot C says: 'Making motion GREEDY, bot is at (1, 3)
+	Making motion CURIOUS, bot is at (1, 3)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+Bot B says: 'Making motion GREEDY, bot is at (1, 4)
+	Making motion CURIOUS, bot is at (1, 4)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+		 D attacks  B
+		 D hits  B
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 18
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (2, 4)'
+		 A attacks  B
+Bot E says: 'Making motion GREEDY, bot is at (1, 1)
+	Making motion BLOODTHIRSTY, bot is at (1, 1)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 3)
+	Making motion CURIOUS, bot is at (1, 3)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+		 F attacks  B
+		 F hits  B
+Bot B says: 'Making motion GREEDY, bot is at (2, 5)
+	Making motion CURIOUS, bot is at (2, 5)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 19
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (2, 4)'
+Bot E says: 'Making motion GREEDY, bot is at (2, 2)
+	Making motion BLOODTHIRSTY, bot is at (2, 2)'
+Bot C says: 'Making motion GREEDY, bot is at (1, 3)
+	Making motion CURIOUS, bot is at (1, 3)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+		 F attacks  B
+		 F hits  B
+Bot B says: 'Making motion GREEDY, bot is at (3, 6)
+	Making motion CURIOUS, bot is at (3, 6)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 20
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 5)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 3)
+	Making motion BLOODTHIRSTY, bot is at (3, 3)'
+Bot C says: 'Making motion GREEDY, bot is at (2, 4)
+	Making motion CURIOUS, bot is at (2, 4)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+		 F attacks  B
+Bot B says: 'Making motion GREEDY, bot is at (3, 7)
+	Making motion CURIOUS, bot is at (3, 7)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 21
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 6)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 4)
+	Making motion BLOODTHIRSTY, bot is at (3, 4)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 5)
+	Making motion CURIOUS, bot is at (3, 5)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 8)
+	Making motion CURIOUS, bot is at (3, 8)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 22
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 7)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 4)
+	Making motion BLOODTHIRSTY, bot is at (3, 4)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 6)
+	Making motion CURIOUS, bot is at (3, 6)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 9)
+	Making motion CURIOUS, bot is at (3, 9)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 23
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 8)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 5)
+	Making motion BLOODTHIRSTY, bot is at (3, 5)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 7)
+	Making motion CURIOUS, bot is at (3, 7)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (2, 6)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 10)
+	Making motion CURIOUS, bot is at (3, 10)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (1, 5)
+	Making motion BLOODTHIRSTY, bot is at (1, 5)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 24
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 9)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 6)
+	Making motion BLOODTHIRSTY, bot is at (3, 6)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 8)
+	Making motion CURIOUS, bot is at (3, 8)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 7)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 11)
+	Making motion CURIOUS, bot is at (3, 11)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (2, 6)
+	Making motion BLOODTHIRSTY, bot is at (2, 6)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 25
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 10)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 6)
+	Making motion BLOODTHIRSTY, bot is at (3, 6)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 9)
+	Making motion CURIOUS, bot is at (3, 9)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 8)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion CURIOUS, bot is at (3, 12)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 7)
+	Making motion BLOODTHIRSTY, bot is at (3, 7)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 26
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 11)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 6)
+	Making motion BLOODTHIRSTY, bot is at (3, 6)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 10)
+	Making motion CURIOUS, bot is at (3, 10)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 9)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion CURIOUS, bot is at (3, 13)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 8)
+	Making motion BLOODTHIRSTY, bot is at (3, 8)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 27
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 7)
+	Making motion BLOODTHIRSTY, bot is at (3, 7)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 11)
+	Making motion CURIOUS, bot is at (3, 11)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 10)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 14)
+	Making motion CURIOUS, bot is at (3, 14)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 9)
+	Making motion BLOODTHIRSTY, bot is at (3, 9)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 28
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 13)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 8)
+	Making motion BLOODTHIRSTY, bot is at (3, 8)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion CURIOUS, bot is at (3, 12)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 11)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 15)
+	Making motion CURIOUS, bot is at (3, 15)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 10)
+	Making motion BLOODTHIRSTY, bot is at (3, 10)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 29
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 9)
+	Making motion BLOODTHIRSTY, bot is at (3, 9)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion CURIOUS, bot is at (3, 13)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 11)
+	Making motion BLOODTHIRSTY, bot is at (3, 11)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 30
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 15)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 10)
+	Making motion BLOODTHIRSTY, bot is at (3, 10)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 14)
+	Making motion CURIOUS, bot is at (3, 14)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 13)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 17)
+	Making motion CURIOUS, bot is at (3, 17)
+	closest port is at 3, 19'
+Bot D says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 31
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 16)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 11)
+	Making motion BLOODTHIRSTY, bot is at (3, 11)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 15)
+	Making motion CURIOUS, bot is at (3, 15)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (3, 18)
+	Making motion CURIOUS, bot is at (3, 18)
+	closest port is at 3, 19'
+	Bot is walking into a port going to 2
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+		 D hits  E
+		 D removes coin(c) from  E
+		 coin(c) lands at [3, 13]
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 32
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 15)'
+Bot B says: 'Making motion GREEDY, bot is at (17, 19)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 33
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (16, 18)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+		 D hits  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 34
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (15, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+		 D hits  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 35
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (14, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 36
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (13, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 37
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (12, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 38
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (11, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+		 D hits  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 39
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (10, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+		 D hits  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 40
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'
+Bot F says: 'Making motion BLOODTHIRSTY, bot is at (3, 14)'
+Bot B says: 'Making motion GREEDY, bot is at (9, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 13)
+	Making motion BLOODTHIRSTY, bot is at (3, 13)'
+		 D attacks  E
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-10-27T13:23:56.937759, iteration 41
+Bot A says: 'Making motion BLOODTHIRSTY, bot is at (3, 17)'
+Bot E says: 'Making motion GREEDY, bot is at (3, 12)
+	Making motion BLOODTHIRSTY, bot is at (3, 12)'
+Bot C says: 'Making motion GREEDY, bot is at (3, 16)
+	Making motion CURIOUS, bot is at (3, 16)
+	closest port is at 3, 19'

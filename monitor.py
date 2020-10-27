@@ -25,7 +25,7 @@ def main(stdscr):
     stdscr.nodelay(1)
     games = sorted(os.listdir("games"))
     files = os.listdir(os.path.join("games", games[-1]))
-    log_files = [os.path.join("games", games[-1], f) for f in files if f[0].isdigit()]
+    log_files = sorted([os.path.join("games", games[-1], f) for f in files if f[0].isdigit()])
     key = ''
     while key != ord('q'):
         key = stdscr.getch()

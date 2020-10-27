@@ -54,7 +54,10 @@ or onto other bots
 
 ## TODOs
 * TODO get the coin dropping working
+* TODO Make sure coins can't spawn in on the walls
 * TODO test the bot fighting system
+
+## Nice to have
 * TODO Revamp the front end
 * TODO add nice instructions for beginners to the console
 * TODO Add more maps to the default bot client

@@ -66,8 +66,8 @@ def step(game):
             if result.returncode != 0:
                 print("Error running bot, stderr='{}'".format(result.stderr))
 
-            bot.stdout = result.stdout#.replace('\n', '<br>')
-            bot.stderr = result.stderr#.replace('\n', '<br>')
+            bot.stdout = result.stdout.strip()
+            bot.stderr = result.stderr.strip()
             if bot.stdout:
                 print("Bot {} says: '{}'".format(bot.bot_icon, bot.stdout))
             
