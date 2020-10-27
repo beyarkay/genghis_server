@@ -30,24 +30,13 @@
                 </a>
             </div>
             <div id="header-info">
-                <label for="game">Game:</label>
-                <select name="game" id="game">
-                    <option value="home">Home</option>
-                    <option value="Game-1">Game 1</option>
-                    <option value="Game-2">Game 2</option>
-                    <option value="Game-3">Game 3</option>
+                <label for="cmb_game">Game:</label>
+                <select name="game" id="cmb_game">
                 </select>
                 <br>
                 <br>
-                <label for="following">Following:</label>
-                <select name="following" id="following">
-                    <option value="none">None</option>
-                    <option value="bot_a">Bot A</option>
-                    <option value="bot_b">Bot B</option>
-                    <option value="bot_c">Bot C</option>
-                    <option value="bot_1">Battleground 1</option>
-                    <option value="bot_2">Battleground 2</option>
-                    <option value="bot_3">Battleground 3</option>
+                <label for="cmb_following">Following:</label>
+                <select name="following" id="cmb_following">
                 </select>
             </div>
         </div>
@@ -121,40 +110,88 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
 </div>
 <script>
     function get_param(param, defaultvalue) {
-        var urlparameter = defaultvalue;
-        if(window.location.href.indexOf(param) > -1){
+        if (window.location.href.indexOf(param) > -1) {
             let vars = {};
-            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, 
-                    function(m, key, value) {
-                vars[key] = value;
-            });
+            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+                function (m, key, value) {
+                    vars[key] = value;
+                });
             return vars[param]
         }
         return defaultvalue;
     }
 
-    console.log(get_param("game", "None"));
-    console.log(get_param("follow", "None"));
+    console.log(get_param("game", ""));
+    console.log(get_param("follow", ""));
     $.ajax({
-        url: "server_state.json"
+        url: "../server_state.json"
     }).done(data => {
         if (data && data['games']) {
             console.log("Data found: ", data['games']);
             // Update the list of games
-            let ul = document.getElementById("games_list");
-            ul.innerHTML = "";
-            // Attempt to get the files for the bots / battlegrounds
-            for (let i = 0; i < data['games'].length; i++) {
-                let game = data['games'][i];
-                let li = document.createElement("li");
-                let a = document.createElement("a");
-                a.setAttribute("href", "www/follow.html?game=" + game['game_dir'] + "&follow=none");
-                a.innerHTML = game['game_dir'].replace('games/','');
-                li.appendChild(a);
-                ul.appendChild(li);
+            // let ul = document.getElementById("games_list");
+            // ul.innerHTML = "";
+            // // Attempt to get the files for the bots / battlegrounds
+            // for (let i = 0; i < data['games'].length; i++) {
+            //     let game = data['games'][i];
+            //     let li = document.createElement("li");
+            //     let a = document.createElement("a");
+            //     a.setAttribute("href", "www/follow.html?game=" + game['game_dir'] + "&follow=none");
+            //     a.innerHTML = game['game_dir'].replace('games/', '');
+            //     li.appendChild(a);
+            //     ul.appendChild(li);
+            // }
+
+            // Populate the list of games available
+            let games_list = ["Overview"];
+            data['games'].forEach((game) => {
+                games_list.push(game['game_dir']);
+            });
+            let cmb_game = document.getElementById("cmb_game");
+            cmb_game.setAttribute("onchange", "update_following(this.value)")
+            cmb_game.innerHTML = "";
+
+            for (let i = 0; i < games_list.length; i++) {
+                let option = document.createElement("option");
+                option.value = games_list[i];
+                option.text = games_list[i];
+                if (get_param("game", "") === games_list[i]) {
+                    option.setAttribute("selected", "selected")
+                }
+                cmb_game.appendChild(option);
             }
         }
     });
+
+    function update_following(selected_game_path) {
+        console.log("Updating from " + selected_game_path)
+        let cmb_following = document.getElementById("cmb_following");
+        if (selected_game_path.includes('games/')) {
+            $.ajax({
+                url: "../" + selected_game_path + "/game.json"
+            }).done(game => {
+                console.log("Got data: " + game)
+                // Populate the list of games available
+                let following_list = ["Overview"];
+                game['bots'].forEach((bot) => {
+                    following_list.push("Bot " + bot['bot_icon']);
+                });
+                game['battlegrounds'].forEach((bg) => {
+                    following_list.push("Battleground " + bg['port_icon']);
+                });
+
+                cmb_following.innerHTML = "";
+                for (let i = 0; i < following_list.length; i++) {
+                    let option = document.createElement("option");
+                    option.value = following_list[i];
+                    option.text = following_list[i];
+                    cmb_following.appendChild(option);
+                }
+            });
+        } else {
+            window.location.href = '../index.html';
+        }
+    }
 
     // $(document).ready(function () {
     //     $.ajaxSetup({cache: false});

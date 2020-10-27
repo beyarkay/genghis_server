@@ -92,6 +92,10 @@ class Game:
         with open("game.pickle", "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
+        with open("game.json", "w+") as game_file:
+            json.dump(self.json(), game_file)
+
+
     def print_logs(self):
         # print out the current state of every bg map to stdout
         for bg in self.battlegrounds:
