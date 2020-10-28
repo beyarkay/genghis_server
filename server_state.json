@@ -1,9 +1,23 @@
 {
   "clients": [
     {
+      "username": "boyd",
+      "abbreviations": [
+        "b"
+      ],
+      "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"
+    },
+    {
+      "username": "adam",
+      "abbreviations": [
+        "d"
+      ],
+      "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"
+    },
+    {
       "username": "andy",
       "abbreviations": [
-        "a"
+        "y"
       ],
       "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"
     },
@@ -23,54 +37,13 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-10-28T11:42:21.202115",
+      "game_dir": "games/2020-10-28T12:08:51.346875",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
       "iteration": 0,
-      "turn_time": 0.1
-    },
-    {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
-      "battlegrounds": [],
-      "game_dir": "games/2020-10-28T11:44:08.544563",
-      "coin_icons": [],
-      "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
-      "turn_time": 0.1
-    },
-    {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
-      "battlegrounds": [],
-      "game_dir": "games/2020-10-28T11:45:47.832698",
-      "coin_icons": [],
-      "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
-      "turn_time": 0.1
-    },
-    {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
-      "battlegrounds": [],
-      "game_dir": "games/2020-10-28T11:47:40.496678",
-      "coin_icons": [],
-      "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
-      "turn_time": 0.1
+      "turn_time": 0.1,
+      "tick": 0
     }
   ]
 }

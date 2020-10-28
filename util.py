@@ -38,6 +38,7 @@ class Game:
         self.port_icons = []
         self.iteration = 0
         self.turn_time = 0.1
+        self.tick = 0
         os.mkdir(self.game_dir)
         os.chmod("games", 0o755)
         os.chmod(self.game_dir, 0o755)
@@ -60,6 +61,7 @@ class Game:
         json['port_icons'] = self.port_icons
         json['iteration'] = self.iteration
         json['turn_time'] = self.turn_time
+        json['tick'] = self.tick
         return json
 
     def add_bot(self, bot):
@@ -105,12 +107,12 @@ class Game:
                     bg_port_icon = bg.port_icon
                     break
             bot_info = bot_info.append({
-                'iteration': self.iteration,
+                'tick': self.tick,
                 'bot_icon': bot.bot_icon,
                 'bg_port_icon': bg_port_icon,
                 'total_coins': sum([coin.value for coin in bot.coins]),
             }, ignore_index=True)
-        bot_info.to_json(BOT_INFO_PATH, orient='records')
+        bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
 
         # iteration vs num-coins/bots on each bg
         BG_INFO_PATH = 'bg_info.json'
@@ -120,11 +122,11 @@ class Game:
             bg_info = pd.DataFrame()
         for bg in self.battlegrounds:
             bg_info = bg_info.append({
-                'iteration': self.iteration,
+                'tick': self.tick,
                 'bg_port_icon': bg.port_icon,
                 'num_bots': len(bg.bots),
             }, ignore_index=True)
-        bg_info.to_json(BG_INFO_PATH, orient='records')
+        bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
         # Pickle the game object so it can be used by the monitoring system
         with open("game.pickle", "wb") as game_pkl:
             pickle.dump(self, game_pkl)
