@@ -57,7 +57,7 @@ def step(game):
                  '/home/k/knxboy001/public_html/genghis_server',
                  bot.bot_icon,
                  bg_icon],
-                timeout=5,
+                timeout=1,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True

@@ -1,0 +1,24 @@
+{
+  "links": [
+    {
+      "source": "1",
+      "target": "2",
+      "value": 1
+    },
+    {
+      "source": "2",
+      "target": "1",
+      "value": 1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "1",
+      "label": "andy/my battleground"
+    },
+    {
+      "id": "2",
+      "label": "abby/my battleground"
+    }
+  ]
+}
