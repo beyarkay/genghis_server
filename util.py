@@ -5,6 +5,7 @@ import requests
 import os
 import pickle
 import random
+import pandas as pd
 
 PORT_ICONS = [str(i) for i in range(1, 10)] + ["!", "@", "$", "%", "^", "&", "*", "(", ")"]
 ACTION_WALK = "walk"
@@ -47,20 +48,20 @@ class Game:
         server_state['games'].append(self.json())
         with open('server_state.json', 'w+') as ss_file:
             json.dump(server_state, ss_file, indent=2)
-            
+
     def json(self):
         json = {}
         json['port_graph'] = self.port_graph
         json['bots'] = [bot.json() for bot in self.bots]
         json['battlegrounds'] = [bg.json() for bg in self.battlegrounds]
         json['game_dir'] = self.game_dir
-        json['coin_icons'] = self.coin_icons 
-        json['bot_icons'] = self.bot_icons 
-        json['port_icons'] = self.port_icons 
+        json['coin_icons'] = self.coin_icons
+        json['bot_icons'] = self.bot_icons
+        json['port_icons'] = self.port_icons
         json['iteration'] = self.iteration
-        json['turn_time'] = self.turn_time 
+        json['turn_time'] = self.turn_time
         return json
-    
+
     def add_bot(self, bot):
         bot.game_dir = self.game_dir
         self.bots.append(bot)
@@ -90,6 +91,40 @@ class Game:
                 # write out the current state of the bg map to a file
                 json.dump(bot.json(), bot_file, indent=2)
 
+        # Also log some historic files for graphs
+        # iteration vs total coins / bot
+        BOT_INFO_PATH = 'bot_info.json'
+        if os.path.exists(BOT_INFO_PATH):
+            bot_info = pd.read_json(BOT_INFO_PATH, orient='records')
+        else:
+            bot_info = pd.DataFrame()
+        for bot in self.bots:
+            bg_port_icon = None
+            for bg in self.battlegrounds:
+                if bot.bot_icon in [bg_bot.bot_icon for bg_bot in bg.bots]:
+                    bg_port_icon = bg.port_icon
+                    break
+            bot_info = bot_info.append({
+                'iteration': self.iteration,
+                'bot_icon': bot.bot_icon,
+                'bg_port_icon': bg_port_icon,
+                'total_coins': sum([coin.value for coin in bot.coins]),
+            }, ignore_index=True)
+        bot_info.to_json(BOT_INFO_PATH, orient='records')
+
+        # iteration vs num-coins/bots on each bg
+        BG_INFO_PATH = 'bg_info.json'
+        if os.path.exists(BG_INFO_PATH):
+            bg_info = pd.read_json(BG_INFO_PATH, orient='records')
+        else:
+            bg_info = pd.DataFrame()
+        for bg in self.battlegrounds:
+            bg_info = bg_info.append({
+                'iteration': self.iteration,
+                'bg_port_icon': bg.port_icon,
+                'num_bots': len(bg.bots),
+            }, ignore_index=True)
+        bg_info.to_json(BG_INFO_PATH, orient='records')
         # Pickle the game object so it can be used by the monitoring system
         with open("game.pickle", "wb") as game_pkl:
             pickle.dump(self, game_pkl)
@@ -97,7 +132,6 @@ class Game:
         with open("game.json", "w+") as game_file:
             json.dump(self.json(), game_file, indent=2)
         os.chmod("game.json", 0o755)
-
 
     def print_logs(self):
         # print out the current state of every bg map to stdout
@@ -352,7 +386,8 @@ class Bot:
                         if coin.value > 0:
                             coin.value -= 1
                             dropped = Coin(coin.originator, 1)
-                            print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon, defender_icon))
+                            print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon,
+                                                                             defender_icon))
                             break
                     # Add that dropped coin onto the map
                     all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
