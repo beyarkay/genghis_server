@@ -1,0 +1,19 @@
+{
+  "game_dir": "games/2020-10-28T01:03:10.146961",
+  "username": "andy",
+  "bot_path": "games/2020-10-28T01:03:10.146961/andy/bot_greedy.py",
+  "abbreviations": [
+    "A"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/bot_greedy.py",
+  "name": "greedy",
+  "coin_icon": "e",
+  "bot_icon": "E",
+  "stderr": "",
+  "stdout": "Making motion GREEDY, bot is at (13, 17)",
+  "move_dict": {
+    "action": "walk",
+    "direction": "lu"
+  },
+  "len(coins)": 0
+}

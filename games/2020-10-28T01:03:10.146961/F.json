@@ -1,0 +1,19 @@
+{
+  "game_dir": "games/2020-10-28T01:03:10.146961",
+  "username": "abby",
+  "bot_path": "games/2020-10-28T01:03:10.146961/abby/bot_aggressive.py",
+  "abbreviations": [
+    "A"
+  ],
+  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/bot_aggressive.py",
+  "name": "agressive",
+  "coin_icon": "f",
+  "bot_icon": "F",
+  "stderr": "",
+  "stdout": "Making motion BLOODTHIRSTY, bot is at (10, 19)",
+  "move_dict": {
+    "action": "walk",
+    "direction": "ru"
+  },
+  "len(coins)": 0
+}

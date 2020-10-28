@@ -38,13 +38,15 @@ class Game:
         self.iteration = 0
         self.turn_time = 0.1
         os.mkdir(self.game_dir)
+        os.chmod("games", 0o755)
+        os.chmod(self.game_dir, 0o755)
         with open('server_state.json', 'r+') as ss_file:
             server_state = json.load(ss_file)
         if not server_state.get('games'):
             server_state['games'] = []
         server_state['games'].append(self.json())
         with open('server_state.json', 'w+') as ss_file:
-            json.dump(server_state, ss_file)
+            json.dump(server_state, ss_file, indent=2)
             
     def json(self):
         json = {}
@@ -80,7 +82,7 @@ class Game:
                 bg_file.writelines(lines)
             # write out the current state of every bg json to a file
             with open(bg.port_icon + ".json", "w+") as bg_file:
-                json.dump(bg.json(), bg_file)
+                json.dump(bg.json(), bg_file, indent=2)
 
         # write out the current state of every bot to a file
         for bot in self.bots:
@@ -93,7 +95,8 @@ class Game:
             pickle.dump(self, game_pkl)
 
         with open("game.json", "w+") as game_file:
-            json.dump(self.json(), game_file)
+            json.dump(self.json(), game_file, indent=2)
+        os.chmod("game.json", 0o755)
 
 
     def print_logs(self):
@@ -180,7 +183,7 @@ class Game:
 
         # Log the graph network to a json file for graphing
         with open(os.path.join(self.game_dir, "port_graph.json"), "w+") as graphfile:
-            json.dump(self.port_graph, graphfile)
+            json.dump(self.port_graph, graphfile, indent=2)
 
         # Pickle the game object so it can be used by the judge system
         with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
