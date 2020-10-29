@@ -37,12 +37,12 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-10-28T12:08:51.346875",
+      "game_dir": "games/2020-10-29T13:17:39.639795",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
       "iteration": 0,
-      "turn_time": 0.1,
+      "turn_time": 0.05,
       "tick": 0
     }
   ]

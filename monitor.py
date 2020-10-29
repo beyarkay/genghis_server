@@ -18,14 +18,13 @@ PADDING = 2
 STATE_ALL = "STATE_ALL"
 STATE_BOT = "STATE_BOT"
 STATE_BG = "STATE_BG"
-
 def main(stdscr):
     icon = ''
     state = STATE_ALL
     stdscr.nodelay(1)
     games = sorted(os.listdir("games"))
     files = os.listdir(os.path.join("games", games[-1]))
-    log_files = sorted([os.path.join("games", games[-1], f) for f in files if f[0].isdigit()])
+    log_files = sorted([os.path.join("games", games[-1], f) for f in files if f[0].isdigit() and '.log' in f])
     key = ''
     while key != ord('q'):
         key = stdscr.getch()
@@ -194,5 +193,4 @@ def main(stdscr):
                 i += 1
                 stdscr.refresh()
         time.sleep(0.5)
-
 wrapper(main)

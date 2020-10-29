@@ -37,7 +37,7 @@ class Game:
         self.bot_icons = []
         self.port_icons = []
         self.iteration = 0
-        self.turn_time = 0.1
+        self.turn_time = 0.05
         self.tick = 0
         os.mkdir(self.game_dir)
         os.chmod("games", 0o755)
@@ -289,12 +289,12 @@ class Bot:
         curr_bg = None
         for bg in game.battlegrounds:
             for bot in bg.bots:
-                if bot.bot_path == self.bot_path:
+                if bot.bot_icon == self.bot_icon:
                     curr_bg = bg
 
         # Get the bot's current location on the battleground
         bot_locs = curr_bg.find_icon(self.bot_icon)
-        assert len(bot_locs) == 1, ", ".join(bot_locs) + " icon: " + self.bot_icon
+        assert len(bot_locs) == 1, "bot_locs=[{}], curr_bg_icon={}, bot_icon={}".format(','.join(bot_locs), curr_bg.port_icon, self.bot_icon)
         bot_loc = list(bot_locs[0])
 
         # If the bot is just walking around (possibly into a port or air)
@@ -346,7 +346,7 @@ class Bot:
                 # Figure out the index of the current bot so as to pop it from the
                 # Current battlegrounds list of bots
                 for i, bot in enumerate(curr_bg.bots):
-                    if bot.bot_path == self.bot_path:
+                    if bot.bot_icon == self.bot_icon:
                         remove_idx = i
                         break
                 # Remove the current bot from the current battleground, and add
@@ -464,7 +464,7 @@ class Coin:
 class Battleground:
     def __init__(self, game_dir, username,
                  battleground_filename, battleground_url,
-                 name):
+                 name, num_coins=5):
         self.game_dir = game_dir
         self.username = username
         self.battleground_path = os.path.join(self.game_dir, username, battleground_filename)
@@ -473,7 +473,7 @@ class Battleground:
             os.mkdir(os.path.join(self.game_dir, username))
         self.battleground_url = battleground_url
         self.name = name
-        self.num_coins = 1
+        self.num_coins = num_coins
         self.spawn_locations = []
         self.port_spawn_locations = []
         self.port_locations = []
