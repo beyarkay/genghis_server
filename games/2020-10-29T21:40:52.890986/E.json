@@ -10,10 +10,10 @@
   "coin_icon": "e",
   "bot_icon": "E",
   "stderr": "",
-  "stdout": "Making motion GREEDY, bot is at (5, 12)",
+  "stdout": "Making motion GREEDY, bot is at (5, 6)",
   "move_dict": {
     "action": "walk",
-    "direction": "ru"
+    "direction": "ld"
   },
   "len(coins)": 2
 }

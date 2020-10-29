@@ -10,7 +10,7 @@
   "coin_icon": "f",
   "bot_icon": "F",
   "stderr": "",
-  "stdout": "Making motion GREEDY, bot is at (6, 12)\n\tMaking motion BLOODTHIRSTY, bot is at (6, 12)",
+  "stdout": "Making motion GREEDY, bot is at (5, 7)\n\tMaking motion BLOODTHIRSTY, bot is at (5, 7)",
   "move_dict": {
     "action": "attack",
     "direction": "l"
