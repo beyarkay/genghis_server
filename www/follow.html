@@ -49,14 +49,36 @@
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>Battleground</h2>
+            <h2>Battleground 1</h2>
             <!--            Now another group for the BG and it's stats-->
             <div class="pure-g">
                 <div class="pure-u-md-3-5 pure-u-1-1">
-                    <div id="bg_plot">
+                    <div id="bg_plot1">
                         <svg xmlns="http://www.w3.org/2000/svg">
                             <rect width="100%" height="100%" fill="lightgrey"/>
-                            <text x="20" y="30">Battleground</text>
+                            <text x="20" y="30">Battleground 1</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="pure-u-md-2-5 pure-u-1-1">
+                    <p>Information about that thing you just clicked...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Battleground Card-->
+<div class="pure-g">
+    <div class="pure-u-1-1">
+        <div class="shadow">
+            <h2>Battleground 2</h2>
+            <!--            Now another group for the BG and it's stats-->
+            <div class="pure-g">
+                <div class="pure-u-md-3-5 pure-u-1-1">
+                    <div id="bg_plot2">
+                        <svg xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" fill="lightgrey"/>
+                            <text x="20" y="30">Battleground 2</text>
                         </svg>
                     </div>
                 </div>
@@ -73,7 +95,7 @@
         <div class="shadow">
             <h2>Total coins per Bot</h2>
             <div id="cpb_plot">
-                <svg xmlns="http://www.w3.org/2000/svg">
+                <svg xmlns="http://www.w3.org/2000/svg" height="300px">
                     <rect width="100%" height="100%" fill="lightgrey"/>
                     <text x="20" y="30">Total coins per Bot</text>
                 </svg>
@@ -85,11 +107,13 @@
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>Graph 2</h2>
-            <svg xmlns="http://www.w3.org/2000/svg">
-                <rect width="100%" height="100%" fill="lightgrey"/>
-                <text x="20" y="30">Graph 2</text>
-            </svg>
+            <h2>Bot Locations</h2>
+            <div id="bot_locs_plot">
+                <svg xmlns="http://www.w3.org/2000/svg" height="300px">
+                    <rect width="100%" height="100%" fill="lightgrey"/>
+                    <text x="20" y="30">Total coins per Bot</text>
+                </svg>
+            </div>
         </div>
     </div>
 </div>
@@ -100,25 +124,6 @@
             <h2>Info about Followed Entity</h2>
             <pre>
 {
-  "game_dir": "games/2020-10-27T12:25:57.605449",
-  "username": "adam",
-  "bot_path": "games/2020-10-27T12:25:57.605449/adam/template_bot.py",
-  "abbreviations": [
-    "A"
-  ],
-  "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
-  "name": "my bot",
-  "coin_icon": "a",
-  "bot_icon": "A",
-  "stderr": "Traceback (most recent call last):\n  File \"template_bot.py\", line 180, in
-            \n    main()\n  File \"template_bot.py\", line 75, in main\n    loc = this_battleground.find
-_icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
-  "stdout": "Making motion BLOODTHIRSTY, bot is at (8, 19)\n",
-  "move_dict": {
-    "action": "walk",
-    "direction": "r"
-  },
-  "len(coins)": 0
 }
             </pre>
         </div>
@@ -137,7 +142,7 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         return defaultvalue;
     }
 
-    function draw_bg(div_id, bg_port_icon) {
+    function draw_battleground(div_id, bg_port_icon) {
         // Get the bg_map from the text file
         const cell_width = 20;
         const cell_height = 20;
@@ -234,7 +239,6 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
 
     }
 
-    // function draw_coins_per_bot
     function draw_coins_per_bot(div_id) {
         let selected_game_path = get_param("game", "");
 
@@ -261,8 +265,8 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 "#97692f",
                 "#b35355",
                 "#e29371"]
+            const MAX_HISTORY = 500; // Only show ticks upto 300 ticks in the past
             let unique_bots = [];
-            let colours = [];
             let bots = [];
             for (let i = 0; i < bot_info.length; i++) {
                 if (!unique_bots.includes(bot_info[i]['bot_icon'])) {
@@ -270,16 +274,20 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                     bots.push([]);
                 }
             }
+
             unique_bots.sort((a, b) => (a < b) ? -1 : 1);
+            const present = d3.max(bot_info, (d) => d.tick);
             // Restructure the data. Each element in data corrosponds to a different bot's data
             for (let i = 0; i < bot_info.length; i++) {
-                bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+                if (bot_info[i].tick >= present - MAX_HISTORY) {
+                    bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+                }
             }
 
             // set the dimensions and margins of the graph
             const margin = {top: 10, right: 70, bottom: 50, left: 40};
             const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
-            const height = document.getElementById(div_id).offsetHeight - margin.top - margin.bottom
+            const height = 400 - margin.top - margin.bottom
 
             d3.select('#' + div_id).selectAll("svg").remove();
             // append the svg object to the body of the page
@@ -291,7 +299,7 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             const xScale = d3.scaleLinear()
-                .domain(d3.extent(bot_info, (e) => e.tick))
+                .domain([Math.max(0, present - MAX_HISTORY), present])
                 .range([0, width]);
 
             const yScale = d3.scaleLinear()
@@ -342,10 +350,10 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                     .datum(bots[i])
                     .attr('class', 'legend')
                     .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
                     })
                     .on('mouseout', () => { // on mouse out hide line, circles and text
-                        d3.selectAll("path.line").style("opacity", "0.7");
+                        d3.selectAll("path.line").style("opacity", 0.9);
                     });
                 if (y_offset > height) {
                     x_offset += 30;
@@ -367,26 +375,26 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 svg.append("path")
                     .datum(bots[i])
                     .attr("class", "line")
-                    .style("opacity", "0.7")
+                    .style("opacity", "0.9")
                     .style("stroke", d => colour(d[0].bot_icon))
                     .attr("d", line)
                     .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
                     })
                     .on('mouseout', () => { // on mouse out hide line, circles and text
-                        d3.selectAll("path.line").style("opacity", "0.7");
+                        d3.selectAll("path.line").style("opacity", "0.9");
                     });
 
             }
         });
     }
 
-    function draw_bots_per_bg(div_id) {
+    function draw_bot_locs(div_id) {
         let selected_game_path = get_param("game", "");
-
         $.ajax({
             url: "../" + selected_game_path + "/bot_info.json"
         }).done(bot_info => {
+            const MAX_HISTORY = 500; // Only show ticks upto 300 ticks in the past
             let COLOURS = ["#c4ad3a",
                 "#715fcd",
                 "#73b638",
@@ -408,25 +416,32 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 "#b35355",
                 "#e29371"]
             let unique_bots = [];
-            let colours = [];
+            let unique_battlegrounds = [];
             let bots = [];
             for (let i = 0; i < bot_info.length; i++) {
                 if (!unique_bots.includes(bot_info[i]['bot_icon'])) {
                     unique_bots.push(bot_info[i]['bot_icon']);
                     bots.push([]);
                 }
+                if (!unique_battlegrounds.includes(bot_info[i]['bg_port_icon'].toString())) {
+                    unique_battlegrounds.push(bot_info[i]['bg_port_icon'].toString());
+                }
             }
             unique_bots.sort((a, b) => (a < b) ? -1 : 1);
+            unique_battlegrounds.sort((a, b) => (a < b) ? -1 : 1);
+            const present = d3.max(bot_info, (d) => d.tick);
             // Restructure the data. Each element in data corrosponds to a different bot's data
             for (let i = 0; i < bot_info.length; i++) {
-                bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+                if (bot_info[i].tick >= present - MAX_HISTORY) {
+                    bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+                }
             }
 
             // set the dimensions and margins of the graph
             const margin = {top: 10, right: 70, bottom: 50, left: 40};
             const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
-            const height = document.getElementById(div_id).offsetHeight - margin.top - margin.bottom
-
+            const height = 400 - margin.top - margin.bottom
+            console.log(unique_battlegrounds);
             d3.select('#' + div_id).selectAll("svg").remove();
             // append the svg object to the body of the page
             const svg = d3.select('#' + div_id)
@@ -436,28 +451,38 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
             const xScale = d3.scaleLinear()
-                .domain(d3.extent(bot_info, (e) => e.tick))
+                .domain([Math.max(0, present - MAX_HISTORY), present])
                 .range([0, width]);
 
-            const yScale = d3.scaleLinear()
-                .domain(d3.extent(bot_info, (e) => e.total_coins))
-                .range([height, 0]);
+            const yScale0 = d3.scaleBand()
+                .domain(unique_battlegrounds)
+                .rangeRound([height, 0])
+                .paddingInner(0.5);
+
+            // const yScale1 = d3.scaleBand()
+            const yScale1 = d3.scaleBand()
+                .domain(unique_bots)
+                .rangeRound([0, yScale0.bandwidth()])
+            // .paddingInner(0.25)
+            // .domain(d3.extent(bot_info, (e) => e.total_coins))
+            // .range([height, 0]);
 
             const colour = d3.scaleOrdinal()
                 .domain(unique_bots)
                 .range(COLOURS.splice(0, unique_bots.length));
 
-            // Filter out all the fractional ticks for total_coins:
-            const yAxisTicks = yScale.ticks()
-                .filter(tick => Number.isInteger(tick));
-            const yAxis = d3.axisLeft(yScale)
-                .tickValues(yAxisTicks)
-                .tickFormat(d3.format('d'));
+            // // Filter out all the fractional ticks for total_coins:
+            // const yAxisTicks = yScale.ticks()
+            //     .filter(tick => Number.isInteger(tick));
+            // const yAxis = d3.axisLeft(yScale)
+            //     .tickValues(yAxisTicks)
+            //     .tickFormat(d3.format('d'));
 
             const line = d3.line()
                 .x(d => xScale(d.tick))
-                .y(d => yScale(d.total_coins));
+                .y(d => yScale0(d.bg_port_icon) + yScale1(d.bot_icon));
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -470,15 +495,17 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                 .style("alignment-baseline", "bottom")
                 .text("Game tick");
 
+            let yAxis = d3.axisLeft(yScale0).tickSize(0);
             svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", '-1.5em')
-                .attr("x", 0)
-                .style("text-anchor", "end")
-                .text("Number of coins");
+                .attr("x", -height * 0.5)
+                .style("text-anchor", "middle")
+                // .style("alignment-baseline", "bottom")
+                .text("Battleground");
 
 
             let x_offset = 5;
@@ -488,7 +515,7 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                     .datum(bots[i])
                     .attr('class', 'legend')
                     .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
                     })
                     .on('mouseout', () => { // on mouse out hide line, circles and text
                         d3.selectAll("path.line").style("opacity", "1");
@@ -497,7 +524,6 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                     x_offset += 30;
                     y_offset = 0;
                 }
-
                 legend.append('rect')
                     .attr('x', width + x_offset)
                     .attr('y', (d, _) => y_offset)
@@ -510,15 +536,14 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
                     .attr('y', (d, _) => (y_offset) + 7)
                     .text(d => d[0].bot_icon);
                 y_offset += 20
+
                 svg.append("path")
                     .datum(bots[i])
                     .attr("class", "line")
-                    .style("stroke", d => {
-                        return colour(d[0].bot_icon);
-                    })
+                    .style("stroke", d => colour(d[0].bot_icon))
                     .attr("d", line)
                     .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
                     })
                     .on('mouseout', () => { // on mouse out hide line, circles and text
                         d3.selectAll("path.line").style("opacity", "1");
@@ -526,6 +551,21 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
 
             }
         });
+    }
+
+    function update_following() {
+        let cmb_following = document.getElementById("cmb_following");
+        let cmb_game = document.getElementById("cmb_game");
+        let forwarding_url;
+        if (cmb_game.value !== 'Overview') {
+            forwarding_url = 'follow.html?game=' + cmb_game.value;
+            if (cmb_following.value !== 'Overview') {
+                forwarding_url += '&following=' + cmb_following.value;
+            }
+        } else {
+            forwarding_url = '../index.html';
+        }
+        window.location.href = forwarding_url;
     }
 
     // Update the list of running games
@@ -572,6 +612,9 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         game['battlegrounds'].sort((a, b) => a['port_icon'] > b['port_icon'] ? 1 : -1);
         game['battlegrounds'].forEach((bg) => {
             following_list.push(bg['port_icon']);
+            // Add some divs for the BG to be shown in
+            // TODO have some way of showing all the battlegrounds at once
+            draw_battleground("bg_plot", bg['port_icon'].toString())
         });
 
         let cmb_following = document.getElementById("cmb_following");
@@ -597,54 +640,17 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         }
     });
 
-
-    function update_following() {
-        let cmb_following = document.getElementById("cmb_following");
-        let cmb_game = document.getElementById("cmb_game");
-        let forwarding_url;
-        if (cmb_game.value !== 'Overview') {
-            forwarding_url = 'follow.html?game=' + cmb_game.value;
-            if (cmb_following.value !== 'Overview') {
-                forwarding_url += '&following=' + cmb_following.value;
-            }
-        } else {
-            forwarding_url = '../index.html';
-        }
-        window.location.href = forwarding_url;
+    // Now start doing the draw loop
+    $.ajaxSetup({cache: false});
+    const interval = 1000;
+    function loop() {
+        draw_battleground("bg_plot1", "1")
+        draw_battleground("bg_plot2", "2")
+        draw_coins_per_bot("cpb_plot")
+        draw_bot_locs("bot_locs_plot")
+        setTimeout(loop, interval);
     }
-
-    draw_bg("bg_plot", '1')
-    draw_coins_per_bot("cpb_plot")
-    draw_coins_per_bot("bot_locs_plot")
-
-    // $(document).ready(function () {
-    //     $.ajaxSetup({cache: false});
-    //     let interval = 250;
-    //
-    //     function update() {
-    //         $.when($.ajax('games/*'))
-    //             .then(function (stateResponse) {
-    //                 //console.log(stateResponse);
-    //
-    //                 updateWithState(stateResponse);
-    //
-    //             }, function () {
-    //                 console.log('Error while loading gamestate/layout');
-    //             });
-    //         setTimeout(update, interval);
-    //     }
-    //
-    //     setTimeout(update, interval);
-    //
-    //
-    // });
-    // Update the Games list
-    // Update the bots/battlegrounds list
-    // Update the Live Now card
-    // Update the Preview map
-    // Go to the top and update it all again
-
-
+    setTimeout(loop, interval);
 </script>
 
 </body>
