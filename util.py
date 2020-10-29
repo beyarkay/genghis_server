@@ -83,15 +83,18 @@ class Game:
             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
             with open(bg.port_icon + ".log", "w+") as bg_file:
                 bg_file.writelines(lines)
+            os.chmod(bg.port_icon + ".log", 0o755)
             # write out the current state of every bg json to a file
             with open(bg.port_icon + ".json", "w+") as bg_file:
                 json.dump(bg.json(), bg_file, indent=2)
+            os.chmod(bg.port_icon + ".json", 0o755)
 
         # write out the current state of every bot to a file
         for bot in self.bots:
             with open(bot.bot_icon + ".json", "w+") as bot_file:
                 # write out the current state of the bg map to a file
                 json.dump(bot.json(), bot_file, indent=2)
+            os.chmod(bot.bot_icon + ".json", 0o755)
 
         # Also log some historic files for graphs
         # iteration vs total coins / bot
@@ -113,7 +116,8 @@ class Game:
                 'total_coins': sum([coin.value for coin in bot.coins]),
             }, ignore_index=True)
         bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
-
+        os.chmod(BOT_INFO_PATH, 0o755)
+        
         # iteration vs num-coins/bots on each bg
         BG_INFO_PATH = 'bg_info.json'
         if os.path.exists(BG_INFO_PATH):
@@ -127,6 +131,8 @@ class Game:
                 'num_bots': len(bg.bots),
             }, ignore_index=True)
         bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
+        os.chmod(BG_INFO_PATH, 0o755)
+       
         # Pickle the game object so it can be used by the monitoring system
         with open("game.pickle", "wb") as game_pkl:
             pickle.dump(self, game_pkl)
