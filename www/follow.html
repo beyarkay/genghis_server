@@ -46,14 +46,15 @@
     </div>
 </div>
 <!--Battleground Card-->
-<div class="pure-g">
+<div class="pure-g" id="bg_card">
     <div class="pure-u-1-1">
         <div class="shadow">
+            <p style="color: lightgray">1 2 3 4 A B C D E F G H</p>
             <h2>Battleground 1</h2>
             <!--            Now another group for the BG and it's stats-->
             <div class="pure-g">
                 <div class="pure-u-md-3-5 pure-u-1-1">
-                    <div id="bg_plot1">
+                    <div id="bg_plot">
                         <svg xmlns="http://www.w3.org/2000/svg">
                             <rect width="100%" height="100%" fill="lightgrey"/>
                             <text x="20" y="30">Battleground 1</text>
@@ -67,30 +68,8 @@
         </div>
     </div>
 </div>
-<!--Battleground Card-->
-<div class="pure-g">
-    <div class="pure-u-1-1">
-        <div class="shadow">
-            <h2>Battleground 2</h2>
-            <!--            Now another group for the BG and it's stats-->
-            <div class="pure-g">
-                <div class="pure-u-md-3-5 pure-u-1-1">
-                    <div id="bg_plot2">
-                        <svg xmlns="http://www.w3.org/2000/svg">
-                            <rect width="100%" height="100%" fill="lightgrey"/>
-                            <text x="20" y="30">Battleground 2</text>
-                        </svg>
-                    </div>
-                </div>
-                <div class="pure-u-md-2-5 pure-u-1-1">
-                    <p>Information about that thing you just clicked...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <!--Graph Card: number of coins per bot over time-->
-<div class="pure-g">
+<div class="pure-g" id="cpb_card">
     <div class="pure-u-1-1">
         <div class="shadow">
             <h2>Total coins per Bot</h2>
@@ -104,7 +83,7 @@
     </div>
 </div>
 <!--Graph Card: number of bots per battleground over time-->
-<div class="pure-g">
+<div class="pure-g" id="bot_locs_card">
     <div class="pure-u-1-1">
         <div class="shadow">
             <h2>Bot Locations</h2>
@@ -118,17 +97,17 @@
     </div>
 </div>
 <!--Entity Info Card-->
-<div class="pure-g">
-    <div class="pure-u-1-1">
-        <div class="shadow">
-            <h2>Info about Followed Entity</h2>
-            <pre>
-{
-}
-            </pre>
-        </div>
-    </div>
-</div>
+<!--<div class="pure-g">-->
+<!--    <div class="pure-u-1-1">-->
+<!--        <div class="shadow">-->
+<!--            <h2>Info about Followed Entity</h2>-->
+<!--            <pre>-->
+<!--{-->
+<!--}-->
+<!--            </pre>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 <script>
     function get_param(param, defaultvalue) {
         if (window.location.href.indexOf(param) > -1) {
@@ -265,7 +244,7 @@
                 "#97692f",
                 "#b35355",
                 "#e29371"]
-            const MAX_HISTORY = 500; // Only show ticks upto 300 ticks in the past
+            const MAX_HISTORY = 2000; // Only show ticks upto MAX_HISTORY ticks in the past
             let unique_bots = [];
             let bots = [];
             for (let i = 0; i < bot_info.length; i++) {
@@ -394,7 +373,7 @@
         $.ajax({
             url: "../" + selected_game_path + "/bot_info.json"
         }).done(bot_info => {
-            const MAX_HISTORY = 500; // Only show ticks upto 300 ticks in the past
+            const MAX_HISTORY = 2000; // Only show ticks upto 300 ticks in the past
             let COLOURS = ["#c4ad3a",
                 "#715fcd",
                 "#73b638",
@@ -441,7 +420,6 @@
             const margin = {top: 10, right: 70, bottom: 50, left: 40};
             const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
             const height = 400 - margin.top - margin.bottom
-            console.log(unique_battlegrounds);
             d3.select('#' + div_id).selectAll("svg").remove();
             // append the svg object to the body of the page
             const svg = d3.select('#' + div_id)
@@ -609,12 +587,9 @@
             following_list.push(bot['bot_icon']);
         });
 
-        game['battlegrounds'].sort((a, b) => a['port_icon'] > b['port_icon'] ? 1 : -1);
+        game['battlegrounds'].sort((a, b) => a['port_icon'] < b['port_icon'] ? 1 : -1);
         game['battlegrounds'].forEach((bg) => {
             following_list.push(bg['port_icon']);
-            // Add some divs for the BG to be shown in
-            // TODO have some way of showing all the battlegrounds at once
-            draw_battleground("bg_plot", bg['port_icon'].toString())
         });
 
         let cmb_following = document.getElementById("cmb_following");
@@ -643,13 +618,25 @@
     // Now start doing the draw loop
     $.ajaxSetup({cache: false});
     const interval = 1000;
+
     function loop() {
-        draw_battleground("bg_plot1", "1")
-        draw_battleground("bg_plot2", "2")
-        draw_coins_per_bot("cpb_plot")
-        draw_bot_locs("bot_locs_plot")
+        let following = get_param('following', '');
+        if (following !== '') {
+            if (!isNaN(following)) {
+                draw_battleground("bg_plot", following)
+                document.getElementById('cpb_card').remove();
+                document.getElementById('bot_locs_card').remove();
+            } else { // Following is a bot_icon, so find it and plot it
+
+            }
+        } else {
+            document.getElementById('bg_card').remove();
+            draw_coins_per_bot("cpb_plot")
+            draw_bot_locs("bot_locs_plot")
+        }
         setTimeout(loop, interval);
     }
+
     setTimeout(loop, interval);
 </script>
 
