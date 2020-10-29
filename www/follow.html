@@ -12,6 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="./styles.css" rel="stylesheet" type="text/css"/>
 
+    <!--    Get D3 for plotting-->
+    <script src="https://d3js.org/d3.v4.js"></script>
+
     <!--    Get jQuery-->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -46,26 +49,39 @@
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <svg xmlns="http://www.w3.org/2000/svg">
-                <rect width="100%" height="100%" fill="lightgrey"/>
-                <text x="20" y="30">Battleground</text>
-            </svg>
+            <h2>Battleground</h2>
+            <!--            Now another group for the BG and it's stats-->
+            <div class="pure-g">
+                <div class="pure-u-md-3-5 pure-u-1-1">
+                    <div id="bg_plot">
+                        <svg xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" fill="lightgrey"/>
+                            <text x="20" y="30">Battleground</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="pure-u-md-2-5 pure-u-1-1">
+                    <p>Information about that thing you just clicked...</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<!--Graph 1 Card-->
+<!--Graph Card: number of coins per bot over time-->
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <h2>Graph 1</h2>
-            <svg xmlns="http://www.w3.org/2000/svg">
-                <rect width="100%" height="100%" fill="lightgrey"/>
-                <text x="20" y="30">Graph 1</text>
-            </svg>
+            <h2>Total coins per Bot</h2>
+            <div id="cpb_plot">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100%" height="100%" fill="lightgrey"/>
+                    <text x="20" y="30">Total coins per Bot</text>
+                </svg>
+            </div>
         </div>
     </div>
 </div>
-<!--Graph 2 Card-->
+<!--Graph Card: number of bots per battleground over time-->
 <div class="pure-g">
     <div class="pure-u-1-1">
         <div class="shadow">
@@ -113,12 +129,403 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         if (window.location.href.indexOf(param) > -1) {
             let vars = {};
             let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-                function (m, key, value) {
+                (m, key, value) => {
                     vars[key] = value;
                 });
             return vars[param]
         }
         return defaultvalue;
+    }
+
+    function draw_bg(div_id, bg_port_icon) {
+        // Get the bg_map from the text file
+        const cell_width = 20;
+        const cell_height = 20;
+        let selected_game_path = get_param("game", "");
+        $.ajax({
+            url: "../" + selected_game_path + "/" + bg_port_icon + '.log'
+        }).done(bg_map => {
+            let map = [];
+            bg_map.split('\n').forEach(d => {
+                if (d.length > 0) {
+                    map.push(d.split(''))
+                }
+            })
+
+            // set the dimensions and margins of the graph
+            const margin = {top: 10, right: 10, bottom: 10, left: 10};
+            const width = cell_width * map[0].length;
+            const height = cell_height * map.length;
+
+            // append the svg object to the body of the page
+            d3.select('#' + div_id).selectAll("svg").remove();
+            const svg = d3.select('#' + div_id)
+                .append("svg")
+                // .attr("width", document.getElementById(div_id).offsetWidth)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            const grid_data = [];
+            let xpos = 1;
+            let ypos = 1;
+
+            for (let row = 0; row < map.length; row++) {
+                grid_data.push([]);
+                for (let column = 0; column < map[0].length; column++) {
+                    grid_data[row].push({
+                        x: xpos,
+                        y: ypos,
+                        width: cell_width,
+                        height: cell_height,
+                        content: map[row][column],
+                        click: 0,
+                    })
+                    xpos += cell_width;
+                }
+                xpos = 1;
+                ypos += cell_height;
+            }
+
+            let row = svg.selectAll(".row")
+                .data(grid_data)
+                .enter().append("g")
+                .attr("class", "row");
+            const COL_HOVER = ["#eee", "#aaa"];
+            const COL_NO_HOVER = ["#fff", "#aaa"];
+            let square_group = row.selectAll(".square")
+                .data(d => d)
+                .enter().append("g")
+                .attr("class", "square")
+                .on('click', function (d) {
+                    d.click++;
+                    d3.select(this).selectAll('rect').style("fill", COL_NO_HOVER[(d.click) % 2]);
+                    // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#4f4f4f");
+                })
+                .on('mouseover', function (d) {
+                    d3.select(this).selectAll('rect').style("fill", COL_HOVER[(d.click) % 2]);
+                    // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#1d1d1d");
+                })
+                .on('mouseout', function (d) {
+                    d3.select(this).selectAll('rect').style("fill", COL_NO_HOVER[(d.click) % 2]);
+                    // d3.select(this).selectAll('rect').style("fill", ((d.click) % 2 === 0) ? "#ff0000" : "#c2d000");
+                    // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#000000");
+                })
+            ;
+            let square = svg.selectAll('.square')
+                .append("rect")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("width", d => d.width)
+                .attr("height", d => d.height)
+                .style("fill", d => ((d.click) % 2 === 0) ? "#ffffff" : "#a5a5a5")
+                .style("stroke", "#222");
+
+            let text = svg.selectAll('.square')
+                .append("text")
+                .attr("text-anchor", 'middle')
+                .attr("alignment-baseline", 'middle')
+                // .style("fill", d => ((d.click) % 2 === 0) ? "#a5a5a5" : "#ffffff")
+                .attr("x", d => d.x + 0.5 * d.width)
+                .attr("y", d => d.y + 0.5 * d.height)
+                .text(d => d.content);
+        });
+
+    }
+
+    // function draw_coins_per_bot
+    function draw_coins_per_bot(div_id) {
+        let selected_game_path = get_param("game", "");
+
+        $.ajax({
+            url: "../" + selected_game_path + "/bot_info.json"
+        }).done(bot_info => {
+            let COLOURS = ["#c4ad3a",
+                "#715fcd",
+                "#73b638",
+                "#c24cb5",
+                "#4fbd6a",
+                "#da4478",
+                "#55b48f",
+                "#d04934",
+                "#49b9d3",
+                "#d9842d",
+                "#6380c5",
+                "#687428",
+                "#be86dd",
+                "#3d7d3e",
+                "#d983b3",
+                "#a3b165",
+                "#97487a",
+                "#97692f",
+                "#b35355",
+                "#e29371"]
+            let unique_bots = [];
+            let colours = [];
+            let bots = [];
+            for (let i = 0; i < bot_info.length; i++) {
+                if (!unique_bots.includes(bot_info[i]['bot_icon'])) {
+                    unique_bots.push(bot_info[i]['bot_icon']);
+                    bots.push([]);
+                }
+            }
+            unique_bots.sort((a, b) => (a < b) ? -1 : 1);
+            // Restructure the data. Each element in data corrosponds to a different bot's data
+            for (let i = 0; i < bot_info.length; i++) {
+                bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+            }
+
+            // set the dimensions and margins of the graph
+            const margin = {top: 10, right: 70, bottom: 50, left: 40};
+            const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
+            const height = document.getElementById(div_id).offsetHeight - margin.top - margin.bottom
+
+            d3.select('#' + div_id).selectAll("svg").remove();
+            // append the svg object to the body of the page
+            const svg = d3.select('#' + div_id)
+                .append("svg")
+                .attr("height", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            const xScale = d3.scaleLinear()
+                .domain(d3.extent(bot_info, (e) => e.tick))
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain(d3.extent(bot_info, (e) => e.total_coins))
+                .range([height, 0]);
+
+            const colour = d3.scaleOrdinal()
+                .domain(unique_bots)
+                .range(COLOURS.splice(0, unique_bots.length));
+
+            // Filter out all the fractional ticks for total_coins:
+            const yAxisTicks = yScale.ticks()
+                .filter(tick => Number.isInteger(tick));
+            const yAxis = d3.axisLeft(yScale)
+                .tickValues(yAxisTicks)
+                .tickFormat(d3.format('d'));
+
+            const line = d3.line()
+                .x(d => xScale(d.tick))
+                .y(d => yScale(d.total_coins));
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(xScale))
+                .append("text")
+                .attr("y", '2.5em')
+                .attr("x", 0)
+                .style("text-anchor", "start")
+                .style("alignment-baseline", "bottom")
+                .text("Game tick");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", '-1.5em')
+                .attr("x", 0)
+                .style("text-anchor", "end")
+                .text("Number of coins");
+
+
+            let x_offset = 5;
+            let y_offset = 0;
+            for (let i = 0; i < bots.length; i++) {
+                let legend = svg.append('g')
+                    .datum(bots[i])
+                    .attr('class', 'legend')
+                    .on('mouseover', () => { // on mouse in show line, circles and text
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                    })
+                    .on('mouseout', () => { // on mouse out hide line, circles and text
+                        d3.selectAll("path.line").style("opacity", "0.7");
+                    });
+                if (y_offset > height) {
+                    x_offset += 30;
+                    y_offset = 0;
+                }
+
+                legend.append('rect')
+                    .attr('x', width + x_offset)
+                    .attr('y', (d, _) => y_offset)
+                    .attr('width', 10)
+                    .attr('height', 10)
+                    .style('fill', d => colour(d[0].bot_icon));
+                legend.append('text')
+                    .attr("alignment-baseline", 'middle')
+                    .attr('x', width + 12 + x_offset)
+                    .attr('y', (d, _) => (y_offset) + 7)
+                    .text(d => d[0].bot_icon);
+                y_offset += 20
+                svg.append("path")
+                    .datum(bots[i])
+                    .attr("class", "line")
+                    .style("opacity", "0.7")
+                    .style("stroke", d => colour(d[0].bot_icon))
+                    .attr("d", line)
+                    .on('mouseover', () => { // on mouse in show line, circles and text
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                    })
+                    .on('mouseout', () => { // on mouse out hide line, circles and text
+                        d3.selectAll("path.line").style("opacity", "0.7");
+                    });
+
+            }
+        });
+    }
+
+    function draw_bots_per_bg(div_id) {
+        let selected_game_path = get_param("game", "");
+
+        $.ajax({
+            url: "../" + selected_game_path + "/bot_info.json"
+        }).done(bot_info => {
+            let COLOURS = ["#c4ad3a",
+                "#715fcd",
+                "#73b638",
+                "#c24cb5",
+                "#4fbd6a",
+                "#da4478",
+                "#55b48f",
+                "#d04934",
+                "#49b9d3",
+                "#d9842d",
+                "#6380c5",
+                "#687428",
+                "#be86dd",
+                "#3d7d3e",
+                "#d983b3",
+                "#a3b165",
+                "#97487a",
+                "#97692f",
+                "#b35355",
+                "#e29371"]
+            let unique_bots = [];
+            let colours = [];
+            let bots = [];
+            for (let i = 0; i < bot_info.length; i++) {
+                if (!unique_bots.includes(bot_info[i]['bot_icon'])) {
+                    unique_bots.push(bot_info[i]['bot_icon']);
+                    bots.push([]);
+                }
+            }
+            unique_bots.sort((a, b) => (a < b) ? -1 : 1);
+            // Restructure the data. Each element in data corrosponds to a different bot's data
+            for (let i = 0; i < bot_info.length; i++) {
+                bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
+            }
+
+            // set the dimensions and margins of the graph
+            const margin = {top: 10, right: 70, bottom: 50, left: 40};
+            const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
+            const height = document.getElementById(div_id).offsetHeight - margin.top - margin.bottom
+
+            d3.select('#' + div_id).selectAll("svg").remove();
+            // append the svg object to the body of the page
+            const svg = d3.select('#' + div_id)
+                .append("svg")
+                .attr("height", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            const xScale = d3.scaleLinear()
+                .domain(d3.extent(bot_info, (e) => e.tick))
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain(d3.extent(bot_info, (e) => e.total_coins))
+                .range([height, 0]);
+
+            const colour = d3.scaleOrdinal()
+                .domain(unique_bots)
+                .range(COLOURS.splice(0, unique_bots.length));
+
+            // Filter out all the fractional ticks for total_coins:
+            const yAxisTicks = yScale.ticks()
+                .filter(tick => Number.isInteger(tick));
+            const yAxis = d3.axisLeft(yScale)
+                .tickValues(yAxisTicks)
+                .tickFormat(d3.format('d'));
+
+            const line = d3.line()
+                .x(d => xScale(d.tick))
+                .y(d => yScale(d.total_coins));
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(xScale))
+                .append("text")
+                .attr("y", '2.5em')
+                .attr("x", 0)
+                .style("text-anchor", "start")
+                .style("alignment-baseline", "bottom")
+                .text("Game tick");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", '-1.5em')
+                .attr("x", 0)
+                .style("text-anchor", "end")
+                .text("Number of coins");
+
+
+            let x_offset = 5;
+            let y_offset = 0;
+            for (let i = 0; i < bots.length; i++) {
+                let legend = svg.append('g')
+                    .datum(bots[i])
+                    .attr('class', 'legend')
+                    .on('mouseover', () => { // on mouse in show line, circles and text
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                    })
+                    .on('mouseout', () => { // on mouse out hide line, circles and text
+                        d3.selectAll("path.line").style("opacity", "1");
+                    });
+                if (y_offset > height) {
+                    x_offset += 30;
+                    y_offset = 0;
+                }
+
+                legend.append('rect')
+                    .attr('x', width + x_offset)
+                    .attr('y', (d, _) => y_offset)
+                    .attr('width', 10)
+                    .attr('height', 10)
+                    .style('fill', d => colour(d[0].bot_icon));
+                legend.append('text')
+                    .attr("alignment-baseline", 'middle')
+                    .attr('x', width + 12 + x_offset)
+                    .attr('y', (d, _) => (y_offset) + 7)
+                    .text(d => d[0].bot_icon);
+                y_offset += 20
+                svg.append("path")
+                    .datum(bots[i])
+                    .attr("class", "line")
+                    .style("stroke", d => {
+                        return colour(d[0].bot_icon);
+                    })
+                    .attr("d", line)
+                    .on('mouseover', () => { // on mouse in show line, circles and text
+                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 0.9 : 0.1);
+                    })
+                    .on('mouseout', () => { // on mouse out hide line, circles and text
+                        d3.selectAll("path.line").style("opacity", "1");
+                    });
+
+            }
+        });
     }
 
     // Update the list of running games
@@ -205,6 +612,10 @@ _icon(bot_bg.bot_icon)\nNameError: name 'bot_bg' is not defined\n",
         }
         window.location.href = forwarding_url;
     }
+
+    draw_bg("bg_plot", '1')
+    draw_coins_per_bot("cpb_plot")
+    draw_coins_per_bot("bot_locs_plot")
 
     // $(document).ready(function () {
     //     $.ajaxSetup({cache: false});

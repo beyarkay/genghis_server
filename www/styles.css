@@ -93,3 +93,17 @@ pre {
     word-wrap: break-word; /* Internet Explorer 5.5+ */
 
 }
+
+.square {
+
+}
+
+.axis text {
+    font-size: 15px;
+    fill: black;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3px;
+}

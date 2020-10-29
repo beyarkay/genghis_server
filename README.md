@@ -53,10 +53,10 @@ or onto other bots
 
 
 ## TODOs
-* TODO get the coin dropping working
-* TODO Make sure coins can't spawn in on the walls
 * TODO test the bot fighting system
-
+* TODO The mobile display doesn't work with the long game names
+* TODO The background doesn't adapt to the mobile display
+* TODO Whichever bot is currently making it's move, highlight it somehow
 ## Nice to have
 * Allow NN training
 * TODO Revamp the front end
