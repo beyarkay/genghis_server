@@ -1,59 +1,11 @@
-# Genghis Server
-## A bot-battling game system
-
-
-## Bot action possibilities
-
-### Walk to an empty cell
-```
-{
-    "action": "walk",
-    "direction": One of l, u, r, d or a combination of two of them
-}
-```
-
-### Attack another bot
-When your bot makes an attack on an adjacent bot (in one of the 8
-adjacent cells to your own), the attack can either hit or miss.
-
-If an attack misses, nothing happens and your turn is over. If the 
-attack hits, then your opponent will randomly drop one coin onto an adjacent
-cell to itself that is either the cell you are in, or contains air. 
-
-
-
-```
-{
-    "action": "attach",
-    "direction": One of l, u, r, d or a combination of two of them
-}
-```
-
-### Port between battlegrounds
-To do this is the same as walking into a cell that has a port
-```
-{
-    "action": "walk",
-    "direction": One of l, u, r, d or a combination of two of them
-}
-```
-### Drop a coin
-The bot will remain in the same spot, but one coin will be dropped
-in the direction you choose. You can only drop coins onto air blocks
-or onto other bots
-```
-{
-    "action": "drop",
-    "currency": "drop",
-    "direction": One of l, u, r, d or a combination of two of them
-}
-```
-
-## Future Features
-
+# Genghis Competitive Bot System - Server
+## A bot-battling game system for coders
+Genghis is a framework that allows bots built by Computer Science 
+students compete for resources, trade, and fight each other across 
+multiple different battlegrounds. 
+See the [Genghis Client](https://github.com/beyarkay/genghis_server) to get started.
 
 ## TODOs
-
 ### Important for getting people play-testing
 1. Get things synchronous properly
 2. Update D3 plots, don't recreate D3 plots

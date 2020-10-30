@@ -77,6 +77,7 @@ class Game:
         """ Log the entire gamestate for debugging
         This is called from the game directory so needs no prefix other
         than the filename
+        # TODO  Rather send things out of the sockets to the monitor.py script / the clients who are watching
         """
         for bg in self.battlegrounds:
             # write out the visual representation of every bg map to a file
@@ -140,6 +141,10 @@ class Game:
         with open("game.json", "w+") as game_file:
             json.dump(self.json(), game_file, indent=2)
         os.chmod("game.json", 0o755)
+
+
+        # Now write the current tick to the sockets
+        
 
     def print_logs(self):
         # print out the current state of every bg map to stdout
