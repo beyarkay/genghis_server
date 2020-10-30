@@ -371,7 +371,7 @@ class Bot:
                 pass
 
         # If the bot is attacking another cell
-        elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] is not '':
+        elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] != '':
             # print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
@@ -433,8 +433,8 @@ class Bot:
 
         # If the bot is dropping a coin on the floor (to trade possibly)
         elif bot_move.get('action') == ACTION_DROP and \
-                bot_move.get('direction') is not '' and \
-                bot_move.get('type') is not '':
+                bot_move.get('direction') != '' and \
+                bot_move.get('type') != '':
             """Drop the coin specified in bot_move['type'] onto the ground in the 
             direction of bot_move['direction']
             """
