@@ -1,0 +1,774 @@
+{
+  "port_graph": {
+    "links": [
+      {
+        "source": "1",
+        "target": "2",
+        "value": 1
+      },
+      {
+        "source": "2",
+        "target": "3",
+        "value": 1
+      },
+      {
+        "source": "3",
+        "target": "4",
+        "value": 1
+      },
+      {
+        "source": "4",
+        "target": "1",
+        "value": 1
+      }
+    ],
+    "nodes": [
+      {
+        "id": "1",
+        "label": "adam/template battleground"
+      },
+      {
+        "id": "2",
+        "label": "abby/template battleground"
+      },
+      {
+        "id": "3",
+        "label": "boyd/template battleground"
+      },
+      {
+        "id": "4",
+        "label": "andy/template battleground"
+      }
+    ]
+  },
+  "bots": [
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "boyd",
+      "bot_path": "games/2020-11-01T22:44:46.928953/boyd/template_bot.py",
+      "abbreviations": [
+        "A"
+      ],
+      "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+      "name": "template bot",
+      "coin_icon": "d",
+      "bot_icon": "D",
+      "stderr": "",
+      "stdout": "Making motion GREEDY, bot is at (10, 15)\n\tMaking motion BLOODTHIRSTY, bot is at (10, 15)\n\tMaking motion CURIOUS, bot is at (10, 15)\n\tclosest port is at 6, 19",
+      "move_dict": {
+        "action": "walk",
+        "direction": "ld"
+      },
+      "len(coins)": 1
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "abby",
+      "bot_path": "games/2020-11-01T22:44:46.928953/abby/template_bot.py",
+      "abbreviations": [
+        "A"
+      ],
+      "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+      "name": "template bot",
+      "coin_icon": "c",
+      "bot_icon": "C",
+      "stderr": "",
+      "stdout": "Making motion GREEDY, bot is at (3, 10)\n\tMaking motion BLOODTHIRSTY, bot is at (3, 10)\n\tMaking motion CURIOUS, bot is at (3, 10)\n\tclosest port is at 16, 19",
+      "move_dict": {
+        "action": "walk",
+        "direction": "rd"
+      },
+      "len(coins)": 1
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "adam",
+      "bot_path": "games/2020-11-01T22:44:46.928953/adam/template_bot.py",
+      "abbreviations": [
+        "A"
+      ],
+      "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+      "name": "template bot",
+      "coin_icon": "a",
+      "bot_icon": "A",
+      "stderr": "",
+      "stdout": "Making motion GREEDY, bot is at (13, 10)\n\tMaking motion BLOODTHIRSTY, bot is at (13, 10)\n\tMaking motion CURIOUS, bot is at (13, 10)\n\tclosest port is at 12, 19",
+      "move_dict": {
+        "action": "walk",
+        "direction": "ld"
+      },
+      "len(coins)": 1
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "andy",
+      "bot_path": "games/2020-11-01T22:44:46.928953/andy/template_bot.py",
+      "abbreviations": [
+        "A"
+      ],
+      "bot_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_bot.py",
+      "name": "template bot",
+      "coin_icon": "b",
+      "bot_icon": "B",
+      "stderr": "",
+      "stdout": "Making motion GREEDY, bot is at (4, 13)\n\tMaking motion BLOODTHIRSTY, bot is at (4, 13)\n\tMaking motion CURIOUS, bot is at (4, 13)\n\tclosest port is at 4, 19",
+      "move_dict": {
+        "action": "walk",
+        "direction": "d"
+      },
+      "len(coins)": 1
+    }
+  ],
+  "battlegrounds": [
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "adam",
+      "battleground_path": "games/2020-11-01T22:44:46.928953/adam/template_battleground.txt",
+      "battleground_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_battleground.txt",
+      "name": "template battleground",
+      "spawn_locations": [
+        [
+          4,
+          19
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          7,
+          19
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          14,
+          19
+        ],
+        [
+          15,
+          19
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          11,
+          19
+        ],
+        [
+          8,
+          19
+        ],
+        [
+          13,
+          19
+        ],
+        [
+          9,
+          19
+        ],
+        [
+          16,
+          19
+        ],
+        [
+          5,
+          19
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          19,
+          19
+        ],
+        [
+          12,
+          19
+        ],
+        [
+          3,
+          19
+        ],
+        [
+          6,
+          19
+        ]
+      ],
+      "port_spawn_locations": [
+        [
+          8,
+          2
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          19,
+          2
+        ],
+        [
+          9,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          18,
+          2
+        ],
+        [
+          15,
+          2
+        ]
+      ],
+      "port_locations": [
+        [
+          6,
+          19
+        ]
+      ],
+      "port_icon": "1",
+      "bot_icons": [
+        "D"
+      ]
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "abby",
+      "battleground_path": "games/2020-11-01T22:44:46.928953/abby/template_battleground.txt",
+      "battleground_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_battleground.txt",
+      "name": "template battleground",
+      "spawn_locations": [
+        [
+          16,
+          19
+        ],
+        [
+          7,
+          19
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          8,
+          19
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          4,
+          19
+        ],
+        [
+          14,
+          19
+        ],
+        [
+          11,
+          19
+        ],
+        [
+          6,
+          19
+        ],
+        [
+          19,
+          19
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          15,
+          19
+        ],
+        [
+          5,
+          19
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          3,
+          19
+        ],
+        [
+          13,
+          19
+        ],
+        [
+          9,
+          19
+        ],
+        [
+          12,
+          19
+        ]
+      ],
+      "port_spawn_locations": [
+        [
+          8,
+          2
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          18,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          19,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          9,
+          2
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          7,
+          2
+        ]
+      ],
+      "port_locations": [
+        [
+          12,
+          19
+        ]
+      ],
+      "port_icon": "2",
+      "bot_icons": [
+        "A"
+      ]
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "boyd",
+      "battleground_path": "games/2020-11-01T22:44:46.928953/boyd/template_battleground.txt",
+      "battleground_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_battleground.txt",
+      "name": "template battleground",
+      "spawn_locations": [
+        [
+          12,
+          19
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          14,
+          19
+        ],
+        [
+          6,
+          19
+        ],
+        [
+          15,
+          19
+        ],
+        [
+          16,
+          19
+        ],
+        [
+          11,
+          19
+        ],
+        [
+          8,
+          19
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          3,
+          19
+        ],
+        [
+          5,
+          19
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          9,
+          19
+        ],
+        [
+          7,
+          19
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          13,
+          19
+        ],
+        [
+          19,
+          19
+        ],
+        [
+          4,
+          19
+        ]
+      ],
+      "port_spawn_locations": [
+        [
+          6,
+          2
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          18,
+          2
+        ],
+        [
+          9,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          15,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          19,
+          2
+        ]
+      ],
+      "port_locations": [
+        [
+          4,
+          19
+        ]
+      ],
+      "port_icon": "3",
+      "bot_icons": [
+        "B"
+      ]
+    },
+    {
+      "game_dir": "games/2020-11-01T22:44:46.928953",
+      "username": "andy",
+      "battleground_path": "games/2020-11-01T22:44:46.928953/andy/template_battleground.txt",
+      "battleground_url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client/template_battleground.txt",
+      "name": "template battleground",
+      "spawn_locations": [
+        [
+          9,
+          19
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          3,
+          19
+        ],
+        [
+          19,
+          19
+        ],
+        [
+          11,
+          19
+        ],
+        [
+          7,
+          19
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          8,
+          19
+        ],
+        [
+          12,
+          19
+        ],
+        [
+          15,
+          19
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          14,
+          19
+        ],
+        [
+          6,
+          19
+        ],
+        [
+          4,
+          19
+        ],
+        [
+          5,
+          19
+        ],
+        [
+          13,
+          19
+        ],
+        [
+          16,
+          19
+        ]
+      ],
+      "port_spawn_locations": [
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          12,
+          2
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          2
+        ],
+        [
+          18,
+          2
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          9,
+          2
+        ],
+        [
+          19,
+          2
+        ],
+        [
+          17,
+          2
+        ],
+        [
+          5,
+          2
+        ]
+      ],
+      "port_locations": [
+        [
+          16,
+          19
+        ]
+      ],
+      "port_icon": "4",
+      "bot_icons": [
+        "C"
+      ]
+    }
+  ],
+  "game_dir": "games/2020-11-01T22:44:46.928953",
+  "coin_icons": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "bot_icons": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "port_icons": [
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+  "iteration": 36,
+  "turn_time": 0.05,
+  "tick": 145
+}
