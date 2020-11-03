@@ -37,7 +37,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-10-29T21:40:52.890986",
+      "game_dir": "games/2020-11-01T22:44:46.928953",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -52,22 +52,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-10-29T22:14:21.614299",
-      "coin_icons": [],
-      "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
-      "turn_time": 0.05,
-      "tick": 0
-    },
-    {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
-      "battlegrounds": [],
-      "game_dir": "games/2020-10-29T22:18:17.319253",
+      "game_dir": "games/2020-11-01T22:47:58.772156",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
