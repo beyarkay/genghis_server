@@ -23,6 +23,11 @@ CMD_DICT = {
     '': (0, 0)
 }
 
+def dict_diff(dict1, dict2):
+    """
+    Get the difference between two json files, such that j1 can be converted to j2
+    """
+    return { k : dict2[k] for k in dict2 if dict1[k] != dict2[k]}
 
 class Game:
     def __init__(self, game_dir):
@@ -46,23 +51,23 @@ class Game:
             server_state = json.load(ss_file)
         if not server_state.get('games'):
             server_state['games'] = []
-        server_state['games'].append(self.json())
+        server_state['games'].append(self.to_dict())
         with open('server_state.json', 'w+') as ss_file:
             json.dump(server_state, ss_file, indent=2)
 
-    def json(self):
-        json = {}
-        json['port_graph'] = self.port_graph
-        json['bots'] = [bot.json() for bot in self.bots]
-        json['battlegrounds'] = [bg.json() for bg in self.battlegrounds]
-        json['game_dir'] = self.game_dir
-        json['coin_icons'] = self.coin_icons
-        json['bot_icons'] = self.bot_icons
-        json['port_icons'] = self.port_icons
-        json['iteration'] = self.iteration
-        json['turn_time'] = self.turn_time
-        json['tick'] = self.tick
-        return json
+    def to_dict(self):
+        d = {}
+        d['port_graph'] = self.port_graph
+        d['bots'] = [bot.to_dict() for bot in self.bots]
+        d['battlegrounds'] = [bg.to_dict() for bg in self.battlegrounds]
+        d['game_dir'] = self.game_dir
+        d['coin_icons'] = self.coin_icons
+        d['bot_icons'] = self.bot_icons
+        d['port_icons'] = self.port_icons
+        d['iteration'] = self.iteration
+        d['turn_time'] = self.turn_time
+        d['tick'] = self.tick
+        return d
 
     def add_bot(self, bot):
         bot.game_dir = self.game_dir
@@ -73,78 +78,80 @@ class Game:
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
 
-    def log_state(self):
+    def log_state(self, diff_only=True):
         """ Log the entire gamestate for debugging
         This is called from the game directory so needs no prefix other
         than the filename
-        # TODO  Rather send things out of the sockets to the monitor.py script / the clients who are watching
         """
-        for bg in self.battlegrounds:
-            # write out the visual representation of every bg map to a file
-            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
-            with open(bg.port_icon + ".log", "w+") as bg_file:
-                bg_file.writelines(lines)
-            os.chmod(bg.port_icon + ".log", 0o755)
-            # write out the current state of every bg json to a file
-            with open(bg.port_icon + ".json", "w+") as bg_file:
-                json.dump(bg.json(), bg_file, indent=2)
-            os.chmod(bg.port_icon + ".json", 0o755)
-
-        # write out the current state of every bot to a file
-        for bot in self.bots:
-            with open(bot.bot_icon + ".json", "w+") as bot_file:
-                # write out the current state of the bg map to a file
-                json.dump(bot.json(), bot_file, indent=2)
-            os.chmod(bot.bot_icon + ".json", 0o755)
-
-        # Also log some historic files for graphs
-        # iteration vs total coins / bot
-        BOT_INFO_PATH = 'bot_info.json'
-        if os.path.exists(BOT_INFO_PATH):
-            bot_info = pd.read_json(BOT_INFO_PATH, orient='records')
-        else:
-            bot_info = pd.DataFrame()
-        for bot in self.bots:
-            bg_port_icon = None
+        if diff_only: 
             for bg in self.battlegrounds:
-                if bot.bot_icon in [bg_bot.bot_icon for bg_bot in bg.bots]:
-                    bg_port_icon = bg.port_icon
-                    break
-            bot_info = bot_info.append({
-                'tick': self.tick,
-                'bot_icon': bot.bot_icon,
-                'bg_port_icon': bg_port_icon,
-                'total_coins': sum([coin.value for coin in bot.coins]),
-            }, ignore_index=True)
-        bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
-        os.chmod(BOT_INFO_PATH, 0o755)
-        
-        # iteration vs num-coins/bots on each bg
-        BG_INFO_PATH = 'bg_info.json'
-        if os.path.exists(BG_INFO_PATH):
-            bg_info = pd.read_json(BG_INFO_PATH, orient='records')
+                bg_diff = dict_diff(bg.last_dict, bg.to_dict())
+                   
+            pass
         else:
-            bg_info = pd.DataFrame()
-        for bg in self.battlegrounds:
-            bg_info = bg_info.append({
-                'tick': self.tick,
-                'bg_port_icon': bg.port_icon,
-                'num_bots': len(bg.bots),
-            }, ignore_index=True)
-        bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
-        os.chmod(BG_INFO_PATH, 0o755)
-       
-        # Pickle the game object so it can be used by the monitoring system
-        with open("game.pickle", "wb") as game_pkl:
-            pickle.dump(self, game_pkl)
+            for bg in self.battlegrounds:
+                # write out the visual representation of every bg map to a file
+                lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
+                with open(bg.port_icon + ".log", "w+") as bg_file:
+                    bg_file.writelines(lines)
+                os.chmod(bg.port_icon + ".log", 0o755)
+                # write out the current state of every bg json to a file
+                with open(bg.port_icon + ".json", "w+") as bg_file:
+                    json.dump(bg.to_dict(), bg_file, indent=2)
+                os.chmod(bg.port_icon + ".json", 0o755)
 
-        with open("game.json", "w+") as game_file:
-            json.dump(self.json(), game_file, indent=2)
-        os.chmod("game.json", 0o755)
+            # write out the current state of every bot to a file
+            for bot in self.bots:
+                with open(bot.bot_icon + ".json", "w+") as bot_file:
+                    # write out the current state of the bg map to a file
+                    json.dump(bot.to_dict(), bot_file, indent=2)
+                os.chmod(bot.bot_icon + ".json", 0o755)
 
-
-        # Now write the current tick to the sockets
+            # Also log some historic files for graphs
+            # iteration vs total coins / bot
+            BOT_INFO_PATH = 'bot_info.json'
+            if os.path.exists(BOT_INFO_PATH):
+                bot_info = pd.read_json(BOT_INFO_PATH, orient='records')
+            else:
+                bot_info = pd.DataFrame()
+            for bot in self.bots:
+                bg_port_icon = None
+                for bg in self.battlegrounds:
+                    if bot.bot_icon in [bg_bot.bot_icon for bg_bot in bg.bots]:
+                        bg_port_icon = bg.port_icon
+                        break
+                bot_info = bot_info.append({
+                    'tick': self.tick,
+                    'bot_icon': bot.bot_icon,
+                    'bg_port_icon': bg_port_icon,
+                    'total_coins': sum([coin.value for coin in bot.coins]),
+                }, ignore_index=True)
+            bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
+            os.chmod(BOT_INFO_PATH, 0o755)
+            
+            # iteration vs num-coins/bots on each bg
+            BG_INFO_PATH = 'bg_info.json'
+            if os.path.exists(BG_INFO_PATH):
+                bg_info = pd.read_json(BG_INFO_PATH, orient='records')
+            else:
+                bg_info = pd.DataFrame()
+            for bg in self.battlegrounds:
+                bg_info = bg_info.append({
+                    'tick': self.tick,
+                    'bg_port_icon': bg.port_icon,
+                    'num_bots': len(bg.bots),
+                }, ignore_index=True)
+            bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
+            os.chmod(BG_INFO_PATH, 0o755)
         
+            # Pickle the game object so it can be used by the monitoring system
+            with open("game.pickle", "wb") as game_pkl:
+                pickle.dump(self, game_pkl)
+
+            with open("game.json", "w+") as game_file:
+                json.dump(self.to_dict(), game_file, indent=2)
+            os.chmod("game.json", 0o755)
+
 
     def print_logs(self):
         # print out the current state of every bg map to stdout
@@ -153,7 +160,7 @@ class Game:
             print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines)))
 
         for bot in self.bots:
-            print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.json(), indent=2)))
+            print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.to_dict(), indent=2)))
 
     def init_game(self):
 
@@ -262,21 +269,22 @@ class Bot:
         self.move_dict = {}
         self.coins = []  # an array of Coin objects
 
-    def json(self):
-        json = {}
-        json['game_dir'] = self.game_dir
-        json['username'] = self.username
-        json['bot_path'] = self.bot_path
-        json['abbreviations'] = self.abbreviations
-        json['bot_url'] = self.bot_url
-        json['name'] = self.name
-        json['coin_icon'] = self.coin_icon
-        json['bot_icon'] = self.bot_icon
-        json['stderr'] = self.stderr
-        json['stdout'] = self.stdout
-        json['move_dict'] = self.move_dict
-        json['len(coins)'] = len(self.coins)
-        return json
+    def to_dict(self):
+        d = {}
+        d['game_dir'] = self.game_dir
+        d['username'] = self.username
+        d['bot_path'] = self.bot_path
+        d['abbreviations'] = self.abbreviations
+        d['bot_url'] = self.bot_url
+        d['name'] = self.name
+        d['coin_icon'] = self.coin_icon
+        d['bot_icon'] = self.bot_icon
+        d['stderr'] = self.stderr
+        d['stdout'] = self.stdout
+        d['move_dict'] = self.move_dict
+        d['coins'] = [coin.to_dict() for coin in self,coins]
+        d['len(coins)'] = len(self.coins)
+        return d
 
     def add_coins(self, new_coins):
         """ Add new coins to the bot.
@@ -470,7 +478,12 @@ class Coin:
     def __init__(self, originator, value):
         self.originator = originator
         self.value = value
-
+    
+    def to_dict(self):
+        d = {}
+        d['originator'] = self.originator
+        d['value'] = self.value
+        return d
 
 class Battleground:
     def __init__(self, game_dir, username,
@@ -499,20 +512,21 @@ class Battleground:
         self.bg_map = [[]]
         self.bots = []
 
-    def json(self):
-        json_dict = {}
-        json_dict['game_dir'] = self.game_dir
-        json_dict['username'] = self.username
-        json_dict['battleground_path'] = self.battleground_path
-        json_dict['battleground_url'] = self.battleground_url
-        json_dict['name'] = self.name
-        json_dict['spawn_locations'] = self.spawn_locations
-        json_dict['port_spawn_locations'] = self.port_spawn_locations
-        json_dict['port_locations'] = self.port_locations
-        json_dict['port_icon'] = self.port_icon
-        json_dict['bot_icons'] = [bot.bot_icon for bot in self.bots]
+    def to_dict(self):
+        d = {}
+        d['game_dir'] = self.game_dir
+        d['username'] = self.username
+        d['battleground_path'] = self.battleground_path
+        d['battleground_url'] = self.battleground_url
+        d['bg_map'] = self.bg_map
+        d['name'] = self.name
+        d['spawn_locations'] = self.spawn_locations
+        d['port_spawn_locations'] = self.port_spawn_locations
+        d['port_locations'] = self.port_locations
+        d['port_icon'] = self.port_icon
+        d['bot_icons'] = [bot.bot_icon for bot in self.bots]
 
-        return json_dict
+        return d
 
     def find_icon(self, icon):
         returner = []

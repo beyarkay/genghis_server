@@ -81,7 +81,7 @@ def main(stdscr):
             # Just show the one bg and it's json interpretation
             bg_lines = [''.join(row) for row in zip(*bg.bg_map)]
             json_dict = {}
-            for dict_key, value in bg.json().items():
+            for dict_key, value in bg.to_dict().items():
                 if type(value) is list:
                     json_dict[dict_key] = repr(value)
                 else:
@@ -141,7 +141,7 @@ def main(stdscr):
                     bg_lines = [''.join(row) for row in zip(*game_bg.bg_map)]
                     break
             json_dict = {}
-            for dict_key, value in bot.json().items():
+            for dict_key, value in bot.to_dict().items():
                 if type(value) is list:
                     json_dict[dict_key] = repr(value)
                 else:
