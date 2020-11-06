@@ -23,11 +23,13 @@ CMD_DICT = {
     '': (0, 0)
 }
 
+
 def dict_diff(dict1, dict2):
     """
     Get the difference between two json files, such that j1 can be converted to j2
     """
-    return { k : dict2[k] for k in dict2 if dict1[k] != dict2[k]}
+    return {k: dict2[k] for k in dict2 if dict1[k] != dict2[k]}
+
 
 class Game:
     def __init__(self, game_dir):
@@ -83,10 +85,10 @@ class Game:
         This is called from the game directory so needs no prefix other
         than the filename
         """
-        if diff_only: 
+        if diff_only:
             for bg in self.battlegrounds:
                 bg_diff = dict_diff(bg.last_dict, bg.to_dict())
-                   
+
             pass
         else:
             for bg in self.battlegrounds:
@@ -128,7 +130,7 @@ class Game:
                 }, ignore_index=True)
             bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
             os.chmod(BOT_INFO_PATH, 0o755)
-            
+
             # iteration vs num-coins/bots on each bg
             BG_INFO_PATH = 'bg_info.json'
             if os.path.exists(BG_INFO_PATH):
@@ -143,7 +145,7 @@ class Game:
                 }, ignore_index=True)
             bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
             os.chmod(BG_INFO_PATH, 0o755)
-        
+
             # Pickle the game object so it can be used by the monitoring system
             with open("game.pickle", "wb") as game_pkl:
                 pickle.dump(self, game_pkl)
@@ -151,7 +153,6 @@ class Game:
             with open("game.json", "w+") as game_file:
                 json.dump(self.to_dict(), game_file, indent=2)
             os.chmod("game.json", 0o755)
-
 
     def print_logs(self):
         # print out the current state of every bg map to stdout
@@ -282,7 +283,7 @@ class Bot:
         d['stderr'] = self.stderr
         d['stdout'] = self.stdout
         d['move_dict'] = self.move_dict
-        d['coins'] = [coin.to_dict() for coin in self,coins]
+        d['coins'] = [coin.to_dict() for coin in self.coins]
         d['len(coins)'] = len(self.coins)
         return d
 
@@ -313,7 +314,9 @@ class Bot:
 
         # Get the bot's current location on the battleground
         bot_locs = curr_bg.find_icon(self.bot_icon)
-        assert len(bot_locs) == 1, "bot_locs=[{}], curr_bg_icon={}, bot_icon={}".format(','.join(bot_locs), curr_bg.port_icon, self.bot_icon)
+        assert len(bot_locs) == 1, "bot_locs=[{}], curr_bg_icon={}, bot_icon={}".format(','.join(bot_locs),
+                                                                                        curr_bg.port_icon,
+                                                                                        self.bot_icon)
         bot_loc = list(bot_locs[0])
 
         # If the bot is just walking around (possibly into a port or air)
@@ -478,12 +481,13 @@ class Coin:
     def __init__(self, originator, value):
         self.originator = originator
         self.value = value
-    
+
     def to_dict(self):
         d = {}
         d['originator'] = self.originator
         d['value'] = self.value
         return d
+
 
 class Battleground:
     def __init__(self, game_dir, username,
