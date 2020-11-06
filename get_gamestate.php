@@ -17,17 +17,23 @@ $return_status = [
 echo json_encode( $return_status , JSON_PRETTY_PRINT);
 
 // Get the last seen tick from the client
-$last_seen_tick = $decoded_params['last_seen_tick'];
+$last_seen_tick = (int)$decoded_params['last_seen_tick'];
 
 // Get the game id
 $game_id = $decoded_params['game_id'];
 
-
 // Get the current game tick
-
+echo "getting file games/$game_id/game.json";
+$game_json = file_get_contents("games/$game_id/game.json");
+$game_obj = json_decode($game_json, true);
+$curr_game_tick = (int)$game_obj['tick'];
+echo "Curr game tick is $curr_game_tick";
 
 // Calculate which change files need to be sent
-
+for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
+    $to = $from + 1;
+    echo "From $from to $to <br>";
+}
 
 // Package all the change files together into one file
 

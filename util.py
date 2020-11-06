@@ -97,7 +97,7 @@ class Game:
                 with open('game.json', 'r') as old_game_json:
                     old_game_str = json.dumps(json.load(old_game_json))
             else:
-                old_game_str = new_game_str
+                old_game_str = ""
 
             dmp = dmp_module.diff_match_patch()
             diffs = dmp.diff_main(old_game_str, new_game_str)
