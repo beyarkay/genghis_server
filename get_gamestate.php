@@ -13,7 +13,7 @@ $return_status = [
     'input' => $decoded_params['input']
 ];
 
-$from_tick = $decoded_params['from_tick']
+//$from_tick = $decoded_params['from_tick']
 
 echo json_encode( $return_status , JSON_PRETTY_PRINT);
 //
