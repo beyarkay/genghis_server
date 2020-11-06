@@ -6,6 +6,7 @@ import os
 import pickle
 import random
 import pandas as pd
+import diff_match_patch as dmp_module
 
 PORT_ICONS = [str(i) for i in range(1, 10)] + ["!", "@", "$", "%", "^", "&", "*", "(", ")"]
 ACTION_WALK = "walk"
@@ -80,16 +81,37 @@ class Game:
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
 
-    def log_state(self, diff_only=True):
+    def log_state(self, diff_only=False):
         """ Log the entire gamestate for debugging
         This is called from the game directory so needs no prefix other
         than the filename
         """
-        if diff_only:
-            for bg in self.battlegrounds:
-                bg_diff = dict_diff(bg.last_dict, bg.to_dict())
 
-            pass
+        if diff_only:
+            # Just write the line-by-line diff of the game.json file
+            game_dict = self.to_dict()
+            new_game_str = json.dumps(game_dict)
+
+            if self.tick > 0:
+                # Load up the old game.json file
+                with open('game.json', 'r') as old_game_json:
+                    old_game_str = json.dumps(json.load(old_game_json))
+            else:
+                old_game_str = new_game_str
+
+            dmp = dmp_module.diff_match_patch()
+            diffs = dmp.diff_main(old_game_str, new_game_str)
+            dmp.diff_cleanupSemantic(diffs)
+            patches = dmp.patch_make(old_game_str, diffs)
+
+            with open("patch_{}_{}.txt".format(max(0, self.tick - 1), self.tick), 'w+') as gamefile:
+                gamefile.write(dmp.patch_toText(patches))
+
+            # Overwrite the old game.json with the new game.json
+            with open("game.json", "w+") as game_file:
+                json.dump(game_dict, game_file, indent=2)
+            os.chmod("game.json", 0o755)
+
         else:
             for bg in self.battlegrounds:
                 # write out the visual representation of every bg map to a file
