@@ -24,7 +24,7 @@ echo "getting file games/$game_id/game.json<br>";
 $game_json = file_get_contents("games/$game_id/game.json");
 $game_obj = json_decode($game_json, true);
 $curr_game_tick = (int)$game_obj['tick'];
-echo "Curr game tick is $curr_game_tick<br>";
+echo "Curr game tick is $curr_game_tick<br><br>";
 
 // Calculate which change files need to be sent
 for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
@@ -32,6 +32,8 @@ for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
     echo "From $from to $to: games/$game_id/patch_$from_$to.txt<br>";
     $contents = file_get_contents("games/$game_id/patch_$from_$to.txt");
     echo $contents;
+    echo "<br><br><br>";
+
 }
 
 // Package all the change files together into one file
