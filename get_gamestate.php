@@ -9,12 +9,9 @@ error_reporting(E_ALL);
 // }
 $json_params = file_get_contents("php://input");
 $decoded_params = json_decode($json_params, true);
-$return_status = [
-    'input' => $decoded_params['input']
-];
 
 //$from_tick = $decoded_params['from_tick']
-echo json_encode( $return_status , JSON_PRETTY_PRINT);
+echo json_encode( $decoded_params , JSON_PRETTY_PRINT);
 
 // Get the last seen tick from the client
 $last_seen_tick = (int)$decoded_params['last_seen_tick'];
