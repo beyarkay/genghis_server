@@ -3,9 +3,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
-
-
 // function isValidJSON($str) {
 //    json_decode($str);
 //    return json_last_error() == JSON_ERROR_NONE;
