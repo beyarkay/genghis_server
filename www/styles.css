@@ -107,3 +107,7 @@ pre {
     fill: none;
     stroke-width: 3px;
 }
+
+#follow_list {
+    color: lightgray;
+}

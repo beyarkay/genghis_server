@@ -3,10 +3,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// function isValidJSON($str) {
-//    json_decode($str);
-//    return json_last_error() == JSON_ERROR_NONE;
-// }
 $json_params = file_get_contents("php://input");
 $decoded_params = json_decode($json_params, true);
 
@@ -19,20 +15,22 @@ $last_seen_tick = (int)$decoded_params['last_seen_tick'];
 // Get the game id
 $game_id = $decoded_params['game_id'];
 
+// FIXME this fails if the client has no data whatsoever
+
 // Get the current game tick
-echo "getting file games/$game_id/game.json<br>";
+//echo "getting file games/$game_id/game.json<br>";
 $game_json = file_get_contents("games/$game_id/game.json");
 $game_obj = json_decode($game_json, true);
 $curr_game_tick = (int)$game_obj['tick'];
-echo "Curr game tick is $curr_game_tick<br><br>";
+//echo "Curr game tick is $curr_game_tick<br><br>";
 
 // Calculate which change files need to be sent
 for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
     $to = $from + 1;
-    echo "From $from to $to: games/$game_id/patch_$from_$to.txt<br>";
+    echo "===$game_id/patch_$from_$to.txt===<br>";
     $contents = file_get_contents("games/$game_id/patch_$from_$to.txt");
     echo $contents;
-    echo "<br><br><br>";
+    echo "<br>";
 
 }
 

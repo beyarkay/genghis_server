@@ -43,7 +43,9 @@
                 <div class="pure-u-16-24" id="cpb_plot">
                     <svg xmlns="http://www.w3.org/2000/svg">
                         <rect width="100%" height="100%" fill="lightgrey"/>
+                        <text x="20" y="30">Loading Game Preview...</text>
                     </svg>
+
                 </div>
             </div>
         </div>
@@ -101,169 +103,10 @@
     </div>
 </div>
 
-<script>
-    function get_param(param, defaultvalue) {
-        var urlparameter = defaultvalue;
-        if (window.location.href.indexOf(param) > -1) {
-            let vars = {};
-            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-                function (m, key, value) {
-                    vars[key] = value;
-                });
-            return vars[param]
-        }
-        return defaultvalue;
-    }
-
-    function draw_coins_per_bot(div_id, selected_game_path) {
-        // let selected_game_path = get_param("game", "");
-
-        $.ajax({
-            url: "../" + selected_game_path + "/bot_info.json"
-        }).done(bot_info => {
-            let COLOURS = ["#c4ad3a",
-                "#715fcd",
-                "#73b638",
-                "#c24cb5",
-                "#4fbd6a",
-                "#da4478",
-                "#55b48f",
-                "#d04934",
-                "#49b9d3",
-                "#d9842d",
-                "#6380c5",
-                "#687428",
-                "#be86dd",
-                "#3d7d3e",
-                "#d983b3",
-                "#a3b165",
-                "#97487a",
-                "#97692f",
-                "#b35355",
-                "#e29371"]
-            const MAX_HISTORY = 500; // Only show ticks upto 300 ticks in the past
-            let unique_bots = [];
-            let bots = [];
-            for (let i = 0; i < bot_info.length; i++) {
-                if (!unique_bots.includes(bot_info[i]['bot_icon'])) {
-                    unique_bots.push(bot_info[i]['bot_icon']);
-                    bots.push([]);
-                }
-            }
-
-            unique_bots.sort((a, b) => (a < b) ? -1 : 1);
-            const present = d3.max(bot_info, (d) => d.tick);
-            // Restructure the data. Each element in data corrosponds to a different bot's data
-            for (let i = 0; i < bot_info.length; i++) {
-                if (bot_info[i].tick >= present - MAX_HISTORY) {
-                    bots[unique_bots.indexOf(bot_info[i].bot_icon)].push(bot_info[i]);
-                }
-            }
-
-            // set the dimensions and margins of the graph
-            const margin = {top: 10, right: 70, bottom: 50, left: 40};
-            const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right
-            const height = 400 - margin.top - margin.bottom
-
-            d3.select('#' + div_id).selectAll("svg").remove();
-            // append the svg object to the body of the page
-            const svg = d3.select('#' + div_id)
-                .append("svg")
-                .attr("height", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            const xScale = d3.scaleLinear()
-                .domain([Math.max(0, present - MAX_HISTORY), present])
-                .range([0, width]);
-
-            const yScale = d3.scaleLinear()
-                .domain(d3.extent(bot_info, (e) => e.total_coins))
-                .range([height, 0]);
-
-            const colour = d3.scaleOrdinal()
-                .domain(unique_bots)
-                .range(COLOURS.splice(0, unique_bots.length));
-
-            // Filter out all the fractional ticks for total_coins:
-            const yAxisTicks = yScale.ticks()
-                .filter(tick => Number.isInteger(tick));
-            const yAxis = d3.axisLeft(yScale)
-                .tickValues(yAxisTicks)
-                .tickFormat(d3.format('d'));
-
-            const line = d3.line()
-                .x(d => xScale(d.tick))
-                .y(d => yScale(d.total_coins));
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(xScale))
-                .append("text")
-                .attr("y", '2.5em')
-                .attr("x", 0)
-                .style("text-anchor", "start")
-                .style("alignment-baseline", "bottom")
-                .text("Game tick");
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", '-1.5em')
-                .attr("x", 0)
-                .style("text-anchor", "end")
-                .text("Number of coins");
-
-
-            let x_offset = 5;
-            let y_offset = 0;
-            for (let i = 0; i < bots.length; i++) {
-                let legend = svg.append('g')
-                    .datum(bots[i])
-                    .attr('class', 'legend')
-                    .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
-                    })
-                    .on('mouseout', () => { // on mouse out hide line, circles and text
-                        d3.selectAll("path.line").style("opacity", 0.9);
-                    });
-                if (y_offset > height) {
-                    x_offset += 30;
-                    y_offset = 0;
-                }
-
-                legend.append('rect')
-                    .attr('x', width + x_offset)
-                    .attr('y', (d, _) => y_offset)
-                    .attr('width', 10)
-                    .attr('height', 10)
-                    .style('fill', d => colour(d[0].bot_icon));
-                legend.append('text')
-                    .attr("alignment-baseline", 'middle')
-                    .attr('x', width + 12 + x_offset)
-                    .attr('y', (d, _) => (y_offset) + 7)
-                    .text(d => d[0].bot_icon);
-                y_offset += 20
-                svg.append("path")
-                    .datum(bots[i])
-                    .attr("class", "line")
-                    .style("opacity", "0.9")
-                    .style("stroke", d => colour(d[0].bot_icon))
-                    .attr("d", line)
-                    .on('mouseover', () => { // on mouse in show line, circles and text
-                        d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
-                    })
-                    .on('mouseout', () => { // on mouse out hide line, circles and text
-                        d3.selectAll("path.line").style("opacity", "0.9");
-                    });
-
-            }
-        });
-    }
+<script type="module">
+    import {
+        draw_coins_per_bot,
+    } from './www/script.js';
 
     $.ajax({
         url: "server_state.json"
@@ -275,7 +118,7 @@
             ul.innerHTML = "";
             // Attempt to get the files for the bots / battlegrounds
             let selected_game_path;
-            data['games'].sort((a, b) => a['game_dir'] < b['game_dir'] ? -1 : 1)
+            data['games'].sort((a, b) => a['game_dir'] > b['game_dir'] ? -1 : 1)
             for (let i = 0; i < data['games'].length; i++) {
                 let game = data['games'][i];
                 let li = document.createElement("li");
@@ -285,8 +128,10 @@
                 li.appendChild(a);
                 ul.appendChild(li);
                 selected_game_path = game['game_dir'];
+                // TODO Show only the live battles, instead of just the most recent one
+                break;
             }
-            draw_coins_per_bot('cpb_plot', selected_game_path);
+            // draw_coins_per_bot('cpb_plot', selected_game_path);
         }
     });
 

@@ -551,7 +551,6 @@ class Battleground:
         d['port_locations'] = self.port_locations
         d['port_icon'] = self.port_icon
         d['bot_icons'] = [bot.bot_icon for bot in self.bots]
-
         return d
 
     def find_icon(self, icon):
