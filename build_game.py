@@ -21,12 +21,20 @@ def main():
     copy over the judge system script
     start the game going
     """
-    # TODO Every time this runs, reset the file permissions to 0o755 where needed
-
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
 
-    need_permissions = ['www/script.js', 'get_gamestate.php', 'index.html', 'www', 'www/follow.html', 'www/styles.css', 'register_client.php', 'server_state.json']
+    need_permissions = [
+        'server_state.json',
+        'index.html',
+        'www',
+        'www/follow.html',
+        'www/diff_match_patch.js',
+        'www/script.js',
+        'www/styles.css',
+        'register_client.php',
+        'get_gamestate.php',
+    ]
     for f in need_permissions:
         os.chmod(f, 0o755)
     clients = []

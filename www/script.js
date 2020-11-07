@@ -434,3 +434,30 @@ export function update_following() {
     }
     window.location.href = forwarding_url;
 }
+
+export function cache_and_update() {
+    // FIXME this fails if the client doesn't already have some of the game state
+    // AJAX the current game_id and tick to get_gamestate.php
+    $.ajax({
+        url: "../get_gamestate.php",
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "game_id": get_param('game', '').replace('games/', ''),
+            "last_seen_tick": "1"
+        })
+    }).done(data => {
+        console.log(data);
+        // Split the patches up into different patch objects
+
+        // Apply each of the patches
+
+        // const dmp = new diff_match_patch();
+        // const diff = dmp.diff_main('Hello World.', 'Goodbye World.');
+        // // Result: [(-1, "Hell"), (1, "G"), (0, "o"), (1, "odbye"), (0, " World.")]
+        // dmp.diff_cleanupSemantic(diff);
+        // // Result: [(-1, "Hello"), (1, "Goodbye"), (0, " World.")]
+        // alert(diff);
+    });
+}
