@@ -39,10 +39,11 @@
                 </select>
                 <br>
                 <br>
-                <label for="cmb_following">Following:</label>
-                <select name="following" id="cmb_following">
-                    <option value="">Loading...</option>
-                </select>
+                <p id="follow_list">Loading...</p>
+<!--                <label for="cmb_following">Following:</label>-->
+<!--                <select name="following" id="cmb_following">-->
+<!--                    <option value="">Loading...</option>-->
+<!--                </select>-->
             </div>
         </div>
     </div>
@@ -51,7 +52,6 @@
 <div class="pure-g" id="bg_card">
     <div class="pure-u-1-1">
         <div class="shadow">
-            <p id="follow_list">Loading...</p>
             <h2>Battleground</h2>
             <div id="bg_plot">
                 <svg xmlns="http://www.w3.org/2000/svg">
@@ -116,22 +116,26 @@
         game['bots'].forEach((bot) => {
             following_list.push(bot['bot_icon']);
         });
-
         // Push all the battlegrounds onto the following list
-        game['battlegrounds'].sort((a, b) => a['port_icon'] < b['port_icon'] ? 1 : -1);
+        game['battlegrounds'].sort((a, b) => a['port_icon'] > b['port_icon'] ? 1 : -1);
         game['battlegrounds'].forEach((bg) => {
             following_list.push(bg['port_icon']);
         });
-        // console.log(following_list);
         let p_following = document.getElementById("follow_list");
-        p_following.innerHTML = "";
+        p_following.innerHTML = "Following: ";
         for (let i = 0; i < following_list.length; i++) {
             let a = document.createElement("a");
             let url = window.location.href.split(/[?#]/)[0] + '?game=' + game_param + '&following=' + following_list[i];
             a.setAttribute("href", url);
+            a.innerHTML = following_list[i]
+            let style;
             if (following_param === following_list[i]) {
-                a.setAttribute("style", "color: grey");
+                style = "color: grey";
+            } else {
+                style = "color: lightgrey";
+
             }
+            p_following.innerHTML += "<a href='" + url + "' style='" + style + "'>" + following_list[i] + "</a> ";
 
         }
 
