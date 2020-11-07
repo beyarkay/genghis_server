@@ -26,7 +26,7 @@ def main():
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
 
-    need_permissions = ['index.html', 'www', 'www/follow.html', 'www/styles.css', 'register_client.php', 'server_state.json']
+    need_permissions = ['get_gamestate.php', 'index.html', 'www', 'www/follow.html', 'www/styles.css', 'register_client.php', 'server_state.json']
     for f in need_permissions:
         os.chmod(f, 0o755)
     clients = []

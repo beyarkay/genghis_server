@@ -6,8 +6,7 @@ error_reporting(E_ALL);
 $json_params = file_get_contents("php://input");
 $decoded_params = json_decode($json_params, true);
 
-//$from_tick = $decoded_params['from_tick']
-echo json_encode( $decoded_params , JSON_PRETTY_PRINT);
+//echo json_encode( $decoded_params , JSON_PRETTY_PRINT);
 
 // Get the last seen tick from the client
 $last_seen_tick = (int)$decoded_params['last_seen_tick'];
@@ -15,10 +14,8 @@ $last_seen_tick = (int)$decoded_params['last_seen_tick'];
 // Get the game id
 $game_id = $decoded_params['game_id'];
 
-// FIXME this fails if the client has no data whatsoever
-
 // Get the current game tick
-//echo "getting file games/$game_id/game.json<br>";
+//echo "getting file games/$game_id/game.json ....<br>";
 $game_json = file_get_contents("games/$game_id/game.json");
 $game_obj = json_decode($game_json, true);
 $curr_game_tick = (int)$game_obj['tick'];

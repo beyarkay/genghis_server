@@ -90,6 +90,46 @@ class Game:
         if diff_only:
             # Just write the line-by-line diff of the game.json file
             game_dict = self.to_dict()
+            """ FIXME:
+╰> $ ./build_game.py 
+--== Starting game at 2020-11-06T23:46:17.067528 ==--
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 0
+Bot A says: 'Making motion GREEDY, bot is at (13, 19)'
+Bot B says: 'Making motion GREEDY, bot is at (16, 19)'
+Bot D says: 'Making motion GREEDY, bot is at (3, 19)'
+Bot C says: 'Making motion GREEDY, bot is at (6, 19)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 1
+Bot A says: 'Making motion GREEDY, bot is at (12, 18)'
+Bot B says: 'Making motion GREEDY, bot is at (17, 18)'
+Bot D says: 'Making motion GREEDY, bot is at (4, 18)'
+Bot C says: 'Making motion GREEDY, bot is at (5, 18)'
+Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 2
+Bot A says: 'Making motion GREEDY, bot is at (11, 17)'
+Bot B says: 'Making motion GREEDY, bot is at (18, 17)'
+Bot D says: 'Making motion GREEDY, bot is at (5, 17)'
+Bot C says: 'Making motion GREEDY, bot is at (4, 17)'
+	Bot is walking into a coin
+Traceback (most recent call last):
+  File "judge.py", line 97, in <module>
+    main()
+  File "judge.py", line 31, in main
+    step(game)
+  File "judge.py", line 89, in step
+    game.log_state(diff_only=True)
+  File "/home/k/knxboy001/public_html/genghis_server/util.py", line 93, in log_state
+    new_game_str = json.dumps(game_dict)
+  File "/usr/lib/python3.6/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+  File "/usr/lib/python3.6/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/usr/lib/python3.6/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/usr/lib/python3.6/json/encoder.py", line 180, in default
+    o.__class__.__name__)
+TypeError: Object of type 'Bot' is not JSON serializable
+--== Ending game at 2020-11-06T23:46:17.067528 ==--
+
+            """
             new_game_str = json.dumps(game_dict)
 
             if self.tick > 0:
@@ -103,9 +143,10 @@ class Game:
             diffs = dmp.diff_main(old_game_str, new_game_str)
             dmp.diff_cleanupSemantic(diffs)
             patches = dmp.patch_make(old_game_str, diffs)
-
-            with open("patch_{}_{}.txt".format(max(0, self.tick - 1), self.tick), 'w+') as gamefile:
+            patch_path = "patch_{}_{}.txt".format(max(0, self.tick - 1), self.tick)
+            with open(patch_path, 'w+') as gamefile:
                 gamefile.write(dmp.patch_toText(patches))
+            os.chmod(patch_path, 0o755)
 
             # Overwrite the old game.json with the new game.json
             with open("game.json", "w+") as game_file:
@@ -506,7 +547,7 @@ class Coin:
 
     def to_dict(self):
         d = {}
-        d['originator'] = self.originator
+        d['originator_icon'] = self.originator.bot_icon
         d['value'] = self.value
         return d
 
