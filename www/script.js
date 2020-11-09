@@ -109,6 +109,32 @@ export function __draw_battleground__(div_id, bg_port_icon) {
 }
 
 function create_battleground(div_id, bg, game) {
+    const COLOURS = ["#c4ad3a",
+        "#715fcd",
+        "#73b638",
+        "#c24cb5",
+        "#4fbd6a",
+        "#da4478",
+        "#55b48f",
+        "#d04934",
+        "#49b9d3",
+        "#d9842d",
+        "#6380c5",
+        "#687428",
+        "#be86dd",
+        "#3d7d3e",
+        "#d983b3",
+        "#a3b165",
+        "#97487a",
+        "#97692f",
+        "#b35355",
+        "#e29371"]
+    let bot_icons = []
+    game.bots.forEach((bot) => bot_icons.push(bot.bot_icon));
+    bot_icons.sort((a, b) => (a < b) ? -1 : 1);
+    const colour = d3.scaleOrdinal()
+        .domain(bot_icons)
+        .range(COLOURS.splice(0, bot_icons.length));
     // set the dimensions and margins of the graph
     const margin = {top: 2, right: 8, bottom: 2, left: 8};
     const width = document.getElementById(div_id).offsetWidth;
@@ -132,13 +158,21 @@ function create_battleground(div_id, bg, game) {
     for (let col = 0; col < bg['bg_map'].length; col++) {
         grid_data.push([]);
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
+            let cell_colour;
+            if (bot_icons.includes(bg['bg_map'][row][col])) {
+                cell_colour = colour(bg['bg_map'][row][col]);
+            } else if (bg['bg_map'][row][col] === '#') {
+                cell_colour = 'lightgrey';
+            } else {
+                cell_colour = 'grey'
+            }
             grid_data[col].push({
                 x: xpos,
                 y: ypos,
                 width: cell_width,
                 height: cell_height,
                 content: bg['bg_map'][row][col],
-                colour: bg['bg_map'][row][col] === '#' ? 'lightgrey' : 'black',
+                colour: cell_colour,
                 click: 0,
             })
             xpos += cell_width;
@@ -652,33 +686,6 @@ export function update_following() {
         forwarding_url = '../index.html';
     }
     window.location.href = forwarding_url;
-}
-
-export function cache_and_update() {
-    // FIXME this fails if the client doesn't already have some of the game state
-    // AJAX the current game_id and tick to get_gamestate.php
-    $.ajax({
-        url: "../get_gamestate.php",
-        type: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify({
-            "game_id": get_param('game', '').replace('games/', ''),
-            "last_seen_tick": "1"
-        })
-    }).done(data => {
-        // console.log(data);
-        // Split the patches up into different patch objects
-
-        // Apply each of the patches
-
-        // const dmp = new diff_match_patch();
-        // const diff = dmp.diff_main('Hello World.', 'Goodbye World.');
-        // // Result: [(-1, "Hell"), (1, "G"), (0, "o"), (1, "odbye"), (0, " World.")]
-        // dmp.diff_cleanupSemantic(diff);
-        // // Result: [(-1, "Hello"), (1, "Goodbye"), (0, " World.")]
-        // alert(diff);
-    });
 }
 
 export function create_bg_card(div_id, game) {

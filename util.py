@@ -277,6 +277,16 @@ class Game:
                 "target": self.port_icons[(i + 1) % len(self.port_icons)],
                 "value": 1
             })
+            self.port_graph['links'].append({
+                "source": port_icon,
+                "target": self.port_icons[(i - 1) % len(self.port_icons)],
+                "value": 1
+            })
+            self.port_graph['links'].append({
+                "source": port_icon,
+                "target": self.port_icons[random.randrange(0, len(self.port_icons))],
+                "value": 1
+            })
 
         # assign bot icons
         self.bot_icons = []

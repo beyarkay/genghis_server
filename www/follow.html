@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     <meta http-equiv="refresh" content="30" />
 
     <!--    Include the purecss.io CSS files for formatting and responsive design-->
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
@@ -52,8 +51,6 @@
 <script type="module">
     import {
         get_param,
-        __draw_battleground__,
-        __draw_coins_per_bot__,
         draw_bot_locs,
         update_following,
         create_bg_card,
@@ -67,7 +64,30 @@
         // When the game json is loaded, add content to the battleground and graphs cards
         create_bg_card('bg-card', game);
         create_graph_card('graphs-card', game);
+
+        setInterval(() => {
+            console.log('getting data...')
+            $.ajax({
+                url: "../get_gamestate.php",
+                // type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'last_seen_tick': game.tick,
+                    'game_id': game_param.replace('games/', '')
+                })
+            }).done(data => {
+                console.log("got data")
+                // When the game json is loaded, add content to the battleground and graphs cards
+                console.log(data); // But for now just dump the changes
+            });
+        }, 1000);
     });
+
+    setInterval(() => {
+        window.location.reload(true);
+    }, 15000);
+
 
 </script>
 </body>
