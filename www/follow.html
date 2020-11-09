@@ -66,7 +66,12 @@
         create_graph_card('graphs-card', game);
 
         setInterval(() => {
-            console.log('getting data...')
+            console.log(
+                JSON.stringify({
+                    'last_seen_tick': game.tick,
+                    'game_id': game_param.replace('games/', '')
+                })
+            )
             $.ajax({
                 url: "../get_gamestate.php",
                 // type: 'post',
@@ -75,11 +80,12 @@
                 data: JSON.stringify({
                     'last_seen_tick': game.tick,
                     'game_id': game_param.replace('games/', '')
-                })
-            }).done(data => {
-                console.log("got data")
-                // When the game json is loaded, add content to the battleground and graphs cards
+                }),
+                success: (data) => {
+                console.log("Got data");
                 console.log(data); // But for now just dump the changes
+                }
+
             });
         }, 1000);
     });
