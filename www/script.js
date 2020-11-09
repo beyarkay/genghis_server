@@ -138,7 +138,7 @@ function create_battleground(div_id, bg, game) {
                 width: cell_width,
                 height: cell_height,
                 content: bg['bg_map'][row][col],
-                color: bg['bg_map'][row][col] === '#' ? 'lightgrey' : 'black',
+                colour: bg['bg_map'][row][col] === '#' ? 'lightgrey' : 'black',
                 click: 0,
             })
             xpos += cell_width;
@@ -188,7 +188,7 @@ function create_battleground(div_id, bg, game) {
         .attr("alignment-baseline", 'middle')
         .attr("x", d => d.x + 0.5 * d.width)
         .attr("y", d => d.y + 0.5 * d.height)
-        .attr('fill', d => d.color ? d.color : 'grey')
+        .attr('fill', d => d.colour ? d.colour : 'grey')
         .text(d => d.content);
 }
 
@@ -215,15 +215,14 @@ function create_graph(div_id, graph, game) {
         "#e29371"]
 
     // set the dimensions and margins of the graph
-    console.log(graph)
-    const tick_width = 5
-    const margin = {top: 2, right: 8, bottom: 2, left: 8};
-    const width = d3.max(graph.data, d => d.tick) * tick_width;
+    // console.log(graph)
+    const tick_width = 10
+    const margin = {top: 10, right: 10, bottom: 40, left: 40};
+    const width = game.tick * tick_width;
     const height = 300;
 
     let unique_series = [];
     let per_series_data = []
-    let series_key = graph.series_key;
     for (let i = 0; i < graph.data.length; i++) {
         if (!unique_series.includes(graph.data[i][graph.series_key])) {
             unique_series.push(graph.data[i][graph.series_key]);
@@ -246,14 +245,12 @@ function create_graph(div_id, graph, game) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const x_key = 'tick';
     const xScale = d3.scaleLinear()
-        .domain([d3.max(graph.data, d => d[x_key]), 0])
+        .domain([game.tick, 0])
         .range([0, width]);
 
-    const y_key = 'num_coins';
     const yScale = d3.scaleLinear()
-        .domain(d3.extent(graph.data, d => d[y_key]))
+        .domain(d3.extent(graph.data, d => d[graph.y_key]))
         .range([height, 0]);
 
     const colour = d3.scaleOrdinal()
@@ -267,9 +264,10 @@ function create_graph(div_id, graph, game) {
         .tickValues(yAxisTicks)
         .tickFormat(d3.format('d'));
 
+
     const lineGenerator = d3.line()
-        .x(d => xScale(d[x_key]))
-        .y(d => yScale(d[y_key]));
+        .x(d => xScale(d[graph.x_key]))
+        .y(d => yScale(d[graph.y_key]));
 
     svg.append("g")
         .attr("class", "x axis")
@@ -292,62 +290,38 @@ function create_graph(div_id, graph, game) {
         .style("text-anchor", "end")
         .text(graph.y_label);
 
-    // Now build the actual graph
-    // let series = svg.selectAll(".series")
-    //     .data(per_series_data);
-    //
-    // series.exit().remove();
-    //
-    // series.enter().insert("g", ".focus").append("path")
-    //     .attr("class", "line cities")
-    //     .style("stroke", d => z(d.id))
-    //     .merge(city)
+    let series = svg.selectAll(".series")
+        .data(per_series_data)
+        .enter().append("g")
+        .attr("class", "series");
 
+    series.append("path")
+        .attr("class", "line")
+        .attr("d", d => lineGenerator(d))
+        .style("stroke", d => {
+            return colour(d[0].bot_icon);
+        });
 
-    let legend_x_offset = 5;
-    let legend_y_offset = 0;
-    for (let i = 0; i < bots.length; i++) {
-        let legend = svg.append('g')
-            .datum(bots[i])
-            .attr('class', 'legend')
-        // .on('mouseover', () => { // on mouse in show line, circles and text
-        //     d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
-        // })
-        // .on('mouseout', () => { // on mouse out hide line, circles and text
-        //     d3.selectAll("path.line").style("opacity", 0.9);
-        // });
-        if (legend_y_offset > height) {
-            legend_x_offset += 30;
-            legend_y_offset = 0;
-        }
+    // series.append("text")
+    //     .datum(function (d) {
+    //         return {
+    //             name: d.name,
+    //             value: d.values[d.values.length - 1]
+    //         };
+    //     })
+    //     .attr("transform", d => "translate(" + xScale(d.value[graph.x_key]) + "," + yScale(d.value[graph.y_key]) + ")")
+    //     .attr("x", 3)
+    //     .attr("dy", ".35em")
+    //     .text(d => d.name);
 
-        legend.append('rect')
-            .attr('x', width + legend_x_offset)
-            .attr('y', (d, _) => legend_y_offset)
-            .attr('width', 10)
-            .attr('height', 10)
-            .style('fill', d => colour(d[0].bot_icon));
-        legend.append('text')
-            .attr("alignment-baseline", 'middle')
-            .attr('x', width + 12 + legend_x_offset)
-            .attr('y', (d, _) => (legend_y_offset) + 7)
-            .text(d => d[0].bot_icon);
-        legend_y_offset += 20
-        svg.append("path")
-            .datum(bots[i])
-            .attr("class", "line")
-            .style("opacity", "0.9")
-            .style("stroke", d => colour(d[0].bot_icon))
-            .attr("d", line)
-            .on('mouseover', () => { // on mouse in show line, circles and text
-                d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
-            })
-            .on('mouseout', () => { // on mouse out hide line, circles and text
-                d3.selectAll("path.line").style("opacity", "0.9");
-            });
-
-    }
-
+    // series.selectAll("circle")
+    //     .data(d => d.values)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("r", 3)
+    //     .attr("cx", d => xScale(d[graph.x_key]))
+    //     .attr("cy", d => yScale(d[graph.y_key]))
+    //     .style("fill", (d, i, j) => colour(series[j].name));
 
 }
 
@@ -775,12 +749,16 @@ export function create_graph_card(div_id, game) {
     div.appendChild(pure_g);
     for (let i = 0; i < game['graphs'].length; i++) {
         let curr_graph = game['graphs'][i];
+        if (curr_graph['id'] === 'events') {
+            continue;
+        }
+
         let pure_u = document.createElement("div");
         pure_u.classList.add('pure-u-1');
 
         let bg_title = document.createElement("h3");
         bg_title.classList.add('chart-title');
-        bg_title.innerHTML = `Graph ${i + 1}`;
+        bg_title.innerHTML = curr_graph.title;
         pure_u.appendChild(bg_title);
 
         let chart_div = document.createElement('div');
@@ -788,6 +766,7 @@ export function create_graph_card(div_id, game) {
         pure_u.appendChild(chart_div);
 
         pure_g.appendChild(pure_u);
+
 
         create_graph(`d3-chart-${i}`, curr_graph, game);
 
