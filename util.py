@@ -45,18 +45,27 @@ class Game:
             'title': 'Game-Wide Events',
             'x_label': 'Game Tick',
             'y_label': 'Bot',
+            'x_key': 'tick',
+            'y_key': 'bot_icon',
+            'series_key': '',
             'data': [],
         }, {
             'id': 'cpb',
             'title': 'Coins per Bot',
             'x_label': 'Game Tick',
             'y_label': 'Number of Coins',
+            'x_key': 'tick',
+            'y_key': 'num_coins',
+            'series_key': 'bot_icon',
             'data': [],
         }, {
             'id': 'bot_locs',
             'title': 'Bot Locations',
             'x_label': 'Game Tick',
             'y_label': 'Battleground',
+            'x_key': 'tick',
+            'y_key': 'bg_port_icon',
+            'series_key': 'bot_icon',
             'data': [],
         }]
 

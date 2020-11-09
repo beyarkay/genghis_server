@@ -109,9 +109,6 @@ export function __draw_battleground__(div_id, bg_port_icon) {
 }
 
 function create_battleground(div_id, bg, game) {
-    let selected_game_path = get_param("game", "");
-    console.log(bg);
-
     // set the dimensions and margins of the graph
     const margin = {top: 2, right: 8, bottom: 2, left: 8};
     const width = document.getElementById(div_id).offsetWidth;
@@ -195,7 +192,166 @@ function create_battleground(div_id, bg, game) {
         .text(d => d.content);
 }
 
-export function draw_coins_per_bot(div_id) {
+function create_graph(div_id, graph, game) {
+    const COLOURS = ["#c4ad3a",
+        "#715fcd",
+        "#73b638",
+        "#c24cb5",
+        "#4fbd6a",
+        "#da4478",
+        "#55b48f",
+        "#d04934",
+        "#49b9d3",
+        "#d9842d",
+        "#6380c5",
+        "#687428",
+        "#be86dd",
+        "#3d7d3e",
+        "#d983b3",
+        "#a3b165",
+        "#97487a",
+        "#97692f",
+        "#b35355",
+        "#e29371"]
+
+    // set the dimensions and margins of the graph
+    console.log(graph)
+    const tick_width = 5
+    const margin = {top: 2, right: 8, bottom: 2, left: 8};
+    const width = d3.max(graph.data, d => d.tick) * tick_width;
+    const height = 300;
+
+    let unique_series = [];
+    let per_series_data = []
+    let series_key = graph.series_key;
+    for (let i = 0; i < graph.data.length; i++) {
+        if (!unique_series.includes(graph.data[i][graph.series_key])) {
+            unique_series.push(graph.data[i][graph.series_key]);
+            per_series_data.push([]);
+        }
+    }
+    unique_series.sort((a, b) => (a < b) ? -1 : 1);
+    // Restructure the data. Each element in data corrosponds to a different series' data
+    for (let i = 0; i < graph.data.length; i++) {
+        per_series_data[unique_series.indexOf(graph.data[i][graph.series_key])].push(graph.data[i]);
+    }
+    console.log(per_series_data);
+
+    // append the svg object to the body of the page
+    d3.select('#' + div_id).selectAll("svg").remove();
+    const svg = d3.select('#' + div_id)
+        .append("svg")
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    const x_key = 'tick';
+    const xScale = d3.scaleLinear()
+        .domain([d3.max(graph.data, d => d[x_key]), 0])
+        .range([0, width]);
+
+    const y_key = 'num_coins';
+    const yScale = d3.scaleLinear()
+        .domain(d3.extent(graph.data, d => d[y_key]))
+        .range([height, 0]);
+
+    const colour = d3.scaleOrdinal()
+        .domain(unique_series)
+        .range(COLOURS.splice(0, unique_series.length));
+
+    // Filter out all the fractional ticks:
+    const yAxisTicks = yScale.ticks()
+        .filter(tick => Number.isInteger(tick));
+    const yAxis = d3.axisLeft(yScale)
+        .tickValues(yAxisTicks)
+        .tickFormat(d3.format('d'));
+
+    const lineGenerator = d3.line()
+        .x(d => xScale(d[x_key]))
+        .y(d => yScale(d[y_key]));
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale))
+        .append("text")
+        .attr("y", '2.5em')
+        .attr("x", 0)
+        .style("text-anchor", "start")
+        .style("alignment-baseline", "bottom")
+        .text(graph.x_label);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", '-1.5em')
+        .attr("x", 0)
+        .style("text-anchor", "end")
+        .text(graph.y_label);
+
+    // Now build the actual graph
+    // let series = svg.selectAll(".series")
+    //     .data(per_series_data);
+    //
+    // series.exit().remove();
+    //
+    // series.enter().insert("g", ".focus").append("path")
+    //     .attr("class", "line cities")
+    //     .style("stroke", d => z(d.id))
+    //     .merge(city)
+
+
+    let legend_x_offset = 5;
+    let legend_y_offset = 0;
+    for (let i = 0; i < bots.length; i++) {
+        let legend = svg.append('g')
+            .datum(bots[i])
+            .attr('class', 'legend')
+        // .on('mouseover', () => { // on mouse in show line, circles and text
+        //     d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
+        // })
+        // .on('mouseout', () => { // on mouse out hide line, circles and text
+        //     d3.selectAll("path.line").style("opacity", 0.9);
+        // });
+        if (legend_y_offset > height) {
+            legend_x_offset += 30;
+            legend_y_offset = 0;
+        }
+
+        legend.append('rect')
+            .attr('x', width + legend_x_offset)
+            .attr('y', (d, _) => legend_y_offset)
+            .attr('width', 10)
+            .attr('height', 10)
+            .style('fill', d => colour(d[0].bot_icon));
+        legend.append('text')
+            .attr("alignment-baseline", 'middle')
+            .attr('x', width + 12 + legend_x_offset)
+            .attr('y', (d, _) => (legend_y_offset) + 7)
+            .text(d => d[0].bot_icon);
+        legend_y_offset += 20
+        svg.append("path")
+            .datum(bots[i])
+            .attr("class", "line")
+            .style("opacity", "0.9")
+            .style("stroke", d => colour(d[0].bot_icon))
+            .attr("d", line)
+            .on('mouseover', () => { // on mouse in show line, circles and text
+                d3.selectAll("path.line").style("opacity", d => d[0].bot_icon === bots[i][0].bot_icon ? 1.0 : 0.3);
+            })
+            .on('mouseout', () => { // on mouse out hide line, circles and text
+                d3.selectAll("path.line").style("opacity", "0.9");
+            });
+
+    }
+
+
+}
+
+export function __draw_coins_per_bot__(div_id) {
     let selected_game_path = get_param("game", "");
 
     $.ajax({
@@ -536,7 +692,7 @@ export function cache_and_update() {
             "last_seen_tick": "1"
         })
     }).done(data => {
-        console.log(data);
+        // console.log(data);
         // Split the patches up into different patch objects
 
         // Apply each of the patches
@@ -617,7 +773,8 @@ export function create_graph_card(div_id, game) {
     let pure_g = document.createElement("div");
     pure_g.classList.add('pure-g')
     div.appendChild(pure_g);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < game['graphs'].length; i++) {
+        let curr_graph = game['graphs'][i];
         let pure_u = document.createElement("div");
         pure_u.classList.add('pure-u-1');
 
@@ -632,14 +789,16 @@ export function create_graph_card(div_id, game) {
 
         pure_g.appendChild(pure_u);
 
-        let svg = d3.select(`#d3-chart-${i}`).append("svg")
-        let width = Math.random() * 1000 + 400;
-        svg.attr('width', width + 'px')
-            .attr('height', '300px')
-            .append('rect')
-            .attr('width', width + 'px')
-            .attr('height', '300px')
-            .attr('fill', `hsl(${300 - i * 20}, 90%, 60%)`);
+        create_graph(`d3-chart-${i}`, curr_graph, game);
+
+        // let svg = d3.select(`#d3-chart-${i}`).append("svg")
+        // let width = Math.random() * 1000 + 400;
+        // svg.attr('width', width + 'px')
+        //     .attr('height', '300px')
+        //     .append('rect')
+        //     .attr('width', width + 'px')
+        //     .attr('height', '300px')
+        //     .attr('fill', `hsl(${300 - i * 20}, 90%, 60%)`);
     }
 
 }
