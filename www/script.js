@@ -189,6 +189,7 @@ function create_battleground(div_id, bg, game) {
         .attr("x", d => d.x + 0.5 * d.width)
         .attr("y", d => d.y + 0.5 * d.height)
         .attr('fill', d => d.colour ? d.colour : 'grey')
+        .attr("font-weight", 'bold')
         .text(d => d.content);
 }
 
