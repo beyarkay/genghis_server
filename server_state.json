@@ -152,6 +152,147 @@
           "data": []
         }
       ]
+    },
+    {
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "bots": [],
+      "battlegrounds": [],
+      "game_dir": "games/2020-11-09T23:37:54.977885",
+      "coin_icons": [],
+      "bot_icons": [],
+      "port_icons": [],
+      "iteration": 0,
+      "turn_time": 0.05,
+      "tick": 0,
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ]
+    },
+    {
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "bots": [],
+      "battlegrounds": [],
+      "game_dir": "games/2020-11-09T23:44:19.893826",
+      "coin_icons": [],
+      "bot_icons": [],
+      "port_icons": [],
+      "iteration": 0,
+      "turn_time": 0.05,
+      "tick": 0,
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ]
+    },
+    {
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "bots": [],
+      "battlegrounds": [],
+      "game_dir": "games/2020-11-09T23:59:40.192432",
+      "coin_icons": [],
+      "bot_icons": [],
+      "port_icons": [],
+      "iteration": 0,
+      "turn_time": 0.05,
+      "tick": 0,
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ]
     }
   ]
 }

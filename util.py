@@ -111,7 +111,7 @@ class Game:
                     graph['data'].append({
                         'tick': self.tick,
                         'bot_icon': bot.bot_icon,
-                        'num_coins': len(bot.coins),
+                        'num_coins': sum([c.value for c in bot.coins]),
                     })
             elif graph['id'] == 'bot_locs':
                 for bg in self.battlegrounds:
