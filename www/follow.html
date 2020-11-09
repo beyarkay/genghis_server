@@ -74,20 +74,20 @@
             )
             $.ajax({
                 url: "../get_gamestate.php",
-                // type: 'post',
-                dataType: 'json',
+                type: 'post',
+                dataType: 'text',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    'last_seen_tick': game.tick,
-                    'game_id': game_param.replace('games/', '')
+                    last_seen_tick: game.tick,
+                    game_id: game_param.replace('games/', '')
                 }),
-                success: (data) => {
-                console.log("Got data");
-                console.log(data); // But for now just dump the changes
+                success: (data, status, xhr) => {
+                    console.log("Got data");
+                    console.log(data, status, xhr); // But for now just dump the changes
                 }
 
             });
-        }, 1000);
+        }, 5000);
     });
 
     setInterval(() => {
