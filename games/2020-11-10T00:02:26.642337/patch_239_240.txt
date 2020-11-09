@@ -1,0 +1,22 @@
+@@ -791,16 +791,66 @@
+  at (13,
++ 19)%5Cn%5CtMaking motion BLOODTHIRSTY, bot is at (13,
+  19)%22, %22
+@@ -15689,18 +15689,18 @@
+ ation%22: 
+-59
++60
+ , %22turn_
+@@ -15721,18 +15721,18 @@
+ tick%22: 2
+-39
++40
+ , %22graph
+@@ -67652,16 +67652,208 @@
+ _coins%22:
++ 7%7D, %7B%22tick%22: 240, %22bot_icon%22: %22D%22, %22num_coins%22: 5%7D, %7B%22tick%22: 240, %22bot_icon%22: %22C%22, %22num_coins%22: 5%7D, %7B%22tick%22: 240, %22bot_icon%22: %22A%22, %22num_coins%22: 3%7D, %7B%22tick%22: 240, %22bot_icon%22: %22B%22, %22num_coins%22:
+  7%7D%5D%7D, %7B
+@@ -118453,21 +118453,233 @@
+  %22bot_icon%22:
++ %22B%22%7D, %7B%22tick%22: 240, %22bg_port_icon%22: %222%22, %22bot_icon%22: %22C%22%7D, %7B%22tick%22: 240, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22A%22%7D, %7B%22tick%22: 240, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22D%22%7D, %7B%22tick%22: 240, %22bg_port_icon%22: %224%22, %22bot_icon%22:
+  %22B%22%7D%5D%7D%5D%7D
