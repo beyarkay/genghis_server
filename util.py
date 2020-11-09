@@ -97,24 +97,24 @@ class Game:
 
     def add_to_graphs(self):
         for graph in self.graphs:
-            if graph.id == 'cpb':
+            if graph['id'] == 'cpb':
                 for bot in self.bots:
-                    graph.data.append({
+                    graph['data'].append({
                         'tick': self.tick,
                         'bot_icon': bot.bot_icon,
                         'num_coins': len(bot.coins),
                     })
-            elif graph.id == 'bot_locs':
+            elif graph['id'] == 'bot_locs':
                 for bg in self.battlegrounds:
                     for bot in bg.bots:
-                        graph.data.append({
+                        graph['data'].append({
                             'tick': self.tick,
                             'bg_port_icon': bg.port_icon,
                             'bot_icon': bot.bot_icon,
                         })
-            # elif graph.id == 'cpb':
+            # elif graph['id'] == 'cpb':
             #     pass
-            # elif graph.id == 'cpb':
+            # elif graph['id'] == 'cpb':
             #     pass
             else:
                 pass
@@ -426,8 +426,8 @@ class Bot:
 
                 # Add the event to the events graph
                 for graph in game.graphs:
-                    if graph.id == 'events':
-                        graph.data.append({
+                    if graph['id'] == 'events':
+                        graph['data'].append({
                             'tick': game.tick,
                             'bot_icon': self.bot_icon,
                             'event_id': 'coin_pickup',
@@ -457,8 +457,8 @@ class Bot:
                 # And remove the bot's icon from the current battleground
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
                 for graph in game.graphs:
-                    if graph.id == 'events':
-                        graph.data.append({
+                    if graph['id']== 'events':
+                        graph['data'].append({
                             'tick': game.tick,
                             'bot_icon': self.bot_icon,
                             'event_id': 'port',
@@ -538,8 +538,8 @@ class Bot:
                         dropped_on = ' '
 
             for graph in game.graphs:
-                if graph.id == 'events':
-                    graph.data.append({
+                if graph['id'] == 'events':
+                    graph['data'].append({
                         'tick': game.tick,
                         'bot_icon': self.bot_icon,
                         'event_id': 'attack',
@@ -586,8 +586,8 @@ class Bot:
                             dropped_on = ' '
 
                         for graph in game.graphs:
-                            if graph.id == 'events':
-                                graph.data.append({
+                            if graph['id'] == 'events':
+                                graph['data'].append({
                                     'tick': game.tick,
                                     'bot_icon': self.bot_icon,
                                     'event_id': 'drop',
