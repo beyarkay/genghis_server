@@ -25,13 +25,6 @@ CMD_DICT = {
 }
 
 
-def dict_diff(dict1, dict2):
-    """
-    Get the difference between two json files, such that j1 can be converted to j2
-    """
-    return {k: dict2[k] for k in dict2 if dict1[k] != dict2[k]}
-
-
 class Game:
     def __init__(self, game_dir):
         self.port_graph = {
@@ -47,6 +40,26 @@ class Game:
         self.iteration = 0
         self.turn_time = 0.05
         self.tick = 0
+        self.graphs = [{
+            'id': 'events',
+            'title': 'Game-Wide Events',
+            'x_label': 'Game Tick',
+            'y_label': 'Bot',
+            'data': [],
+        }, {
+            'id': 'cpb',
+            'title': 'Coins per Bot',
+            'x_label': 'Game Tick',
+            'y_label': 'Number of Coins',
+            'data': [],
+        }, {
+            'id': 'bot_locs',
+            'title': 'Bot Locations',
+            'x_label': 'Game Tick',
+            'y_label': 'Battleground',
+            'data': [],
+        }]
+
         os.mkdir(self.game_dir)
         os.chmod("games", 0o755)
         os.chmod(self.game_dir, 0o755)
@@ -70,6 +83,7 @@ class Game:
         d['iteration'] = self.iteration
         d['turn_time'] = self.turn_time
         d['tick'] = self.tick
+        d['graphs'] = self.graphs
         return d
 
     def add_bot(self, bot):
@@ -81,55 +95,40 @@ class Game:
         battleground.parse_battleground_path()
         self.battlegrounds.append(battleground)
 
+    def add_to_graphs(self):
+        for graph in self.graphs:
+            if graph.id == 'cpb':
+                for bot in self.bots:
+                    graph.data.append({
+                        'tick': self.tick,
+                        'bot_icon': bot.bot_icon,
+                        'num_coins': len(bot.coins),
+                    })
+            elif graph.id == 'bot_locs':
+                for bg in self.battlegrounds:
+                    for bot in bg.bots:
+                        graph.data.append({
+                            'tick': self.tick,
+                            'bg_port_icon': bg.port_icon,
+                            'bot_icon': bot.bot_icon,
+                        })
+            # elif graph.id == 'cpb':
+            #     pass
+            # elif graph.id == 'cpb':
+            #     pass
+            else:
+                pass
+
     def log_state(self, diff_only=False):
         """ Log the entire gamestate for debugging
         This is called from the game directory so needs no prefix other
         than the filename
         """
+        self.add_to_graphs()
 
         if diff_only:
             # Just write the line-by-line diff of the game.json file
             game_dict = self.to_dict()
-            """ FIXME:
-╰> $ ./build_game.py 
---== Starting game at 2020-11-06T23:46:17.067528 ==--
-Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 0
-Bot A says: 'Making motion GREEDY, bot is at (13, 19)'
-Bot B says: 'Making motion GREEDY, bot is at (16, 19)'
-Bot D says: 'Making motion GREEDY, bot is at (3, 19)'
-Bot C says: 'Making motion GREEDY, bot is at (6, 19)'
-Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 1
-Bot A says: 'Making motion GREEDY, bot is at (12, 18)'
-Bot B says: 'Making motion GREEDY, bot is at (17, 18)'
-Bot D says: 'Making motion GREEDY, bot is at (4, 18)'
-Bot C says: 'Making motion GREEDY, bot is at (5, 18)'
-Game /home/k/knxboy001/public_html/genghis_server/games/2020-11-06T23:46:17.067528, iteration 2
-Bot A says: 'Making motion GREEDY, bot is at (11, 17)'
-Bot B says: 'Making motion GREEDY, bot is at (18, 17)'
-Bot D says: 'Making motion GREEDY, bot is at (5, 17)'
-Bot C says: 'Making motion GREEDY, bot is at (4, 17)'
-	Bot is walking into a coin
-Traceback (most recent call last):
-  File "judge.py", line 97, in <module>
-    main()
-  File "judge.py", line 31, in main
-    step(game)
-  File "judge.py", line 89, in step
-    game.log_state(diff_only=True)
-  File "/home/k/knxboy001/public_html/genghis_server/util.py", line 93, in log_state
-    new_game_str = json.dumps(game_dict)
-  File "/usr/lib/python3.6/json/__init__.py", line 231, in dumps
-    return _default_encoder.encode(obj)
-  File "/usr/lib/python3.6/json/encoder.py", line 199, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-  File "/usr/lib/python3.6/json/encoder.py", line 257, in iterencode
-    return _iterencode(o, 0)
-  File "/usr/lib/python3.6/json/encoder.py", line 180, in default
-    o.__class__.__name__)
-TypeError: Object of type 'Bot' is not JSON serializable
---== Ending game at 2020-11-06T23:46:17.067528 ==--
-
-            """
             new_game_str = json.dumps(game_dict)
 
             if self.tick > 0:
@@ -139,10 +138,13 @@ TypeError: Object of type 'Bot' is not JSON serializable
             else:
                 old_game_str = ""
 
+            # Calculate the patch required
             dmp = dmp_module.diff_match_patch()
             diffs = dmp.diff_main(old_game_str, new_game_str)
             dmp.diff_cleanupSemantic(diffs)
             patches = dmp.patch_make(old_game_str, diffs)
+
+            # Save the patch to disk
             patch_path = "patch_{}_{}.txt".format(max(0, self.tick - 1), self.tick)
             with open(patch_path, 'w+') as gamefile:
                 gamefile.write(dmp.patch_toText(patches))
@@ -153,7 +155,10 @@ TypeError: Object of type 'Bot' is not JSON serializable
                 json.dump(game_dict, game_file, indent=2)
             os.chmod("game.json", 0o755)
 
+
+
         else:
+            # DEPRECATED
             for bg in self.battlegrounds:
                 # write out the visual representation of every bg map to a file
                 lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
@@ -419,6 +424,18 @@ class Bot:
                 # Replace the new spot with the bot's icon
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = self.bot_icon
 
+                # Add the event to the events graph
+                for graph in game.graphs:
+                    if graph.id == 'events':
+                        graph.data.append({
+                            'tick': game.tick,
+                            'bot_icon': self.bot_icon,
+                            'event_id': 'coin_pickup',
+                            'bg': curr_bg.port_icon,
+                            'content': cell,
+                        })
+                        break
+
             # If the bot is walking into a port
             elif cell in game.port_icons:
                 # Figure out the next battleground
@@ -439,6 +456,17 @@ class Bot:
                 next_bg.spawn_bot(curr_bg.bots.pop(remove_idx))
                 # And remove the bot's icon from the current battleground
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
+                for graph in game.graphs:
+                    if graph.id == 'events':
+                        graph.data.append({
+                            'tick': game.tick,
+                            'bot_icon': self.bot_icon,
+                            'event_id': 'port',
+                            'from': curr_bg.port_icon,
+                            'to': next_bg.port_icon,
+                        })
+                        break
+
             else:
                 # If the bot tries to walk anywhere illegal, don't allow it and
                 # just stay still
@@ -452,9 +480,11 @@ class Bot:
             print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
             is_hit = random.random() < 0.5
+            dropped = ''
+            dropped_on = ''
             #  check that there's actually a bot at the defending location
             if is_hit and defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
-                print("\t\t {} hits  {}".format(attacker_icon, defender_icon))
+                print("\t\t {} hits {}".format(attacker_icon, defender_icon))
                 attacker, defender = None, None
                 for bot in curr_bg.bots:
                     if bot.bot_icon == defender_icon:
@@ -467,7 +497,7 @@ class Bot:
                 # Check that the defender actually has coins to give
                 if defender.coins and sum([coin.value for coin in defender.coins]):
                     # Choose a random coin to remove
-                    dropped = None
+                    # dropped = None
                     random.shuffle(defender.coins)
                     for coin in defender.coins:
                         if coin.value > 0:
@@ -500,10 +530,25 @@ class Bot:
                         for bot in curr_bg.bots:
                             if bot.bot_icon == landed_icon:
                                 bot.add_coins(Coin(dropped.originator, 1))
+                                dropped_on = bot.bot_icon
                                 break
                     else:
                         # The coin landed on air, so just add it to the map
                         curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
+                        dropped_on = ' '
+
+            for graph in game.graphs:
+                if graph.id == 'events':
+                    graph.data.append({
+                        'tick': game.tick,
+                        'bot_icon': self.bot_icon,
+                        'event_id': 'attack',
+                        'is_hit': is_hit,
+                        'defender': defender_icon,
+                        'dropped': '' if not dropped else dropped.originator.coin_icon,
+                        'on': dropped_on,
+                    })
+                    break
 
         # If the bot is dropping a coin on the floor (to trade possibly)
         elif bot_move.get('action') == ACTION_DROP and \
@@ -523,9 +568,11 @@ class Bot:
                         # Remove the coin from the bot's inventory
                         coin.value -= 1
                         # Add the bot to the ground / to the adjacent bot
+                        dropped_on = ''
                         for bg_bot in curr_bg.bots:
                             if bg_bot.bot_icon == cell:
                                 bg_bot.add_coins(Coin(coin.originator.coin_icon, 1))
+                                dropped_on = bg_bot.bot_icon
                                 break
                         else:  # cell is IC_AIR
                             # Calculate the new location
@@ -536,7 +583,18 @@ class Bot:
                                 coin_position[1] += CMD_DICT[c][1]
                             # Replace the new spot with the coin's icon
                             curr_bg.bg_map[coin_position[0]][coin_position[1]] = coin.originator.coin_icon
+                            dropped_on = ' '
 
+                        for graph in game.graphs:
+                            if graph.id == 'events':
+                                graph.data.append({
+                                    'tick': game.tick,
+                                    'bot_icon': self.bot_icon,
+                                    'event_id': 'drop',
+                                    'dropped': coin_type,
+                                    'on': dropped_on,
+                                })
+                                break
                         break
 
 

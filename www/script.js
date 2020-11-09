@@ -182,7 +182,7 @@ function create_battleground(div_id, bg, game) {
         .attr("width", d => d.width)
         .attr("height", d => d.height)
         .style("fill", d => ((d.click) % 2 === 0) ? "#ffffff" : "#a5a5a5")
-        .style("stroke", "#919191");
+        .style("stroke", "#c1c1c1");
 
     let text = svg.selectAll('.cell')
         .append("text")
