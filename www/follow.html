@@ -22,71 +22,26 @@
     <title>Genghis</title>
 </head>
 <body>
-<!--Genghis Header-->
 <div class="pure-g">
+    <!--Genghis Header Card-->
     <div class="pure-u-1-1">
-        <div style="display:flex">
-            <div>
-                <a class="silent" href="../index.html">
-                    <h1>Genghis</h1>
-                    <h4>Bot Battle System</h4>
-                </a>
-            </div>
-            <div id="header-info">
-                <label for="cmb_game">Game:</label>
-                <select name="game" id="cmb_game">
-                    <option value="">Loading...</option>
-                </select>
-                <br>
-                <br>
-                <p id="follow_list">Loading...</p>
-<!--                <label for="cmb_following">Following:</label>-->
-<!--                <select name="following" id="cmb_following">-->
-<!--                    <option value="">Loading...</option>-->
-<!--                </select>-->
-            </div>
+        <div style="text-align: center;">
+            <a class="silent" href="../index.html">
+                <h1>Genghis</h1>
+                <h4>Bot Battle System</h4>
+            </a>
         </div>
     </div>
-</div>
-<!--Battleground Card-->
-<div class="pure-g" id="bg_card">
+    <!-- Battleground Card-->
     <div class="pure-u-1-1">
-        <div class="shadow">
-            <h2>Battleground</h2>
-            <div id="bg_plot">
-                <svg xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100%" height="100%" fill="lightgrey"/>
-                    <text x="20" y="30">Loading Battleground...</text>
-                </svg>
-            </div>
+        <div class="shadow" id="bg-card">
+            <!--            This div populated by JavaScript-->
         </div>
     </div>
-</div>
-<!--Graph Card: number of coins per bot over time-->
-<div class="pure-g" id="cpb_card">
+    <!--Graphs Card-->
     <div class="pure-u-1-1">
-        <div class="shadow">
-            <h2>Total coins per Bot</h2>
-            <div id="cpb_plot">
-                <svg xmlns="http://www.w3.org/2000/svg" height="300px">
-                    <rect width="100%" height="100%" fill="lightgrey"/>
-                    <text x="20" y="30">Loading Graph...</text>
-                </svg>
-            </div>
-        </div>
-    </div>
-</div>
-<!--Graph Card: number of bots per battleground over time-->
-<div class="pure-g" id="bot_locs_card">
-    <div class="pure-u-1-1">
-        <div class="shadow">
-            <h2>Bot Locations</h2>
-            <div id="bot_locs_plot">
-                <svg xmlns="http://www.w3.org/2000/svg" height="300px">
-                    <rect width="100%" height="100%" fill="lightgrey"/>
-                    <text x="20" y="30">Loading Graph...</text>
-                </svg>
-            </div>
+        <div class="shadow horizontal-scroll" id="graphs-card">
+            <!--This div populated by JavaScript-->
         </div>
     </div>
 </div>
@@ -95,166 +50,23 @@
 <script type="module">
     import {
         get_param,
-        draw_battleground,
+        __draw_battleground__,
         draw_coins_per_bot,
         draw_bot_locs,
-        update_following
+        update_following,
+        create_bg_card,
+        create_graph_card
     } from './script.js';
 
-    // let game = {}
     let game_param = get_param("game", "");
-    let following_param = get_param("following", "");
-    let following_list = ["Overview"];
-    let cmb_following = document.getElementById("cmb_following");
-    // On page load, get all the game.json from server and populate graphs, tables, etc
     $.ajax({
         url: "../" + game_param + "/game.json"
     }).done(game => {
-
-        // Push all the bots onto the following list
-        game['bots'].sort((a, b) => a['bot_icon'] > b['bot_icon'] ? 1 : -1);
-        game['bots'].forEach((bot) => {
-            following_list.push(bot['bot_icon']);
-        });
-        // Push all the battlegrounds onto the following list
-        game['battlegrounds'].sort((a, b) => a['port_icon'] > b['port_icon'] ? 1 : -1);
-        game['battlegrounds'].forEach((bg) => {
-            following_list.push(bg['port_icon']);
-        });
-        let p_following = document.getElementById("follow_list");
-        p_following.innerHTML = "Following: ";
-        for (let i = 0; i < following_list.length; i++) {
-            let a = document.createElement("a");
-            let url = window.location.href.split(/[?#]/)[0] + '?game=' + game_param + '&following=' + following_list[i];
-            a.setAttribute("href", url);
-            a.innerHTML = following_list[i]
-            let style;
-            if (following_param === following_list[i]) {
-                style = "color: grey";
-            } else {
-                style = "color: lightgrey";
-
-            }
-            p_following.innerHTML += "<a href='" + url + "' style='" + style + "'>" + following_list[i] + "</a> ";
-
-        }
-
-
-        // cmb_following.setAttribute("onchange", "update_following()");
-        // cmb_following.innerHTML = "";
-        // for (let i = 0; i < following_list.length; i++) {
-        //     let option = document.createElement("option");
-        //     option.value = following_list[i];
-        //
-        //     if (i !== 0) {
-        //         if (i - 1 < game['bots'].length) {
-        //             option.text = "Bot " + following_list[i];
-        //         } else {
-        //             option.text = "Battleground " + following_list[i];
-        //         }
-        //     } else {
-        //         option.text = following_list[i];
-        //     }
-        //     if (following_param === following_list[i]) {
-        //         option.setAttribute("selected", "selected");
-        //     }
-        //     cmb_following.appendChild(option);
-        // }
+        // When the game json is loaded, add content to the battleground and graphs cards
+        create_bg_card('bg-card', game);
+        create_graph_card('graphs-card', game);
     });
 
-    // Then, go into the loop of updating every so often based on the game.json's tick speed
-    // Update the list of running games
-    // $.ajax({
-    //     url: "../server_state.json"
-    // }).done(data => {
-    //     if (data && data['games']) {
-    //         // Populate the list of games available
-    //         let games_list = ["Overview"];
-    //         data['games'].forEach((game) => {
-    //             games_list.push(game['game_dir']);
-    //         });
-    //         let cmb_game = document.getElementById("cmb_game");
-    //         cmb_game.setAttribute("onchange", "update_following()")
-    //         cmb_game.innerHTML = "";
-    //
-    //         let game_is_selected = false;
-    //         for (let i = 0; i < games_list.length; i++) {
-    //             let option = document.createElement("option");
-    //             option.value = games_list[i];
-    //             option.text = games_list[i];
-    //             if (get_param("game", "") === games_list[i]) {
-    //                 option.setAttribute("selected", "selected")
-    //                 game_is_selected = true
-    //             }
-    //             cmb_game.appendChild(option);
-    //         }
-    //         if (!game_is_selected) {
-    //             window.location.href = '../index.html';
-    //         }
-    //     }
-    // });
-    // let selected_game_path = get_param("game", "");
-    // $.ajax({
-    //     url: "../" + selected_game_path + "/game.json"
-    // }).done(game => {
-    //     let following_list = ["Overview"];
-    //     game['bots'].sort((a, b) => a['bot_icon'] > b['bot_icon'] ? 1 : -1);
-    //     game['bots'].forEach((bot) => {
-    //         following_list.push(bot['bot_icon']);
-    //     });
-    //
-    //     game['battlegrounds'].sort((a, b) => a['port_icon'] < b['port_icon'] ? 1 : -1);
-    //     game['battlegrounds'].forEach((bg) => {
-    //         following_list.push(bg['port_icon']);
-    //     });
-    //
-    //     let cmb_following = document.getElementById("cmb_following");
-    //     cmb_following.setAttribute("onchange", "update_following()");
-    //     cmb_following.innerHTML = "";
-    //     for (let i = 0; i < following_list.length; i++) {
-    //         let option = document.createElement("option");
-    //         option.value = following_list[i];
-    //
-    //         if (i !== 0) {
-    //             if (i - 1 < game['bots'].length) {
-    //                 option.text = "Bot " + following_list[i];
-    //             } else {
-    //                 option.text = "Battleground " + following_list[i];
-    //             }
-    //         } else {
-    //             option.text = following_list[i];
-    //         }
-    //         if (get_param("following", "") === following_list[i]) {
-    //             option.setAttribute("selected", "selected")
-    //         }
-    //         cmb_following.appendChild(option);
-    //     }
-    // });
-    //
-    // // Now start doing the draw loop
-    // $.ajaxSetup({cache: false});
-    // const interval = 1000;
-    //
-    // function loop() {
-    //     let following = get_param('following', '');
-    //     if (following !== '') {
-    //         if (!isNaN(following)) {
-    //             draw_battleground("bg_plot", following)
-    //             document.getElementById('cpb_card').remove();
-    //             document.getElementById('bot_locs_card').remove();
-    //         } else { // Following is a bot_icon, so find it and plot it
-    //
-    //         }
-    //     } else {
-    //         document.getElementById('bg_card').remove();
-    //         draw_coins_per_bot("cpb_plot")
-    //         draw_bot_locs("bot_locs_plot")
-    //     }
-    //     setTimeout(loop, interval);
-    // }
-    //
-    // setTimeout(loop, interval);
 </script>
-
 </body>
 </html>

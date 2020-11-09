@@ -7,11 +7,11 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_server) to get star
 
 ## TODOs
 ### Important for getting people play-testing
-1. Get things synchronous properly
-2. Update D3 plots, don't recreate D3 plots
-3. Get a live badge working
-4. Get a schedule of games going
-6. Something's wrong with the attacking code. The graphs look like something is funky
+1. FRONTEND: Get things synchronous properly
+2. FRONTEND: Update D3 plots, don't recreate D3 plots
+3. FRONTEND: Get a live badge working
+4. BACK-END: Get a schedule of games going (Maybe one game every 3 hours?)
+6. BACK-END: Something's wrong with the attacking code. The graphs look like something is funky
 
 ### Performance
 * TODO Get synchronous Server updates working, so you get 'push' notifications on the website client

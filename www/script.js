@@ -10,7 +10,8 @@ export function get_param(param, defaultvalue) {
     return defaultvalue;
 }
 
-export function draw_battleground(div_id, bg_port_icon) {
+// Deprecated
+export function __draw_battleground__(div_id, bg_port_icon) {
     // Get the bg_map from the text file
     const cell_width = 20;
     const cell_height = 20;
@@ -67,7 +68,7 @@ export function draw_battleground(div_id, bg_port_icon) {
             .attr("class", "row");
         const COL_HOVER = ["#eee", "#aaa"];
         const COL_NO_HOVER = ["#fff", "#aaa"];
-        let square_group = row.selectAll(".square")
+        let square_group = row.selectAll(".cell")
             .data(d => d)
             .enter().append("g")
             .attr("class", "square")
@@ -86,7 +87,7 @@ export function draw_battleground(div_id, bg_port_icon) {
                 // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#000000");
             })
         ;
-        let square = svg.selectAll('.square')
+        let square = svg.selectAll('.cell')
             .append("rect")
             .attr("x", d => d.x)
             .attr("y", d => d.y)
@@ -95,7 +96,7 @@ export function draw_battleground(div_id, bg_port_icon) {
             .style("fill", d => ((d.click) % 2 === 0) ? "#ffffff" : "#a5a5a5")
             .style("stroke", "#222");
 
-        let text = svg.selectAll('.square')
+        let text = svg.selectAll('.cell')
             .append("text")
             .attr("text-anchor", 'middle')
             .attr("alignment-baseline", 'middle')
@@ -105,6 +106,93 @@ export function draw_battleground(div_id, bg_port_icon) {
             .text(d => d.content);
     });
 
+}
+
+function create_battleground(div_id, bg, game) {
+    let selected_game_path = get_param("game", "");
+    console.log(bg);
+
+    // set the dimensions and margins of the graph
+    const margin = {top: 2, right: 8, bottom: 2, left: 8};
+    const width = document.getElementById(div_id).offsetWidth;
+    const height = document.getElementById(div_id).offsetHeight;
+    const cell_width = (width - margin.left - margin.right) / bg['bg_map'][0].length;
+    const cell_height = (height - margin.bottom - margin.top) / bg['bg_map'].length;
+
+    // append the svg object to the body of the page
+    d3.select('#' + div_id).selectAll("svg").remove();
+    const svg = d3.select('#' + div_id)
+        .append("svg")
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    const grid_data = [];
+    let xpos = 1;
+    let ypos = 1;
+
+    for (let col = 0; col < bg['bg_map'].length; col++) {
+        grid_data.push([]);
+        for (let row = 0; row < bg['bg_map'][0].length; row++) {
+            grid_data[col].push({
+                x: xpos,
+                y: ypos,
+                width: cell_width,
+                height: cell_height,
+                content: bg['bg_map'][row][col],
+                color: bg['bg_map'][row][col] === '#' ? 'lightgrey' : 'black',
+                click: 0,
+            })
+            xpos += cell_width;
+        }
+        xpos = 1;
+        ypos += cell_height;
+    }
+
+    let row = svg.selectAll(".row")
+        .data(grid_data)
+        .enter().append("g")
+        .attr("class", "row");
+    // const COL_HOVER = ["#eee", "#aaa"];
+    // const COL_NO_HOVER = ["#fff", "#aaa"];
+    let cell_g = row.selectAll(".cell")
+        .data(d => d)
+        .enter().append("g")
+        .attr("class", "cell")
+    // .on('click', function (d) {
+    //     d.click++;
+    //     d3.select(this).selectAll('rect').style("fill", COL_NO_HOVER[(d.click) % 2]);
+    //     // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#4f4f4f");
+    // })
+    // .on('mouseover', function (d) {
+    //     d3.select(this).selectAll('rect').style("fill", COL_HOVER[(d.click) % 2]);
+    //     // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#1d1d1d");
+    // })
+    // .on('mouseout', function (d) {
+    //     d3.select(this).selectAll('rect').style("fill", COL_NO_HOVER[(d.click) % 2]);
+    //     // d3.select(this).selectAll('rect').style("fill", ((d.click) % 2 === 0) ? "#ff0000" : "#c2d000");
+    //     // d3.select(this).selectAll('text').style("fill", ((d.click) % 2 === 0) ? "#000000" : "#000000");
+    // });
+
+    let cell = svg.selectAll('.cell')
+        .append("rect")
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+        .attr("width", d => d.width)
+        .attr("height", d => d.height)
+        .style("fill", d => ((d.click) % 2 === 0) ? "#ffffff" : "#a5a5a5")
+        .style("stroke", "#919191");
+
+    let text = svg.selectAll('.cell')
+        .append("text")
+        .attr("font-size", (15 / 11.863 * cell_width).toString() + 'px')
+        .attr("text-anchor", 'middle')
+        .attr("alignment-baseline", 'middle')
+        .attr("x", d => d.x + 0.5 * d.width)
+        .attr("y", d => d.y + 0.5 * d.height)
+        .attr('fill', d => d.color ? d.color : 'grey')
+        .text(d => d.content);
 }
 
 export function draw_coins_per_bot(div_id) {
@@ -460,4 +548,98 @@ export function cache_and_update() {
         // // Result: [(-1, "Hello"), (1, "Goodbye"), (0, " World.")]
         // alert(diff);
     });
+}
+
+export function create_bg_card(div_id, game) {
+    //      1st unit: pure-u-lg-8-24 pure-u-md-12-24 pure-u-1-1
+    //      2nd unit: pure-u-lg-8-24 pure-u-md-12-24 pure-u-12-24
+    //      3rd unit: pure-u-lg-8-24 pure-u-md-6-24 pure-u-12-24
+    //      rest : pure-u-lg-4-24 pure-u-md-6-24 pure-u-12-24
+    //
+    // <div class="pure-u-md-8-24 pure-u-sm-12-24 pure-u-1-1">
+    //     <div class="square-box-outer">
+    //         <div class="square-box-inner">
+    //             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    //                 <rect width="100%" height="100%" fill="hsl(0, 90%, 50%)"/>
+    //             </svg>
+    //         </div>
+    //     </div>
+    // </div>
+
+
+    let div = document.getElementById(div_id)
+    div.innerHTML = "";
+    let pure_g = document.createElement("div");
+    pure_g.classList.add('pure-g')
+    div.appendChild(pure_g);
+    for (let i = 0; i < game['battlegrounds'].length; i++) {
+        let curr_bg = game['battlegrounds'][i]
+        let pure_u = document.createElement("div");
+        pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+        pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+        pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+        pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        pure_g.appendChild(pure_u);
+
+        let bg_title = document.createElement("h3");
+        bg_title.classList.add('bg-title');
+        let width = curr_bg['bg_map'].length;
+        let height = curr_bg['bg_map'][0].length;
+        bg_title.innerHTML = `Battleground ${curr_bg['port_icon']}`;
+        pure_u.appendChild(bg_title);
+
+        let outer_box = document.createElement("div");
+        outer_box.classList.add('square-box-outer');
+        pure_u.appendChild(outer_box);
+
+        let inner_box = document.createElement("div");
+        inner_box.classList.add('square-box-inner');
+        inner_box.setAttribute('id', `d3-bg-${i}`);
+        outer_box.appendChild(inner_box);
+
+        create_battleground(`d3-bg-${i}`, curr_bg, game)
+
+        //     let svg = d3.select(`#d3-bg-${i}`).append("svg")
+        //     svg.attr('width', '100%')
+        //         .attr('height', '100%')
+        //         .append('rect')
+        //         .attr('width', '100%')
+        //         .attr('height', '100%')
+        //         .attr('fill', `hsl(${i * 20}, 90%, 60%)`);
+        // }
+
+    }
+}
+
+export function create_graph_card(div_id, game) {
+    let div = document.getElementById(div_id)
+    div.innerHTML = "";
+    let pure_g = document.createElement("div");
+    pure_g.classList.add('pure-g')
+    div.appendChild(pure_g);
+    for (let i = 0; i < 4; i++) {
+        let pure_u = document.createElement("div");
+        pure_u.classList.add('pure-u-1');
+
+        let bg_title = document.createElement("h3");
+        bg_title.classList.add('chart-title');
+        bg_title.innerHTML = `Graph ${i + 1}`;
+        pure_u.appendChild(bg_title);
+
+        let chart_div = document.createElement('div');
+        chart_div.setAttribute('id', `d3-chart-${i}`);
+        pure_u.appendChild(chart_div);
+
+        pure_g.appendChild(pure_u);
+
+        let svg = d3.select(`#d3-chart-${i}`).append("svg")
+        let width = Math.random() * 1000 + 400;
+        svg.attr('width', width + 'px')
+            .attr('height', '300px')
+            .append('rect')
+            .attr('width', width + 'px')
+            .attr('height', '300px')
+            .attr('fill', `hsl(${300 - i * 20}, 90%, 60%)`);
+    }
+
 }
