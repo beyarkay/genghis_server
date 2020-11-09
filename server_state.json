@@ -30,20 +30,5 @@
     }
   ],
   "games": [
-    {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
-      "battlegrounds": [],
-      "game_dir": "games/2020-11-07T10:18:49.358988",
-      "coin_icons": [],
-      "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
-      "turn_time": 0.05,
-      "tick": 0
-    }
   ]
 }
