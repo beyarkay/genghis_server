@@ -28,7 +28,7 @@ def main():
         'server_state.json',
         'index.html',
         'www',
-        'www/follow.html',
+        'www/follow.html',§
         'www/diff_match_patch.js',
         'www/script.js',
         'www/styles.css',

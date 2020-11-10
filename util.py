@@ -161,7 +161,7 @@ class Game:
 
             # Overwrite the old game.json with the new game.json
             with open("game.json", "w+") as game_file:
-                json.dump(game_dict, game_file, indent=2)
+                json.dump(game_dict, game_file)
             os.chmod("game.json", 0o755)
 
 
@@ -228,7 +228,7 @@ class Game:
                 pickle.dump(self, game_pkl)
 
             with open("game.json", "w+") as game_file:
-                json.dump(self.to_dict(), game_file, indent=2)
+                json.dump(self.to_dict(), game_file)
             os.chmod("game.json", 0o755)
 
     def print_logs(self):
@@ -245,15 +245,11 @@ class Game:
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
-        #        print("num_bg", num_battlegrounds)
         for i, bot in enumerate(self.bots):
-            #            print("i ", i, "bot icon: ", bot.bot_icon)
             for bg in [bg for bg in self.battlegrounds if len(bg.bots) == 0]:
-                #                print("Added to empty battleground")
                 bg.add_bot(bot)
                 break
             else:
-                #                print("added to occupied battleground")
                 random_bg = random.choice(self.battlegrounds)
                 random_bg.add_bot(bot)
 
@@ -476,7 +472,7 @@ class Bot:
                 # And remove the bot's icon from the current battleground
                 curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
                 for graph in game.graphs:
-                    if graph['id']== 'events':
+                    if graph['id'] == 'events':
                         graph['data'].append({
                             'tick': game.tick,
                             'bot_icon': self.bot_icon,
@@ -755,14 +751,11 @@ class Battleground:
         # Add in ports to the map at random locations
         random.shuffle(self.port_spawn_locations)
         relevant_targets = [port['target'] for port in port_graph['links'] if port['source'] == self.port_icon]
-        #print(self.port_spawn_locations)
-        #print(relevant_targets)
         assert len(self.port_spawn_locations) >= len(relevant_targets)
         for i, target in enumerate(relevant_targets):
             x, y = self.port_spawn_locations[i]
             self.bg_map[x][y] = target
             self.port_locations.append((x, y))
-            #print('i={}, target={}, self={}, x={}, y={}'.format(i, target, self.port_icon, x, y))
 
         # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
