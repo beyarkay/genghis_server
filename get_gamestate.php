@@ -24,10 +24,11 @@ $curr_game_tick = (int)$game_obj['tick'];
 // Calculate which change files need to be sent
 for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
     $to = $from + 1;
-    echo "===$game_id/patch_${from}_${to}.txt===<br>";
+    //echo "===$game_id/patch_${from}_${to}.txt===<br>";
+    echo "===---===";
     $contents = file_get_contents("games/${game_id}/patch_${from}_${to}.txt");
     echo $contents;
-    echo "<br>";
+    //echo "<br>";
 
 }
 

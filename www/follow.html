@@ -58,9 +58,12 @@
     } from './script.js';
 
     let game_param = get_param("game", "");
+    let game;
     $.ajax({
-        url: "../" + game_param + "/game.json"
-    }).done(game => {
+        url: "../" + game_param + "/game.json",
+        dataType: 'text'
+    }).done(game_str => {
+        game = JSON.parse(game_str);
         // When the game json is loaded, add content to the battleground and graphs cards
         create_bg_card('bg-card', game);
         create_graph_card('graphs-card', game);
@@ -82,17 +85,29 @@
                     game_id: game_param.replace('games/', '')
                 }),
                 success: (data, status, xhr) => {
-                    console.log("Got data");
-                    console.log(data, status, xhr); // But for now just dump the changes
+                    let patch_strings = data.split('===---===');
+                    let dmp = new diff_match_patch();
+                    let patches = [];
+                    for ( let i = 1; i < patch_strings.length; i++){
+                        let sub_patches = dmp.patch_fromText(decodeURI(patch_strings[i]));
+                        sub_patches.forEach((p) => {
+                            patches.push(p);
+                        })
+                    }
+                    game_str = dmp.patch_apply(patches, game_str)[0];
+                    console.log(game_str)
+                    try {
+                        game = JSON.parse(game_str);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    create_bg_card('bg-card', game);
+                    create_graph_card('graphs-card', game);
                 }
 
             });
         }, 5000);
     });
-
-    setInterval(() => {
-        window.location.reload(true);
-    }, 15000);
 
 
 </script>

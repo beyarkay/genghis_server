@@ -754,14 +754,17 @@ class Battleground:
 
         # Add in ports to the map at random locations
         random.shuffle(self.port_spawn_locations)
-        # pprint(port_graph)
         relevant_targets = [port['target'] for port in port_graph['links'] if port['source'] == self.port_icon]
+        #print(self.port_spawn_locations)
+        #print(relevant_targets)
         assert len(self.port_spawn_locations) >= len(relevant_targets)
         for i, target in enumerate(relevant_targets):
-            x, y == self.port_spawn_locations[i]
+            x, y = self.port_spawn_locations[i]
             self.bg_map[x][y] = target
             self.port_locations.append((x, y))
-            # Add in some coins at random air locations:
+            #print('i={}, target={}, self={}, x={}, y={}'.format(i, target, self.port_icon, x, y))
+
+        # Add in some coins at random air locations:
         coin_icons = [bot.coin_icon for bot in self.bots]
         # print("num coins: " + str(self.num_coins))
         for i in range(self.num_coins):
