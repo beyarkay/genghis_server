@@ -1,0 +1,17 @@
+@@ -17630,17 +17630,17 @@
+ ick%22: 41
+-0
++1
+ , %22graph
+@@ -35623,16 +35623,129 @@
+ t%22: %22c%22%7D
++, %7B%22tick%22: 411, %22bot_icon%22: %22D%22, %22event_id%22: %22attack%22, %22is_hit%22: false, %22defender%22: %22C%22, %22dropped%22: %22%22, %22on%22: %22%22%7D
+ %5D%7D, %7B%22id
+@@ -114494,24 +114494,217 @@
+ %22num_coins%22:
++ 11%7D, %7B%22tick%22: 411, %22bot_icon%22: %22C%22, %22num_coins%22: 0%7D, %7B%22tick%22: 411, %22bot_icon%22: %22B%22, %22num_coins%22: 4%7D, %7B%22tick%22: 411, %22bot_icon%22: %22A%22, %22num_coins%22: 5%7D, %7B%22tick%22: 411, %22bot_icon%22: %22D%22, %22num_coins%22:
+  11%7D%5D%7D, %7B%22id
+@@ -201553,21 +201553,233 @@
+  %22bot_icon%22:
++ %22A%22%7D, %7B%22tick%22: 411, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22C%22%7D, %7B%22tick%22: 411, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22B%22%7D, %7B%22tick%22: 411, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22D%22%7D, %7B%22tick%22: 411, %22bg_port_icon%22: %224%22, %22bot_icon%22:
+  %22A%22%7D%5D%7D%5D%7D
