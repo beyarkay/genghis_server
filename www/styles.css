@@ -4,7 +4,12 @@ body {
     font-weight: lighter;
     color: #181818;
     line-height: 1.2;
-    background: whitesmoke;
+    background: #f5f5f5;
+}
+
+body.dark_mode {
+    color: #f5f5f5;
+    background: #181818;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -79,7 +84,7 @@ code {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     padding: 0.5em;
-    background: white;
+    background: #ffffff;
 
 }
 
@@ -87,7 +92,7 @@ code {
     border-style: none none none solid;
     padding-left: 0.5em;
     margin-left: 0.5em;
-    border-color: gray;
+    border-color: #808080;
     border-width: thin;
     vertical-align: middle;
 }
@@ -102,7 +107,7 @@ pre {
 
 .axis text {
     font-size: 15px;
-    fill: black;
+    fill: #000000;
 }
 
 .line {

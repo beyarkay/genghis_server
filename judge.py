@@ -25,7 +25,7 @@ def main():
     # Figure out a global order
     random.shuffle(game.bots)
     # Start stepping through the bots
-    while game_continues():
+    while game_continues(game):
         print("Game {}, iteration {}".format(os.getcwd(), game.iteration))
        # game.print_logs()
         step(game)
@@ -89,9 +89,8 @@ def step(game):
         game.log_state(diff_only=True)
         game.tick += 1
 
-def game_continues():
-    # TODO Add an end condition for the game
-    return True
+def game_continues(game):
+    return game.tick < len(game.bots) * 100
 
 if __name__ == "__main__":
     main()

@@ -58,6 +58,10 @@
     } from './script.js';
 
     let game_param = get_param("game", "");
+    if (game_param === '') {
+        // Load up the homepage
+        window.location.href = '../index.html'
+    }
     let game;
     $.ajax({
         url: "../" + game_param + "/game.json",
@@ -69,12 +73,6 @@
         create_graph_card('graphs-card', game);
 
         setInterval(() => {
-            console.log(
-                JSON.stringify({
-                    'last_seen_tick': game.tick,
-                    'game_id': game_param.replace('games/', '')
-                })
-            )
             $.ajax({
                 url: "../get_gamestate.php",
                 type: 'post',
@@ -85,17 +83,19 @@
                     game_id: game_param.replace('games/', '')
                 }),
                 success: (data, status, xhr) => {
+                    if (data.includes('<?php')){
+                        return
+                    }
                     let patch_strings = data.split('===---===');
                     let dmp = new diff_match_patch();
                     let patches = [];
-                    for ( let i = 1; i < patch_strings.length; i++){
+                    for (let i = 1; i < patch_strings.length; i++) {
                         let sub_patches = dmp.patch_fromText(decodeURI(patch_strings[i]));
                         sub_patches.forEach((p) => {
                             patches.push(p);
                         })
                     }
                     game_str = dmp.patch_apply(patches, game_str)[0];
-                    console.log(game_str)
                     try {
                         game = JSON.parse(game_str);
                     } catch (e) {
