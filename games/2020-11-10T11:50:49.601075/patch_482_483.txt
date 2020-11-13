@@ -1,0 +1,13 @@
+@@ -17682,17 +17682,17 @@
+ ick%22: 48
+-2
++3
+ , %22graph
+@@ -134060,24 +134060,217 @@
+ %22num_coins%22:
++ 12%7D, %7B%22tick%22: 483, %22bot_icon%22: %22C%22, %22num_coins%22: 0%7D, %7B%22tick%22: 483, %22bot_icon%22: %22B%22, %22num_coins%22: 3%7D, %7B%22tick%22: 483, %22bot_icon%22: %22A%22, %22num_coins%22: 5%7D, %7B%22tick%22: 483, %22bot_icon%22: %22D%22, %22num_coins%22:
+  12%7D%5D%7D, %7B%22id
+@@ -236383,21 +236383,233 @@
+  %22bot_icon%22:
++ %22A%22%7D, %7B%22tick%22: 483, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22C%22%7D, %7B%22tick%22: 483, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22B%22%7D, %7B%22tick%22: 483, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22D%22%7D, %7B%22tick%22: 483, %22bg_port_icon%22: %224%22, %22bot_icon%22:
+  %22A%22%7D%5D%7D%5D%7D

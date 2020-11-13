@@ -1,0 +1,32 @@
+@@ -1721,17 +1721,65 @@
+  at (6, 
+-5
++6)%5Cn%5CtMaking motion BLOODTHIRSTY, bot is at (6, 6
+ )%22, %22mov
+@@ -1791,35 +1791,37 @@
+ t%22: %7B%22action%22: %22
+-wal
++attac
+ k%22, %22direction%22:
+@@ -1818,25 +1818,26 @@
+ irection%22: %22
+-d
++lu
+ %22%7D, %22coins%22:
+@@ -17787,17 +17787,17 @@
+ ick%22: 89
+-6
++7
+ , %22graph
+@@ -74422,24 +74422,137 @@
+ %22: %22%22, %22on%22:
++ %22%22%7D, %7B%22tick%22: 897, %22bot_icon%22: %22B%22, %22event_id%22: %22attack%22, %22is_hit%22: false, %22defender%22: %22C%22, %22dropped%22: %22%22, %22on%22:
+  %22%22%7D%5D%7D, %7B%22id
+@@ -247099,24 +247099,217 @@
+ %22num_coins%22:
++ 12%7D, %7B%22tick%22: 897, %22bot_icon%22: %22C%22, %22num_coins%22: 0%7D, %7B%22tick%22: 897, %22bot_icon%22: %22B%22, %22num_coins%22: 2%7D, %7B%22tick%22: 897, %22bot_icon%22: %22A%22, %22num_coins%22: 6%7D, %7B%22tick%22: 897, %22bot_icon%22: %22D%22, %22num_coins%22:
+  12%7D%5D%7D, %7B%22id
+@@ -437190,21 +437190,233 @@
+  %22bot_icon%22:
++ %22A%22%7D, %7B%22tick%22: 897, %22bg_port_icon%22: %223%22, %22bot_icon%22: %22D%22%7D, %7B%22tick%22: 897, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22C%22%7D, %7B%22tick%22: 897, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22B%22%7D, %7B%22tick%22: 897, %22bg_port_icon%22: %224%22, %22bot_icon%22:
+  %22A%22%7D%5D%7D%5D%7D

@@ -1,0 +1,13 @@
+@@ -17680,18 +17680,18 @@
+ tick%22: 4
+-49
++50
+ , %22graph
+@@ -124840,24 +124840,217 @@
+ %22num_coins%22:
++ 12%7D, %7B%22tick%22: 450, %22bot_icon%22: %22C%22, %22num_coins%22: 0%7D, %7B%22tick%22: 450, %22bot_icon%22: %22B%22, %22num_coins%22: 3%7D, %7B%22tick%22: 450, %22bot_icon%22: %22A%22, %22num_coins%22: 5%7D, %7B%22tick%22: 450, %22bot_icon%22: %22D%22, %22num_coins%22:
+  12%7D%5D%7D, %7B%22id
+@@ -220167,21 +220167,233 @@
+  %22bot_icon%22:
++ %22A%22%7D, %7B%22tick%22: 450, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22C%22%7D, %7B%22tick%22: 450, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22B%22%7D, %7B%22tick%22: 450, %22bg_port_icon%22: %224%22, %22bot_icon%22: %22D%22%7D, %7B%22tick%22: 450, %22bg_port_icon%22: %224%22, %22bot_icon%22:
+  %22A%22%7D%5D%7D%5D%7D
