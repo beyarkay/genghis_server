@@ -250,7 +250,6 @@ function create_graph(div_id, graph, game) {
         "#e29371"]
 
     // set the dimensions and margins of the graph
-    // console.log(graph)
     const tick_width = 10
     const margin = {top: 10, right: 10, bottom: 40, left: 40};
     const width = game.tick * tick_width;
@@ -269,7 +268,6 @@ function create_graph(div_id, graph, game) {
     for (let i = 0; i < graph.data.length; i++) {
         per_series_data[unique_series.indexOf(graph.data[i][graph.series_key])].push(graph.data[i]);
     }
-    console.log(per_series_data);
 
     // append the svg object to the body of the page
     d3.select('#' + div_id).selectAll("svg").remove();
@@ -709,6 +707,7 @@ export function create_bg_card(div_id, game) {
     div.innerHTML = "";
     let pure_g = document.createElement("div");
     pure_g.classList.add('pure-g')
+    pure_g.setAttribute('id', `bg-card-pure-g`);
     div.appendChild(pure_g);
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
@@ -717,6 +716,35 @@ export function create_bg_card(div_id, game) {
         pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
         pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
         pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        pure_u.setAttribute('id', `bg-card-pure-u-${i+1}`);
+        pure_u.addEventListener('click', (e) => {
+            // Re-order the game battlegrounds, then re-draw the whole thing
+            let removed = game['battlegrounds'].splice(i, 1)[0];
+            game['battlegrounds'].unshift(removed);
+            create_bg_card(div_id, game)
+
+            // // When a battleground is clicked, move it the top of the list
+            // // Modify the DOM
+            // let container = document.getElementById('bg-card-pure-g')
+            // let old_child = document.getElementById(`bg-card-pure-u-${i+1}`);
+            // container.removeChild(old_child);
+            // container.prepend(old_child);
+            // let pure_classes = [
+            //     'pure-u-lg-6-24', 'pure-u-lg-3-24',
+            //     'pure-u-md-8-24', 'pure-u-md-4-24',
+            //     'pure-u-sm-12-24', 'pure-u-sm-6-24',
+            //     'pure-u-1-1', 'pure-u-12-24'
+            // ];
+            //
+            // for (let j = 0; j < game['battlegrounds'].length; j++) {
+            //     let unit = document.getElementById(`bg-card-pure-u-${game['battlegrounds'][j]['port_icon']}`)
+            //     unit.classList.remove(...pure_classes);
+            //     unit.classList.add(j < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+            //     unit.classList.add(j < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+            //     unit.classList.add(j < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+            //     unit.classList.add(j < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+            // }
+        });
         pure_g.appendChild(pure_u);
 
         let bg_title = document.createElement("h3");
@@ -736,16 +764,6 @@ export function create_bg_card(div_id, game) {
         outer_box.appendChild(inner_box);
 
         create_battleground(`d3-bg-${i}`, curr_bg, game)
-
-        //     let svg = d3.select(`#d3-bg-${i}`).append("svg")
-        //     svg.attr('width', '100%')
-        //         .attr('height', '100%')
-        //         .append('rect')
-        //         .attr('width', '100%')
-        //         .attr('height', '100%')
-        //         .attr('fill', `hsl(${i * 20}, 90%, 60%)`);
-        // }
-
     }
 }
 

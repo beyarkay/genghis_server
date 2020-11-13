@@ -23,12 +23,12 @@
 <!--Genghis Header-->
 <div class="pure-g">
     <div class="pure-u-1-1">
-            <div style="text-align: center;">
-                <a class="silent" href="./index.html">
-                    <h1>Genghis</h1>
-                    <h4>Bot Battle System</h4>
-                </a>
-            </div>
+        <div style="text-align: center;">
+            <a class="silent" href="./index.html">
+                <h1>Genghis</h1>
+                <h4>Bot Battle System</h4>
+            </a>
+        </div>
     </div>
 </div>
 <!--Live now Card-->
@@ -38,9 +38,9 @@
             <!--            Group for the left list-->
             <div class="pure-g">
                 <div class="pure-u-8-24">
-                    <h2>Live now</h2>
+                    <h2>Games:</h2>
                     <ul id="games_list">
-                        <li>No Games Live Right Now</li>
+                        <li>No Games</li>
                     </ul>
                 </div>
                 <!--                Group for the RHS preview-->
@@ -120,20 +120,24 @@
             // Update the list of games
             let ul = document.getElementById("games_list");
             ul.innerHTML = "";
-            // Attempt to get the files for the bots / battlegrounds
-            let selected_game_path;
             data['games'].sort((a, b) => a['game_dir'] > b['game_dir'] ? -1 : 1)
             for (let i = 0; i < data['games'].length; i++) {
+                if (i > 10) {
+                    let li = document.createElement("li");
+                    // let a = document.createElement("a");
+                    li.innerHTML = '...';
+                    // li.appendChild(a);
+                    ul.appendChild(li);
+                    break;
+                }
                 let game = data['games'][i];
                 let li = document.createElement("li");
                 let a = document.createElement("a");
                 a.setAttribute("href", "www/follow.html?game=" + game['game_dir']);
                 a.innerHTML = game['game_dir'].replace('games/', '');
+                a.style.color = i === 0 ? "#b30c0c" : "#a0a0a0";
                 li.appendChild(a);
                 ul.appendChild(li);
-                selected_game_path = game['game_dir'];
-                // TODO Show only the live battles, instead of just the most recent one
-                break;
             }
             // draw_coins_per_bot('cpb_plot', selected_game_path);
         }

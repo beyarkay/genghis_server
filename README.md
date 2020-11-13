@@ -7,30 +7,21 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_server) to get star
 
 ## TODOs
 ### Important for getting people play-testing
-1. FRONTEND: Get things synchronous properly
-2. FRONTEND: Update D3 plots, don't recreate D3 plots
-3. FRONTEND: Get a live badge working
-4. BACK-END: Get a schedule of games going (Maybe one game every 3 hours?)
-6. BACK-END: Something's wrong with the attacking code. The graphs look like something is funky
+1. Get some instructions for making a bot going
+6. BACK-END: FIXED? Something's wrong with the attacking code. The graphs look like something is funky
+7. BACK-END: actually go through the steps and try make a *good* bot
+
 
 ### Performance
-* TODO Get synchronous Server updates working, so you get 'push' notifications on the website client
 * TODO instead of re-creating the svg files, just update them with new data
 
 ### Mobile
-* TODO Doesn't work with the long game names
-* TODO Battleground / graphs don't react properly to the thin format
 
 ### UI/UX
+* TODO Clicking on a plot brings it to the front
 * TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
-* TODO Add in all the hyperlinks to bots / battlegrounds
 * TODO Add in hover info
 * TODO Dark mode
-
-### Features
-* TODO able to follow either: battleground, bot, or whoever's turn it is at the moment
-* TODO Enable the LIVE NOW dialogue to be accurate somehow
-* TODO Get games going regularly with 
 
 ### Nice to have
 * TODO Allow NN training
