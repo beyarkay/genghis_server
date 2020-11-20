@@ -777,26 +777,42 @@ class Client:
         self.url = url
         self.abbreviations = abbreviations[:]
         r = requests.get(self.url + "/config.json")
-        assert r.ok, self.url + "/config.json\n" + r.text
+        # TODO move bot validity checking to the client side setup / allow feedback to the client
+        assert r.ok, "Attempt to get config.json at path {} failed with error:\n{}".format(
+                self.url + "/config.json", r.text
+                )
         self.bots = []
         json_result = r.json()
         for item in json_result['bots']:
             path = self.url + '/' + item['path']
             r = requests.get(path)
-            assert r.ok, path + r.text
-            self.bots.append(Bot(
-                game_dir, self.username, item['path'],
-                self.url + '/' + item['path'], item['name'],
-                json_result['abbreviations']
-            ))
+            if not r.ok:
+                # TODO move bot validity checking to the client side setup / allow feedback to the client
+                print("Attempt to get bot at path {} failed with error:\n{}".format(
+                    path,
+                    r.text
+                ))
+            else:
+                self.bots.append(Bot(
+                    game_dir, self.username, item['path'],
+                    self.url + '/' + item['path'], item['name'],
+                    json_result['abbreviations']
+                ))
+        assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
 
         self.battlegrounds = []
         for item in json_result['battlegrounds']:
             path = self.url + '/' + item['path']
             r = requests.get(path)
-            assert r.ok, path + r.text
-            self.battlegrounds.append(Battleground(
-                game_dir, self.username,
-                item['path'], self.url + '/' + item['path'],
-                item['name'],
-            ))
+            if not r.ok:
+                print("Attempt to get battleground at path {} failed with error:\n{}".format(
+                    path,
+                    r.text
+                ))
+            else:
+                self.battlegrounds.append(Battleground(
+                    game_dir, self.username,
+                    item['path'], self.url + '/' + item['path'],
+                    item['name'],
+                ))
+        assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)

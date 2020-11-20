@@ -23,9 +23,10 @@ def main():
     """
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
-
-    need_permissions = [
+    need_777 = [
         'server_state.json',
+        ]
+    need_permissions = [
         'index.html',
         'www',
         'www/follow.html',
@@ -36,6 +37,9 @@ def main():
         'get_gamestate.php',
     ]
     for f in need_permissions:
+        os.chmod(f, 0o777)
+
+    for f in need_permissions:
         os.chmod(f, 0o755)
     clients = []
     # Create the game directory
@@ -43,20 +47,26 @@ def main():
     game = util.Game(os.path.join("games", iso_str))
 
     for client_obj in server_state['clients']:
-        clients.append(util.Client(
-            client_obj['username'],
-            client_obj['url'],
-            client_obj['abbreviations'],
-            game.game_dir
-        ))
+        try:
+            c = util.Client(
+                client_obj['username'],
+                client_obj['url'],
+                client_obj['abbreviations'],
+                game.game_dir
+            )
+            clients.append(c)
+            # Add in the bots to the game
+            for bot in clients[-1].bots:
+                game.add_bot(bot)
 
-        # Add in the battlegrounds to the game
-        for battleground in clients[-1].battlegrounds:
-            game.add_battleground(battleground)
+            # Add in the battlegrounds to the game
+            for battleground in clients[-1].battlegrounds:
+                game.add_battleground(battleground)
+        except:
+            print("Client failed to build, ommiting client at url {} from the game".format(client_obj['url']))
 
-        # Add in the bots to the game
-        for bot in clients[-1].bots:
-            game.add_bot(bot)
+
+
 
     game.init_game()
 
