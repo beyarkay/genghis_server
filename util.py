@@ -241,7 +241,6 @@ class Game:
             print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.to_dict(), indent=2)))
 
     def init_game(self):
-
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
@@ -318,6 +317,9 @@ class Game:
         # instead of the placeholder icons
         for battleground in self.battlegrounds:
             battleground.init_bg_map(self.port_graph, self.battlegrounds)
+        print("Initialising a new game")
+        print("Bots:\n {}".format('\n '.join(["Name: {:<30} username: {:<20} icon: {}, url: {}".format(bot.name, bot.username, bot.bot_icon, bot.bot_url) for bot in self.bots])))
+        print("Battlegrounds:\n {}".format('\n '.join(["Name: {:<30} username: {:<15}icon: {}, url: {}".format(bg.name, bg.username, bg.port_icon, bg.battleground_url) for bg in self.battlegrounds])))
 
         # Log the graph network to a json file for graphing
         with open(os.path.join(self.game_dir, "port_graph.json"), "w+") as graphfile:

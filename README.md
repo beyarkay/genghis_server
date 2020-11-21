@@ -11,6 +11,7 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 6. BACK-END: FIXED? Something's wrong with the attacking code. The graphs look like something is funky
 7. BACK-END: actually go through the steps and try make a *good* bot
 
+Users don't bother reading the full game timestamp. where possible, abbreviate it on the front end
 Need to provide details about which bot is which, and how your bot is doing
 Add in some error checking for step 5
 Add in healing zones for bgs,  where bots can heal quickly

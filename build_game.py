@@ -36,7 +36,7 @@ def main():
         'register_client.php',
         'get_gamestate.php',
     ]
-    for f in need_permissions:
+    for f in need_777:
         os.chmod(f, 0o777)
 
     for f in need_permissions:
