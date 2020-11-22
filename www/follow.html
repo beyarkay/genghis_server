@@ -33,9 +33,19 @@
             </a>
         </div>
     </div>
+    <div class="pure-u-1-1">
+        <div class="shadow">
+            <h4>Game info</h4>
+            <ul id="basic_info">
+            </ul>
+        </div>
+    </div>
     <!-- Battleground Card-->
     <div class="pure-u-1-1">
         <div class="shadow" id="bg-card">
+            <p>
+            Genghis is Loading...
+            </p>
             <!--            This div populated by JavaScript-->
         </div>
     </div>
@@ -72,43 +82,66 @@
         create_bg_card('bg-card', game);
         create_graph_card('graphs-card', game);
 
-        setInterval(() => {
-            $.ajax({
-                url: "../get_gamestate.php",
-                type: 'post',
-                dataType: 'text',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    last_seen_tick: game.tick,
-                    game_id: game_param.replace('games/', '')
-                }),
-                success: (data, status, xhr) => {
-                    if (data.includes('<?php')){
-                        return
+        let url = "../sse.php?last_seen_tick=" + game.tick + "&game_id=" + game_param.replace('games/', '');
+        console.log(url)
+        var evtSource = new EventSource(url);
+        console.log(evtSource.url);
+        let dmp = new diff_match_patch();
+
+        evtSource.onopen = function() {
+            console.log("Connection to server opened.");
+        };
+
+        evtSource.onmessage = function(e) {
+           console.log("message: " + e.data);
+        };
+
+        evtSource.onerror = function() {
+            console.log("EventSource failed.");
+        };
+
+        evtSource.addEventListener("patch", function(e) {
+            let patch = decodeURI(e.data.replace(/\\ndata: /gm, "%0A"));
+            let sub_patches = dmp.patch_fromText(patch);
+            console.log(sub_patches.length + " patches recieved")
+            game_str = dmp.patch_apply(sub_patches, game_str)[0];
+            try {
+                game = JSON.parse(game_str);
+                let ul = document.getElementById("basic_info");
+                let move_string = "";
+                game['bots'].forEach((b) => {
+                    if (game['moving'] === b.bot_icon) {
+                        move_string += "<b>" + b.bot_icon + "("+ b.username +")" + "</b>  "; 
+                        console.log("Bot " + b.bot_icon + " ("+b.username+") is moving");
+                        console.log(b.move_dict);
+                        console.log(b.stdout);
+                        console.log(b.stderr);
+                    } else {
+                        move_string += "" + b.bot_icon + "("+ b.username +")" + "  "; 
                     }
-                    let patch_strings = data.split('===---===');
-                    let dmp = new diff_match_patch();
-                    let patches = [];
-                    for (let i = 1; i < patch_strings.length; i++) {
-                        let sub_patches = dmp.patch_fromText(decodeURI(patch_strings[i]));
-                        sub_patches.forEach((p) => {
-                            patches.push(p);
-                        })
-                    }
-                    game_str = dmp.patch_apply(patches, game_str)[0];
-                    try {
-                        game = JSON.parse(game_str);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                    create_bg_card('bg-card', game);
-                    create_graph_card('graphs-card', game);
+                })
+
+                ul.innerHTML = "<li>Bots: " + move_string + "</li>";
+                const total_ticks = 100 * game['bots'].length;
+                const perc_ticks = Math.floor(100 * game['tick'] / total_ticks);
+                ul.innerHTML += "<li>Game Tick: " + (1 + game['tick'] )+" out of "+ total_ticks + " (" + perc_ticks + "%)" + "</li>";
+                
+                if (game['continues'] && game['continues'] === true){
+                    //create_bg_card('bg-card', game);
+                    //create_graph_card('graphs-card', game);
+                } else {
+                    evtSource.close();
+                    let ul = document.getElementById("basic_info");
+                    ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server'>the Genghis homepage</a> to view other games</li>"
+
                 }
-            });
-        }, 500);
+            } catch (e) {
+                console.log(e);
+            }
+        }, false);
     });
 
-
+// TODO add error message to user when th json game file doesn't load properly
 </script>
 </body>
 </html>

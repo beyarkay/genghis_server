@@ -38,8 +38,10 @@ class Game:
         self.bot_icons = []
         self.port_icons = []
         self.iteration = 0
-        self.turn_time = 0.05
         self.tick = 0
+        self.turn_time = 0.05
+        self.continues = True 
+        self.moving = None
         self.graphs = [{
             'id': 'events',
             'title': 'Game-Wide Events',
@@ -90,7 +92,9 @@ class Game:
         d['bot_icons'] = self.bot_icons
         d['port_icons'] = self.port_icons
         d['iteration'] = self.iteration
+        d['continues'] = self.continues
         d['turn_time'] = self.turn_time
+        d['moving'] = self.moving
         d['tick'] = self.tick
         d['graphs'] = self.graphs
         return d
@@ -317,6 +321,7 @@ class Game:
         # instead of the placeholder icons
         for battleground in self.battlegrounds:
             battleground.init_bg_map(self.port_graph, self.battlegrounds)
+        self.continues = True
         print("Initialising a new game")
         print("Bots:\n {}".format('\n '.join(["Name: {:<30} username: {:<20} icon: {}, url: {}".format(bot.name, bot.username, bot.bot_icon, bot.bot_url) for bot in self.bots])))
         print("Battlegrounds:\n {}".format('\n '.join(["Name: {:<30} username: {:<15}icon: {}, url: {}".format(bg.name, bg.username, bg.port_icon, bg.battleground_url) for bg in self.battlegrounds])))
@@ -496,7 +501,7 @@ class Bot:
             attacker_icon = curr_bg.get_cell(bot_loc, '')
             print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
-            is_hit = random.random() < 0.5
+            is_hit = True
             dropped = ''
             dropped_on = ''
             #  check that there's actually a bot at the defending location

@@ -6,33 +6,41 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## TODOs
-### Important for getting people play-testing
-1. Get some instructions for making a bot going
-6. BACK-END: FIXED? Something's wrong with the attacking code. The graphs look like something is funky
-7. BACK-END: actually go through the steps and try make a *good* bot
+* TODO instead of re-creating the D3 files, just update them with new data
+* TODO When the game ends, add a marker so that the client stops requesting.
+* TODO Add in some error checking for step 5 in the introduction
 
-Users don't bother reading the full game timestamp. where possible, abbreviate it on the front end
-Need to provide details about which bot is which, and how your bot is doing
-Add in some error checking for step 5
-Add in healing zones for bgs,  where bots can heal quickly
-Add in health points for bots
-maybe when a bot reaches 0hp it respawns with no coins? or maybe it just dies. Death is a good ultimatum, but fewer bots means fewer interactions
-think about genghis server as a game engine that runs arbitrary games, and split the arbitrary game logic apart from the game engine logic
-Games end either when there are not bots left or when the timer runs outm
-Add in an explanation fro people who haven't setup nightmare before at all
-Add in an explanation of what genghis is
+### Gameplay
+* TODO Bots have health points.
+* TODO attacking a bot decreases it's health points.
+* TODO A bot with 0hp is removed from the game
+* TODO Games end either when there are no bots left or when the timer runs out
+* TODO Bots can spend coins at certain points in the map in order to heal
+* TODO more coins will periodically spawn in throughout the game, on random bgs
+
+### New Player Welcoming
+* TODO Add in an explanation of what genghis is
+* TODO Add in an explanation fro people who haven't setup nightmare before at all
+
+
+### Development
+* TODO add in some way of the user's starting up a game at will, with custom bgs, bots, etc
 
 ### Performance
-* TODO instead of re-creating the svg files, just update them with new data
 
-### Mobile
+### brk bot
+* Fix the fast A* algorithm
 
 ### UI/UX
-* TODO Clicking on a plot brings it to the front
+* TODO flip the graph direction, so that the past is to the left
 * TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
+* TODO add in a health-points graph
+* TODO add in a port-network graph
+* TODO Clicking on a plot brings it to the front
 * TODO Add in hover info
 * TODO Dark mode
 
 ### Nice to have
-* TODO Allow NN training
+* TODO Users don't bother reading the full game timestamp. where possible, abbreviate it on the front end
+* TODO Better support for NN training 
 * TODO Make a client version of the monitoring system

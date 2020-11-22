@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import time
 import traceback
+import signal
 
 import requests
 import sys
@@ -19,6 +20,16 @@ sys.path.append("/home/k/knxboy001/public_html/genghis_server")
 import util
 
 def main():
+    def signal_handler(sig, frame):
+        print('Quitting Genghis...')
+        try:
+            game.continues = False
+            game.log_state(diff_only=True)
+        except:
+            pass
+        sys.exit(1)
+ 
+    signal.signal(signal.SIGINT, signal_handler)
     # Read in the Game object from game.pickle
     with open("game.pickle", "rb") as gamefile:
         game = pickle.load(gamefile)
@@ -27,7 +38,6 @@ def main():
     # Start stepping through the bots
     while game_continues(game):
         print("Game {}, iteration {}".format(os.getcwd(), game.iteration))
-       # game.print_logs()
         step(game)
         game.iteration += 1
 
@@ -35,6 +45,7 @@ def main():
 def step(game):
     # For each bot:
     for bot in game.bots:
+        game.moving = bot.bot_icon
         # TODO add more sophisticated waiting so that longer bots don't always get longer turns
         time.sleep(game.turn_time)
         # pickle the current Game object for the bot to use
@@ -63,15 +74,15 @@ def step(game):
                 stderr=subprocess.PIPE,
                 universal_newlines=True
             )
-            os.chdir(cwd)
-            if result.returncode != 0:
-                print("Error running bot, stderr='{}'".format(result.stderr))
-
             bot.stdout = result.stdout.strip()
             bot.stderr = result.stderr.strip()
+            os.chdir(cwd)
+            if result.returncode != 0:
+                print("Error running {}({}):\n{}".format(bot.bot_icon, bot.username, result.stderr.replace("\n", "\n\t\t")))
+
             if bot.stdout:
                 print("Bot {} says: '{}'".format(bot.bot_icon, bot.stdout))
-            
+
             with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
                 bot_move = json.load(move_file)
         except Exception as e:
@@ -90,7 +101,10 @@ def step(game):
         game.tick += 1
 
 def game_continues(game):
-    return game.tick < len(game.bots) * 100
+    game.continues = game.tick < len(game.bots) * 100
+    if not game.continues:
+        game.log_state(diff_only=True)
+    return game.continues
 
 if __name__ == "__main__":
     main()

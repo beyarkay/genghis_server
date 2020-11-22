@@ -136,7 +136,7 @@
                 let li = document.createElement("li");
                 let a = document.createElement("a");
                 a.setAttribute("href", "www/follow.html?game=" + game['game_dir']);
-                a.innerHTML = game['game_dir'].replace('games/', '');
+                a.innerHTML = "Game started on " + game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
                 a.style.color = i === 0 ? "#b30c0c" : "#a0a0a0";
                 li.appendChild(a);
                 ul.appendChild(li);

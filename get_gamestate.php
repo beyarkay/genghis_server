@@ -15,11 +15,9 @@ $last_seen_tick = (int)$decoded_params['last_seen_tick'];
 $game_id = $decoded_params['game_id'];
 
 // Get the current game tick
-//echo "getting file games/$game_id/game.json ....<br>";
 $game_json = file_get_contents("games/$game_id/game.json");
 $game_obj = json_decode($game_json, true);
 $curr_game_tick = (int)$game_obj['tick'];
-//echo "Curr game tick is $curr_game_tick<br><br>";
 
 // Calculate which change files need to be sent
 for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
@@ -28,16 +26,5 @@ for ($from = $last_seen_tick; $from < $curr_game_tick; $from ++) {
     echo "===---===";
     $contents = file_get_contents("games/${game_id}/patch_${from}_${to}.txt");
     echo $contents;
-    //echo "<br>";
-
 }
-
-// Package all the change files together into one file
-
-
-// Actually send that one file back to the client
-
-
-
-
 ?>

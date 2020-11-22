@@ -709,6 +709,9 @@ export function create_bg_card(div_id, game) {
     pure_g.classList.add('pure-g')
     pure_g.setAttribute('id', `bg-card-pure-g`);
     div.appendChild(pure_g);
+    game['battlegrounds'].sort((a, b) => {
+        return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+    })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
         let pure_u = document.createElement("div");
@@ -717,34 +720,12 @@ export function create_bg_card(div_id, game) {
         pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
         pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
         pure_u.setAttribute('id', `bg-card-pure-u-${i+1}`);
-        pure_u.addEventListener('click', (e) => {
-            // Re-order the game battlegrounds, then re-draw the whole thing
-            let removed = game['battlegrounds'].splice(i, 1)[0];
-            game['battlegrounds'].unshift(removed);
-            create_bg_card(div_id, game)
-
-            // // When a battleground is clicked, move it the top of the list
-            // // Modify the DOM
-            // let container = document.getElementById('bg-card-pure-g')
-            // let old_child = document.getElementById(`bg-card-pure-u-${i+1}`);
-            // container.removeChild(old_child);
-            // container.prepend(old_child);
-            // let pure_classes = [
-            //     'pure-u-lg-6-24', 'pure-u-lg-3-24',
-            //     'pure-u-md-8-24', 'pure-u-md-4-24',
-            //     'pure-u-sm-12-24', 'pure-u-sm-6-24',
-            //     'pure-u-1-1', 'pure-u-12-24'
-            // ];
-            //
-            // for (let j = 0; j < game['battlegrounds'].length; j++) {
-            //     let unit = document.getElementById(`bg-card-pure-u-${game['battlegrounds'][j]['port_icon']}`)
-            //     unit.classList.remove(...pure_classes);
-            //     unit.classList.add(j < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-            //     unit.classList.add(j < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-            //     unit.classList.add(j < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-            //     unit.classList.add(j < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
-            // }
-        });
+        //pure_u.addEventListener('click', (e) => {
+        //    // Re-order the game battlegrounds, then re-draw the whole thing
+        //    let removed = game['battlegrounds'].splice(i, 1)[0];
+        //    game['battlegrounds'].unshift(removed);
+        //    create_bg_card(div_id, game)
+        //});
         pure_g.appendChild(pure_u);
 
         let bg_title = document.createElement("h3");
