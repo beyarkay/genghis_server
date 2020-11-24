@@ -10,6 +10,7 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 * TODO When the game ends, add a marker so that the client stops requesting.
 * TODO Add in some error checking for step 5 in the introduction
 
+
 ### Gameplay
 * TODO Bots have health points.
 * TODO attacking a bot decreases it's health points.
@@ -21,7 +22,8 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 ### New Player Welcoming
 * TODO Add in an explanation of what genghis is
 * TODO Add in an explanation fro people who haven't setup nightmare before at all
-
+* Add workflow for developing with genghis
+* Maybe add something to explain new features?
 
 ### Development
 * TODO add in some way of the user's starting up a game at will, with custom bgs, bots, etc

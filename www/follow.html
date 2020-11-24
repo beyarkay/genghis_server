@@ -127,8 +127,8 @@
                 ul.innerHTML += "<li>Game Tick: " + (1 + game['tick'] )+" out of "+ total_ticks + " (" + perc_ticks + "%)" + "</li>";
                 
                 if (game['continues'] && game['continues'] === true){
-                    //create_bg_card('bg-card', game);
-                    //create_graph_card('graphs-card', game);
+                    create_bg_card('bg-card', game);
+                    create_graph_card('graphs-card', game);
                 } else {
                     evtSource.close();
                     let ul = document.getElementById("basic_info");
