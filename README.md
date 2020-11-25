@@ -5,8 +5,18 @@ students compete for resources, trade, and fight each other across
 multiple different battlegrounds. 
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
-## TODOs
+## TODO - Front End revamp
 * TODO instead of re-creating the D3 files, just update them with new data
+* TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
+* TODO make it more obvoius which game it is (and maybe simplify the game name?)
+* TODO make the schedule of games more obvoius
+* TODO flip the graph direction, so that the past is to the left
+* TODO add more info about connection (connected to game, loading data, data failed, etc)
+* Game Info: Starts out as being very general
+    * ie: order of turn, which bots are which icons
+    * Can click on a bot/bg to get more detailed info
+
+### TODO - unclassified
 * TODO When the game ends, add a marker so that the client stops requesting.
 * TODO Add in some error checking for step 5 in the introduction
 
@@ -34,12 +44,9 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 * Fix the fast A* algorithm
 
 ### UI/UX
-* TODO flip the graph direction, so that the past is to the left
-* TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
 * TODO add in a health-points graph
 * TODO add in a port-network graph
 * TODO Clicking on a plot brings it to the front
-* TODO Add in hover info
 * TODO Dark mode
 
 ### Nice to have

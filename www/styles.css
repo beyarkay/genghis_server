@@ -138,3 +138,18 @@ pre {
     overflow-y: hidden;
     white-space: nowrap;
 }
+
+div.tooltip {
+    display: inline-block;
+    position: absolute;
+    text-align: left;
+    /*width: 100px;*/
+    /*height: 28px;*/
+    padding: 2px 2px 2px 2px;
+    font-weight: lighter;
+    font: 14px sans-serif;
+    background: grey;
+    border: 0;
+    border-radius: 2px;
+    pointer-events: none;
+}

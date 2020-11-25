@@ -5,7 +5,8 @@
 
     <!--    Include the purecss.io CSS files for formatting and responsive design-->
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
-          integrity="sha384-4ZPLezkTZTsojWFhpdFembdzFudphhoOzIunR1wH6g1WQDzCAiPvDyitaK67mp0+" crossorigin="anonymous">
+          integrity="" crossorigin="anonymous">
+
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/base-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
@@ -44,7 +45,7 @@
     <div class="pure-u-1-1">
         <div class="shadow" id="bg-card">
             <p>
-            Genghis is Loading...
+                Genghis is Loading...
             </p>
             <!--            This div populated by JavaScript-->
         </div>
@@ -61,8 +62,7 @@
 <script type="module">
     import {
         get_param,
-        draw_bot_locs,
-        update_following,
+        update_bg_card,
         create_bg_card,
         create_graph_card
     } from './script.js';
@@ -88,19 +88,19 @@
         console.log(evtSource.url);
         let dmp = new diff_match_patch();
 
-        evtSource.onopen = function() {
+        evtSource.onopen = function () {
             console.log("Connection to server opened.");
         };
 
-        evtSource.onmessage = function(e) {
-           console.log("message: " + e.data);
+        evtSource.onmessage = function (e) {
+            console.log("message: " + e.data);
         };
 
-        evtSource.onerror = function() {
+        evtSource.onerror = function () {
             console.log("EventSource failed.");
         };
 
-        evtSource.addEventListener("patch", function(e) {
+        evtSource.addEventListener("patch", function (e) {
             let patch = decodeURI(e.data.replace(/\\ndata: /gm, "%0A"));
             let sub_patches = dmp.patch_fromText(patch);
             console.log(sub_patches.length + " patches recieved")
@@ -111,29 +111,29 @@
                 let move_string = "";
                 game['bots'].forEach((b) => {
                     if (game['moving'] === b.bot_icon) {
-                        move_string += "<b>" + b.bot_icon + "("+ b.username +")" + "</b>  "; 
-                        console.log("Bot " + b.bot_icon + " ("+b.username+") is moving");
+                        move_string += "<b>" + b.bot_icon + "(" + b.username + ")" + "</b>  ";
+                        console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving");
                         console.log(b.move_dict);
                         console.log(b.stdout);
                         console.log(b.stderr);
                     } else {
-                        move_string += "" + b.bot_icon + "("+ b.username +")" + "  "; 
+                        move_string += "" + b.bot_icon + "(" + b.username + ")" + "  ";
                     }
                 })
 
                 ul.innerHTML = "<li>Bots: " + move_string + "</li>";
                 const total_ticks = 100 * game['bots'].length;
                 const perc_ticks = Math.floor(100 * game['tick'] / total_ticks);
-                ul.innerHTML += "<li>Game Tick: " + (1 + game['tick'] )+" out of "+ total_ticks + " (" + perc_ticks + "%)" + "</li>";
-                
-                if (game['continues'] && game['continues'] === true){
-                    create_bg_card('bg-card', game);
+                ul.innerHTML += "<li>Game Tick: " + (1 + game['tick']) + " out of " + total_ticks + " (" + perc_ticks + "%)" + "</li>";
+
+                if (game['continues'] && game['continues'] === true) {
+                    // TODO make this more fluid, so that you don't skip from turn 100 through to turn 105 instantly.
+                    update_bg_card('bg-card', game);
                     create_graph_card('graphs-card', game);
                 } else {
                     evtSource.close();
                     let ul = document.getElementById("basic_info");
                     ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server'>the Genghis homepage</a> to view other games</li>"
-
                 }
             } catch (e) {
                 console.log(e);
@@ -141,7 +141,7 @@
         }, false);
     });
 
-// TODO add error message to user when th json game file doesn't load properly
+    // TODO add error message to user when th json game file doesn't load properly
 </script>
 </body>
 </html>
