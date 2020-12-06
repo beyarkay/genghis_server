@@ -225,7 +225,7 @@ function update_battleground(div_id, bg, game) {
     }
     const mouseover_from_cell = (cell) => {
         if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell) || game['coin_icons'].includes(cell)) {
-            return (d) => {
+            return (mouseEvent, d) => {
                 let tool_tip_content;
                 if (game['port_icons'].includes(cell)) {
                     tool_tip_content = `Port ${d.text_content} (${d.username})`;
@@ -238,9 +238,8 @@ function update_battleground(div_id, bg, game) {
                     .duration(200)
                     .style("opacity", .9);
                 d3.select(".tooltip").html(tool_tip_content)
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY) + "px");
-
+                    .style("left", (mouseEvent.pageX) + "px")
+                    .style("top", (mouseEvent.pageY) + "px");
                 d3.select(this).style("fill", "grey")
             }
         } else {
@@ -286,7 +285,6 @@ function update_battleground(div_id, bg, game) {
     let ypos = 1;
     for (let col = 0; col < bg['bg_map'].length; col++) {
         data.push([]);
-        //let row_str = "";
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
             data[col].push({
                 key: (game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${bg["port_icon"]}-${col}-${row}`,
@@ -299,15 +297,11 @@ function update_battleground(div_id, bg, game) {
                 text_content: bg['bg_map'][row][col],
                 text_fill: text_fill_from_cell(bg['bg_map'][row][col]),
                 text_font_weight: text_font_weight_from_cell(bg['bg_map'][row][col]),
-                // mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
-                // mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
+                mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
+                mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
                 username: username_from_cell(bg['bg_map'][row][col]),
             })
-            // row_str += data[col][row].key + " ";
             xpos += cell_width;
-        }
-        if (bg['bot_icons'].includes(game.moving)) {
-            //console.log(row_str);
         }
         xpos = 1;
         ypos += cell_height;
@@ -316,6 +310,32 @@ function update_battleground(div_id, bg, game) {
     const t = svg.transition()
         .duration(500);
 
+    svg.selectAll("rect")
+      .data(data.flat(), element => element.key)
+      .join(
+        enter => enter.append("rect")
+              .attr("x", d => d.rect_x)
+              .attr("y", d => d.rect_y)
+              .attr("width", d => d.rect_width)
+              .attr("height", d => d.rect_height)
+              .style("stroke", d => d.rect_stroke)
+              .style("fill", d => d.rect_fill)
+          .call(enter => enter.transition(t)
+            ),
+
+        update => update
+            .attr("x", d => d.rect_x)
+            .attr("y", d => d.rect_y)
+          .call(update => update.transition(t)
+            ),
+
+        exit => exit
+            .attr("opacity", "1")
+          .call(exit => exit.transition(t)
+            .attr("opacity", "0").remove()
+          )
+      );
+
     svg.selectAll("text")
       .data(data.flat(), element => element.key)
       .join(
@@ -323,12 +343,17 @@ function update_battleground(div_id, bg, game) {
             .attr("font-size", (1.2 * cell_width).toString() + 'px')
             .attr("text-anchor", 'middle')
             .attr("alignment-baseline", 'middle')
+            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
             .attr('fill', d => d.text_fill)
             .attr("font-weight", d => d.text_font_weight)
             .text(d => d.text_content)
-            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+            .on('mouseover', (mouseEvent, d) => d.mouseover(mouseEvent, d))
+            .on('mouseout', (mouseEvent, d) => d.mouseout(mouseEvent, d))
+            .on('mouseout', (d, i) => i.mouseout(i))
+            .attr("opacity", "0")
           .call(enter => enter.transition(t)
+              .attr("opacity", "1")
             ),
 
         update => update
@@ -343,41 +368,6 @@ function update_battleground(div_id, bg, game) {
             .attr("opacity", "0").remove()
           )
       );
-
-
-//    let text_select = svg.selectAll("text")
-//        .data(data.flat());
-//
-//    text_select.exit().remove();
-//
-//    text_select.enter().append("text")
-//        .attr('fill', "green")
-//        .merge(text_select)
-//        .attr('fill', "grey")
-//        .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-//        .attr("y", d => d.rect_y + 0.6 * d.rect_height)
-//        .text(d => d.text_content)
-
-//    merged_cell_groups.selectAll("rect")
-//        .attr("x", d => d.rect_x)
-//        .attr("y", d => d.rect_y)
-//        .attr("width", d => d.rect_width)
-//        .attr("height", d => d.rect_height)
-//        .style("stroke", d => d.rect_stroke)
-//        .style("fill", d => d.rect_fill)
-//        // .on('mouseover', d => d.mouseover(d))
-//        // .on('mouseout', d => d.mouseout(d))
-//    merged_cell_groups.selectAll("text")
-//        .attr("font-size", (1.2 * cell_width).toString() + 'px')
-//        .attr("text-anchor", 'middle')
-//        .attr("alignment-baseline", 'middle')
-//        .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-//        .attr("y", d => d.rect_y + 0.6 * d.rect_height)
-//        .attr('fill', d => d.text_fill)
-//        .attr("font-weight", d => d.text_font_weight)
-//        .text(d => d.text_content)
-//        // .on('mouseover', d => d.mouseover(d))
-//        // .on('mouseout', d => d.mouseout(d))
 }
 
 function init_graph() {
