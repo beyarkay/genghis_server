@@ -87,11 +87,11 @@ export function update_bg_card(div_id, game) {
         pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
 
         // Update the ith battleground
-        console.time(`update d3-bg-${i}`);
+        // console.time(`update d3-bg-${i}`);
         //if (curr_bg['bot_icons'].includes(game.moving)) {
             update_battleground(`d3-bg-${i}`, curr_bg, game)
         //}
-        console.timeEnd(`update d3-bg-${i}`);
+        //  console.timeEnd(`update d3-bg-${i}`);
     }
 }
 
@@ -168,7 +168,6 @@ function update_battleground(div_id, bg, game) {
     const cell_height = (height - margin.bottom - margin.top) / bg['bg_map'].length;
     const svg = d3.select('#' + div_id + " svg g")
     const div = d3.select(".tooltip")
-    // console.log("Updating bg #" + div_id);
     const text_fill_from_cell = (cell) => {
         if (cell === '#') {
             return "#626262";
@@ -287,10 +286,10 @@ function update_battleground(div_id, bg, game) {
     let ypos = 1;
     for (let col = 0; col < bg['bg_map'].length; col++) {
         data.push([]);
-        let row_str = "";
+        //let row_str = "";
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
             data[col].push({
-                key: "bg-" + bg["port_icon"] + "-" + ((game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${col}-${row}`),
+                key: (game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${bg["port_icon"]}-${col}-${row}`,
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
@@ -304,7 +303,7 @@ function update_battleground(div_id, bg, game) {
                 // mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
                 username: username_from_cell(bg['bg_map'][row][col]),
             })
-            row_str += data[col][row].key + " ";
+            // row_str += data[col][row].key + " ";
             xpos += cell_width;
         }
         if (bg['bot_icons'].includes(game.moving)) {
@@ -314,60 +313,71 @@ function update_battleground(div_id, bg, game) {
         ypos += cell_height;
     }
 
-    let selected_rows = svg.selectAll(".row")
-        .data(data)
-    selected_rows.enter().append("g")
-        .attr("class", "row")
-        .merge(selected_rows)
-    selected_rows.exit().remove()
-    // console.log("svg")
-    // console.log(svg)
-    // console.log("svg.selectAll('.row'")
-    // console.log(svg.selectAll(".row"))
-    // console.log("selected_rows")
-    // console.log(selected_rows)
-    
-    let selected_cells = selected_rows.selectAll(".cell")
-            .data(d => d, (element) => element.key)
-    
-    let new_cell_groups = selected_cells.enter().append("g")
-        .attr("class", "cell")
-    new_cell_groups.append("rect")    
-    new_cell_groups.append("text")    
-    console.log("new_cell_groups")
-    console.log(new_cell_groups)
-    
-    let merged_cell_groups = selected_cells.merge(selected_cells)
-    merged_cell_groups.selectAll("rect")
-//        .transition()
-//        .duration(50)
-        .attr("x", d => d.rect_x)
-        .attr("y", d => d.rect_y)
-        .attr("width", d => d.rect_width)
-        .attr("height", d => d.rect_height)
-        .style("stroke", d => d.rect_stroke)
-        .style("fill", d => d.rect_fill)
-        // .on('mouseover', d => d.mouseover(d))
-        // .on('mouseout', d => d.mouseout(d))
-    merged_cell_groups.selectAll("text")
-        .attr("font-size", (1.2 * cell_width).toString() + 'px')
-        .attr("text-anchor", 'middle')
-        .attr("alignment-baseline", 'middle')
-        .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-        .attr("y", d => d.rect_y + 0.6 * d.rect_height)
-        .attr('fill', d => d.text_fill)
-        .attr("font-weight", d => d.text_font_weight)
-        .text(d => d.text_content)
-        // .on('mouseover', d => d.mouseover(d))
-        // .on('mouseout', d => d.mouseout(d))
+    const t = svg.transition()
+        .duration(500);
 
-    selected_cells.exit().remove()    
-    // console.log("selected_rows.selectAll('.cell'")
-    // console.log(selected_rows.selectAll(".cell"))
-    // console.log("svg.selectAll('.cell'")
-    // console.log(svg.selectAll('.cell'))
-    
-    //svg.selectAll('.cell')
+    svg.selectAll("text")
+      .data(data.flat(), element => element.key)
+      .join(
+        enter => enter.append("text")
+            .attr("font-size", (1.2 * cell_width).toString() + 'px')
+            .attr("text-anchor", 'middle')
+            .attr("alignment-baseline", 'middle')
+            .attr('fill', d => d.text_fill)
+            .attr("font-weight", d => d.text_font_weight)
+            .text(d => d.text_content)
+            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+          .call(enter => enter.transition(t)
+            ),
+
+        update => update
+          .call(update => update.transition(t)
+            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+            ),
+
+        exit => exit
+            .attr("opacity", "1")
+          .call(exit => exit.transition(t)
+            .attr("opacity", "0").remove()
+          )
+      );
+
+
+//    let text_select = svg.selectAll("text")
+//        .data(data.flat());
+//
+//    text_select.exit().remove();
+//
+//    text_select.enter().append("text")
+//        .attr('fill', "green")
+//        .merge(text_select)
+//        .attr('fill', "grey")
+//        .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+//        .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+//        .text(d => d.text_content)
+
+//    merged_cell_groups.selectAll("rect")
+//        .attr("x", d => d.rect_x)
+//        .attr("y", d => d.rect_y)
+//        .attr("width", d => d.rect_width)
+//        .attr("height", d => d.rect_height)
+//        .style("stroke", d => d.rect_stroke)
+//        .style("fill", d => d.rect_fill)
+//        // .on('mouseover', d => d.mouseover(d))
+//        // .on('mouseout', d => d.mouseout(d))
+//    merged_cell_groups.selectAll("text")
+//        .attr("font-size", (1.2 * cell_width).toString() + 'px')
+//        .attr("text-anchor", 'middle')
+//        .attr("alignment-baseline", 'middle')
+//        .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+//        .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+//        .attr('fill', d => d.text_fill)
+//        .attr("font-weight", d => d.text_font_weight)
+//        .text(d => d.text_content)
+//        // .on('mouseover', d => d.mouseover(d))
+//        // .on('mouseout', d => d.mouseout(d))
 }
 
 function init_graph() {
