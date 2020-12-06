@@ -25,7 +25,7 @@ def main():
         server_state = json.load(server_state_file)
     need_777 = [
         'server_state.json',
-        ]
+    ]
     need_permissions = [
         'index.html',
         'www',
@@ -64,9 +64,6 @@ def main():
                 game.add_battleground(battleground)
         except:
             print("Client failed to build, ommiting client at url {} from the game".format(client_obj['url']))
-
-
-
 
     game.init_game()
 
