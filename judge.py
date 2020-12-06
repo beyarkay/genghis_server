@@ -36,16 +36,24 @@ def main():
     # Figure out a global order
     random.shuffle(game.bots)
     # Start stepping through the bots
+    print("Game {:<35}".format(game.game_dir))
     while game_continues(game):
-        print("Game {}, iteration {}".format(os.getcwd(), game.iteration))
         step(game)
         game.iteration += 1
-
 
 def step(game):
     # For each bot:
     for bot in game.bots:
+        debug_log = {
+            "bot_icon": "",
+            "start": "",
+            "stop": "",
+            "duration": "",
+            "move": "",
+            "has_errors": "",
+        }
         game.moving = bot.bot_icon
+        debug_log.bot_icon = bot.bot_icon
         # TODO add more sophisticated waiting so that longer bots don't always get longer turns
         time.sleep(game.turn_time)
         # pickle the current Game object for the bot to use
@@ -64,6 +72,7 @@ def step(game):
             os.chdir(bot.username)
 
             # Execute the bot's script
+            debug_log.start = datetime.datetime.now()
             result = subprocess.run(
                 ['python3', bot.bot_filename,
                  '/home/k/knxboy001/public_html/genghis_server',
@@ -74,14 +83,16 @@ def step(game):
                 stderr=subprocess.PIPE,
                 universal_newlines=True
             )
+            debug_log.stop = datetime.datetime.now()
             bot.stdout = result.stdout.strip()
             bot.stderr = result.stderr.strip()
+            debug_log.has_errors = bool(bot.stderr)
+            debug_log.ret_code = result.returncode
             os.chdir(cwd)
-            if result.returncode != 0:
-                print("Error running {}({}):\n{}".format(bot.bot_icon, bot.username, result.stderr.replace("\n", "\n\t\t")))
-
-            if bot.stdout:
-                print("Bot {} says: '{}'".format(bot.bot_icon, bot.stdout))
+            # if result.returncode != 0:
+            #     print("Error running {}({}):\n{}".format(bot.bot_icon, bot.username, result.stderr.replace("\n", "\n\t\t")))
+            # if bot.stdout:
+            #     print("Bot {} says: '{}'".format(bot.bot_icon, bot.stdout))
 
             with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
                 bot_move = json.load(move_file)
@@ -97,8 +108,18 @@ def step(game):
 
         # Move the bot in the gamestate
         bot.perform_action(bot_move, game)
+        debug_log.move = "act: {:<5}, dir: {:<2}".format(bot_move.action, bot_move.direction)
         game.log_state(diff_only=True)
         game.tick += 1
+        print("{} {} {} {} {} {} {}".format(
+            game.tick,
+            debug_log.bot_icon,
+            debug_log.start,
+            str(debug_log.stop - debug_log.start),
+            debug_log.stop,
+            debug_log.move,
+            debug_log.has_errors
+        ))
 
 def game_continues(game):
     game.continues = game.tick < len(game.bots) * 100
