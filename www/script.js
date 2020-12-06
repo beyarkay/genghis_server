@@ -79,7 +79,7 @@ export function update_bg_card(div_id, game) {
     })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
-        let pure_u = d3.select(`#bg-card-pure-u-${i + 1}`);
+        let pure_u = document.getElementById(`bg-card-pure-u-${i + 1}`);
         pure_u.className = ""
         pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
         pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
