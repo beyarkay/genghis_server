@@ -53,7 +53,7 @@ def step(game):
             "has_errors": "",
         }
         game.moving = bot.bot_icon
-        debug_log.bot_icon = bot.bot_icon
+        debug_log["bot_icon"] = bot.bot_icon
         # TODO add more sophisticated waiting so that longer bots don't always get longer turns
         time.sleep(game.turn_time)
         # pickle the current Game object for the bot to use
@@ -72,7 +72,7 @@ def step(game):
             os.chdir(bot.username)
 
             # Execute the bot's script
-            debug_log.start = datetime.datetime.now()
+            debug_log["start"] = datetime.datetime.now()
             result = subprocess.run(
                 ['python3', bot.bot_filename,
                  '/home/k/knxboy001/public_html/genghis_server',
@@ -83,11 +83,11 @@ def step(game):
                 stderr=subprocess.PIPE,
                 universal_newlines=True
             )
-            debug_log.stop = datetime.datetime.now()
+            debug_log["stop"] = datetime.datetime.now()
             bot.stdout = result.stdout.strip()
             bot.stderr = result.stderr.strip()
-            debug_log.has_errors = bool(bot.stderr)
-            debug_log.ret_code = result.returncode
+            debug_log["has_errors"] = bool(bot.stderr)
+            debug_log["ret_code"] = result.returncode
             os.chdir(cwd)
             # if result.returncode != 0:
             #     print("Error running {}({}):\n{}".format(bot.bot_icon, bot.username, result.stderr.replace("\n", "\n\t\t")))
@@ -97,9 +97,9 @@ def step(game):
             with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
                 bot_move = json.load(move_file)
         except Exception as e:
-            print('Bot move for {} was unsuccessful'.format(
+            print('\n\tBot move for {} was unsuccessful'.format(
                 os.path.join(bot.username, bot.bot_filename)
-            ))
+            ), end="\n\t")
             bot_move = {
                 'action': 'walk',
                 'direction': ''
@@ -108,17 +108,21 @@ def step(game):
 
         # Move the bot in the gamestate
         bot.perform_action(bot_move, game)
-        debug_log.move = "act: {:<5}, dir: {:<2}".format(bot_move.action, bot_move.direction)
+        debug_log["bot_username"] = bot.username
+        debug_log["move"] = " {:<5} : {:<2}".format(bot_move["action"], bot_move["direction"])
         game.log_state(diff_only=True)
         game.tick += 1
-        print("{} {} {} {} {} {} {}".format(
+        delta = debug_log["stop"] - debug_log["start"]
+        print("{:<3} | {:<1} | {:<15.15} | {:<12} | {:<6.6} | {:<12} | {:<20} | {:<10} | {:<3}".format(
             game.tick,
-            debug_log.bot_icon,
-            debug_log.start,
-            str(debug_log.stop - debug_log.start),
-            debug_log.stop,
-            debug_log.move,
-            debug_log.has_errors
+            debug_log["bot_icon"],
+            debug_log["bot_username"],
+            debug_log["start"].strftime("%H:%M:%S.%f"),
+            str(delta.seconds +  delta.microseconds / 1_000_000) + "s",
+            debug_log["stop"].strftime("%H:%M:%S.%f"),
+            debug_log["move"],
+            "Has errors" if debug_log["has_errors"] else "No errors",
+            debug_log["ret_code"]
         ))
 
 def game_continues(game):
