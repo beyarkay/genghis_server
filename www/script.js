@@ -85,33 +85,14 @@ export function update_bg_card(div_id, game) {
         pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
         pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
         pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
-        // //pure_u.addEventListener('click', (e) => {
-        // //    // Re-order the game battlegrounds, then re-draw the whole thing
-        // //    let removed = game['battlegrounds'].splice(i, 1)[0];
-        // //    game['battlegrounds'].unshift(removed);
-        // //    create_bg_card(div_id, game)
-        // //});
-        // pure_g.appendChild(pure_u);
-        //
-        // let bg_title = document.createElement("h3");
-        // bg_title.classList.add('bg-title');
-        // let width = curr_bg['bg_map'].length;
-        // let height = curr_bg['bg_map'][0].length;
-        // bg_title.innerHTML = `Battleground ${curr_bg['port_icon']}`;
-        // pure_u.appendChild(bg_title);
-        //
-        // let outer_box = document.createElement("div");
-        // outer_box.classList.add('square-box-outer');
-        // pure_u.appendChild(outer_box);
-        //
-        // let inner_box = document.createElement("div");
-        // inner_box.classList.add('square-box-inner');
-        // inner_box.setAttribute('id', `d3-bg-${i}`);
-        // outer_box.appendChild(inner_box);
 
-        update_battleground(`d3-bg-${i}`, curr_bg, game)
+        // Update the ith battleground
+        console.time(`update d3-bg-${i}`);
+        //if (curr_bg['bot_icons'].includes(game.moving)) {
+            update_battleground(`d3-bg-${i}`, curr_bg, game)
+        //}
+        console.timeEnd(`update d3-bg-${i}`);
     }
-
 }
 
 export function create_graph_card(div_id, game) {
@@ -152,7 +133,6 @@ export function create_graph_card(div_id, game) {
         //     .attr('height', '300px')
         //     .attr('fill', `hsl(${300 - i * 20}, 90%, 60%)`);
     }
-
 }
 
 function hue_from_icon(array, cell) {
@@ -180,6 +160,7 @@ function create_battleground(div_id, bg, game) {
 }
 
 function update_battleground(div_id, bg, game) {
+    // TODO Only update if the bg actually has changed
     const margin = {top: 2, right: 8, bottom: 2, left: 8};
     const width = document.getElementById(div_id).offsetWidth;
     const height = document.getElementById(div_id).offsetHeight;
@@ -187,7 +168,7 @@ function update_battleground(div_id, bg, game) {
     const cell_height = (height - margin.bottom - margin.top) / bg['bg_map'].length;
     const svg = d3.select('#' + div_id + " svg g")
     const div = d3.select(".tooltip")
-
+    // console.log("Updating bg #" + div_id);
     const text_fill_from_cell = (cell) => {
         if (cell === '#') {
             return "#626262";
@@ -267,7 +248,6 @@ function update_battleground(div_id, bg, game) {
             return (d) => {
             };
         }
-
     }
     const mouseout_from_cell = (cell) => {
         // if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell)) {
@@ -300,14 +280,17 @@ function update_battleground(div_id, bg, game) {
             return 'undefined'
         }
     }
+    
 
     let data = [];
     let xpos = 1;
     let ypos = 1;
     for (let col = 0; col < bg['bg_map'].length; col++) {
         data.push([]);
+        let row_str = "";
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
             data[col].push({
+                key: "bg-" + bg["port_icon"] + "-" + ((game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${col}-${row}`),
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
@@ -317,39 +300,56 @@ function update_battleground(div_id, bg, game) {
                 text_content: bg['bg_map'][row][col],
                 text_fill: text_fill_from_cell(bg['bg_map'][row][col]),
                 text_font_weight: text_font_weight_from_cell(bg['bg_map'][row][col]),
-                mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
-                mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
+                // mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
+                // mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
                 username: username_from_cell(bg['bg_map'][row][col]),
             })
+            row_str += data[col][row].key + " ";
             xpos += cell_width;
+        }
+        if (bg['bot_icons'].includes(game.moving)) {
+            //console.log(row_str);
         }
         xpos = 1;
         ypos += cell_height;
     }
 
-    let row_g = svg.selectAll(".row")
+    let selected_rows = svg.selectAll(".row")
         .data(data)
-        .enter().append("g")
-        .attr("class", "row");
-
-    row_g.selectAll(".cell")
-        .data(d => d)
-        .enter().append("g")
+    selected_rows.enter().append("g")
+        .attr("class", "row")
+        .merge(selected_rows)
+    selected_rows.exit().remove()
+    // console.log("svg")
+    // console.log(svg)
+    // console.log("svg.selectAll('.row'")
+    // console.log(svg.selectAll(".row"))
+    // console.log("selected_rows")
+    // console.log(selected_rows)
+    
+    let selected_cells = selected_rows.selectAll(".cell")
+            .data(d => d, (element) => element.key)
+    
+    let new_cell_groups = selected_cells.enter().append("g")
         .attr("class", "cell")
-
-    svg.selectAll('.cell')
-        .append("rect")
+    new_cell_groups.append("rect")    
+    new_cell_groups.append("text")    
+    console.log("new_cell_groups")
+    console.log(new_cell_groups)
+    
+    let merged_cell_groups = selected_cells.merge(selected_cells)
+    merged_cell_groups.selectAll("rect")
+//        .transition()
+//        .duration(50)
         .attr("x", d => d.rect_x)
         .attr("y", d => d.rect_y)
         .attr("width", d => d.rect_width)
         .attr("height", d => d.rect_height)
         .style("stroke", d => d.rect_stroke)
         .style("fill", d => d.rect_fill)
-        .on('mouseover', d => d.mouseover(d))
-        .on('mouseout', d => d.mouseout(d))
-
-    let text = svg.selectAll('.cell')
-        .append("text")
+        // .on('mouseover', d => d.mouseover(d))
+        // .on('mouseout', d => d.mouseout(d))
+    merged_cell_groups.selectAll("text")
         .attr("font-size", (1.2 * cell_width).toString() + 'px')
         .attr("text-anchor", 'middle')
         .attr("alignment-baseline", 'middle')
@@ -358,9 +358,16 @@ function update_battleground(div_id, bg, game) {
         .attr('fill', d => d.text_fill)
         .attr("font-weight", d => d.text_font_weight)
         .text(d => d.text_content)
-        .on('mouseover', d => d.mouseover(d))
-        .on('mouseout', d => d.mouseout(d))
+        // .on('mouseover', d => d.mouseover(d))
+        // .on('mouseout', d => d.mouseout(d))
 
+    selected_cells.exit().remove()    
+    // console.log("selected_rows.selectAll('.cell'")
+    // console.log(selected_rows.selectAll(".cell"))
+    // console.log("svg.selectAll('.cell'")
+    // console.log(svg.selectAll('.cell'))
+    
+    //svg.selectAll('.cell')
 }
 
 function init_graph() {
