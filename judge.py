@@ -83,28 +83,29 @@ def step(game):
                 stderr=subprocess.PIPE,
                 universal_newlines=True
             )
+            os.chdir(cwd)
             debug_log["stop"] = datetime.datetime.now()
             bot.stdout = result.stdout.strip()
             bot.stderr = result.stderr.strip()
             debug_log["has_errors"] = bool(bot.stderr)
             debug_log["ret_code"] = result.returncode
-            os.chdir(cwd)
-            # if result.returncode != 0:
-            #     print("Error running {}({}):\n{}".format(bot.bot_icon, bot.username, result.stderr.replace("\n", "\n\t\t")))
-            # if bot.stdout:
-            #     print("Bot {} says: '{}'".format(bot.bot_icon, bot.stdout))
 
             with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
                 bot_move = json.load(move_file)
         except Exception as e:
+            os.chdir(cwd)
+            debug_log["stop"] = datetime.datetime.now()
             print('\n\tBot move for {} was unsuccessful'.format(
                 os.path.join(bot.username, bot.bot_filename)
-            ), end="\n\t")
+            ))
             bot_move = {
                 'action': 'walk',
                 'direction': ''
             }
+            print("start traceback")
             traceback.print_exc()
+            print("end traceback")
+
 
         # Move the bot in the gamestate
         bot.perform_action(bot_move, game)
@@ -122,7 +123,7 @@ def step(game):
             debug_log["stop"].strftime("%H:%M:%S.%f"),
             debug_log["move"],
             "Has errors" if debug_log["has_errors"] else "No errors",
-            debug_log["ret_code"]
+            debug_log.get("ret_code", "")
         ))
 
 def game_continues(game):

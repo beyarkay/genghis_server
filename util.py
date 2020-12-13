@@ -79,6 +79,8 @@ class Game:
         if not server_state.get('games'):
             server_state['games'] = []
         server_state['games'].append(self.to_dict())
+        server_state['games'] = sorted(server_state['games'], key=lambda g: g['game_dir'])[-10:]
+
         with open('server_state.json', 'w+') as ss_file:
             json.dump(server_state, ss_file, indent=2)
 
@@ -144,11 +146,11 @@ class Game:
             game_dict = self.to_dict()
             new_game_str = json.dumps(game_dict)
 
-            if self.tick > 0:
+            try:
                 # Load up the old game.json file
                 with open('game.json', 'r') as old_game_json:
                     old_game_str = json.dumps(json.load(old_game_json))
-            else:
+            except FileNotFoundError:
                 old_game_str = ""
 
             # Calculate the patch required
@@ -322,9 +324,25 @@ class Game:
         for battleground in self.battlegrounds:
             battleground.init_bg_map(self.port_graph, self.battlegrounds)
         self.continues = True
-        print("Initialising a new game")
-        print("Bots:\n {}".format('\n '.join(["Name: {:<30} username: {:<20} icon: {}, url: {}".format(bot.name, bot.username, bot.bot_icon, bot.bot_url) for bot in self.bots])))
-        print("Battlegrounds:\n {}".format('\n '.join(["Name: {:<30} username: {:<15}icon: {}, url: {}".format(bg.name, bg.username, bg.port_icon, bg.battleground_url) for bg in self.battlegrounds])))
+        print('Battlegrounds:')
+        for bg in self.battlegrounds:
+            print("{:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
+                self.tick,
+                bg.port_icon,
+                bg.username,
+                bg.name,
+                bg.battleground_url
+            ))
+
+        print('Bots:')
+        for bot in self.bots:
+            print("{:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
+                self.tick,
+                bot.bot_icon,
+                bot.username,
+                bot.name,
+                bot.bot_url
+            ))
 
         # Log the graph network to a json file for graphing
         with open(os.path.join(self.game_dir, "port_graph.json"), "w+") as graphfile:

@@ -113,7 +113,7 @@
                 let move_string = "";
                 game['bots'].forEach((b) => {
                     if (game['moving'] === b.bot_icon) {
-                        console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving: " + b.move_dict + ", " + b.stdout + ", " + b.stderr);
+                        console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving: " + JSON.stringify(b.move_dict) + ", " + b.stdout + ", " + b.stderr);
                         move_string += "<b>" + b.bot_icon + "(" + b.username + ")" + "</b>  ";
                     } else {
                         move_string += "" + b.bot_icon + "(" + b.username + ")" + "  ";

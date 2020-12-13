@@ -6,6 +6,8 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## TODO - Front End revamp
+* TODO Add in a testing script for the developers
+    * TODO allow downloading of game.json
 * TODO instead of re-creating the D3 files, just update them with new data
 * TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
 * TODO make it more obvoius which game it is (and maybe simplify the game name?)

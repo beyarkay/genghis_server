@@ -229,8 +229,24 @@ function update_battleground(div_id, bg, game) {
                 let tool_tip_content;
                 if (game['port_icons'].includes(cell)) {
                     tool_tip_content = `Port ${d.text_content} (${d.username})`;
+
                 } else if (game['bot_icons'].includes(cell)) {
-                    tool_tip_content = `Bot ${d.text_content} (${d.username})`;
+                    let pos = [];
+                    for (let bgi = 0; bgi < game['battlegrounds']; bgi++){
+                        if (game['battlegrounds'][bgi]['bot_icons'].includes(cell)) {
+                            bg_map = game['battlegrounds'][bgi]['bg_map'];
+                            for (let r = 0; r < bg_map.length; r ++) {
+                                for (let c = 0; c < bg_map.length; c ++) {
+                                    if (bg_map[r][c] === cell) {
+                                        pos = [r, c];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tool_tip_content = `Bot ${d.text_content} (${d.username})\nLocation: (${pos[0]},${pos[1]})`;
                 } else if (game['coin_icons'].includes(cell)) {
                     tool_tip_content = `Coin ${d.text_content}`;
                 }
