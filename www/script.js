@@ -227,16 +227,15 @@ function update_battleground(div_id, bg, game) {
         if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell) || game['coin_icons'].includes(cell)) {
             return (mouseEvent, d) => {
                 let tool_tip_content;
-                if (game['port_icons'].includes(cell)) {
-                    tool_tip_content = `Port ${d.text_content} (${d.username})`;
-
-                } else if (game['bot_icons'].includes(cell)) {
-                    let pos = [];
-                    for (let bgi = 0; bgi < game['battlegrounds']; bgi++){
+                let pos = [];
+                let port_icon = '';
+                if (cell !== '' || cell !== '#') {
+                    for (let bgi = 0; bgi < game['battlegrounds'].length; bgi++){
                         if (game['battlegrounds'][bgi]['bot_icons'].includes(cell)) {
-                            bg_map = game['battlegrounds'][bgi]['bg_map'];
+                            port_icon = game['battlegrounds'][bgi]['port_icon'];
+                            let bg_map = game['battlegrounds'][bgi]['bg_map'];
                             for (let r = 0; r < bg_map.length; r ++) {
-                                for (let c = 0; c < bg_map.length; c ++) {
+                                for (let c = 0; c < bg_map[r].length; c ++) {
                                     if (bg_map[r][c] === cell) {
                                         pos = [r, c];
                                         break;
@@ -245,11 +244,16 @@ function update_battleground(div_id, bg, game) {
                             }
                         }
                     }
-
-                    tool_tip_content = `Bot ${d.text_content} (${d.username})\nLocation: (${pos[0]},${pos[1]})`;
-                } else if (game['coin_icons'].includes(cell)) {
-                    tool_tip_content = `Coin ${d.text_content}`;
                 }
+                if (game['port_icons'].includes(cell)) {
+                    tool_tip_content = `Port ${d.text_content} (${d.username})<br>`;
+
+                } else if (game['bot_icons'].includes(cell)) {
+                    tool_tip_content = `Bot ${d.text_content} (${d.username})<br>`;
+                } else if (game['coin_icons'].includes(cell)) {
+                    tool_tip_content = `Coin ${d.text_content}<br>`;
+                }
+                tool_tip_content += `Battleground ${d.map_port_icon} at (${d.map_row},${d.map_col})`;
                 d3.select(".tooltip").transition()
                     .duration(200)
                     .style("opacity", .9);
@@ -304,6 +308,9 @@ function update_battleground(div_id, bg, game) {
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
             data[col].push({
                 key: (game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${bg["port_icon"]}-${col}-${row}`,
+                map_port_icon: bg['port_icon'],
+                map_row: row,
+                map_col: col,
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
