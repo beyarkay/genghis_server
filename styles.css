@@ -1,0 +1,155 @@
+body {
+    margin: 1em;
+    font-family: sans-serif;
+    font-weight: lighter;
+    color: #181818;
+    line-height: 1.2;
+    background: #f5f5f5;
+}
+
+body.dark_mode {
+    color: #f5f5f5;
+    background: #181818;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    /*font-family: sans-serif;*/
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+p, ul, ol, li, a {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    font-weight: normal;
+    text-decoration: none;
+    color: #3e3e3e;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a.silent {
+    text-decoration: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+
+p {
+    color: #3e3e3e;
+}
+
+ul, ol {
+    padding-left: 20px;
+}
+
+
+li {
+    margin-top: 1em;
+}
+
+.chart-title {
+    padding-top: 8px;
+}
+
+.bg-title {
+    text-align: center;
+    padding-top: 8px;
+}
+
+code {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    max-width: 100%;
+    overflow: auto;
+    padding: 0.5em;
+    display: block;
+    word-wrap: break-word;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+
+}
+
+
+.shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    background: #ffffff;
+
+}
+
+#header-info {
+    border-style: none none none solid;
+    padding-left: 0.5em;
+    margin-left: 0.5em;
+    border-color: #808080;
+    border-width: thin;
+    vertical-align: middle;
+}
+
+pre {
+    white-space: pre-wrap; /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+
+}
+
+.axis text {
+    font-size: 15px;
+    fill: #000000;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3px;
+}
+
+.square-box-outer {
+    /*height: 0;*/
+    /*overflow: hidden;*/
+    padding-top: 100%;
+    position: relative;
+}
+
+.square-box-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.horizontal-scroll {
+    /*width: 530px;*/
+    /*height: 210px;*/
+    /*border: 13px solid #bed5cd;*/
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+div.tooltip {
+    display: inline-block;
+    position: absolute;
+    text-align: left;
+    /*width: 100px;*/
+    /*height: 28px;*/
+    padding: 2px 2px 2px 2px;
+    font-weight: lighter;
+    font: 14px sans-serif;
+    background: grey;
+    border: 0;
+    border-radius: 2px;
+    pointer-events: none;
+}

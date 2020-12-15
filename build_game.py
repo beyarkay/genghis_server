@@ -28,11 +28,10 @@ def main():
     ]
     need_permissions = [
         'index.html',
-        'www',
-        'www/follow.html',
-        'www/diff_match_patch.js',
-        'www/script.js',
-        'www/styles.css',
+        'follow.html',
+        'diff_match_patch.js',
+        'script.js',
+        'styles.css',
         'register_client.php',
         'get_gamestate.php',
     ]

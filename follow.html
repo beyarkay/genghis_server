@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!--    Include the purecss.io CSS files for formatting and responsive design-->
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
+          integrity="" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/base-min.css">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-min.css">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
+    <!--    Make sure the width is equal to the device's native width-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./styles.css" rel="stylesheet" type="text/css"/>
+
+    <!--    Get D3 for plotting-->
+    <script src="https://d3js.org/d3.v6.js"></script>
+
+    <!--    Get jQuery-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <title>Genghis</title>
+</head>
+<body>
+<div class="pure-g">
+    <!--Genghis Header Card-->
+    <div class="pure-u-1-1">
+        <div style="text-align: center;">
+            <a class="silent" href="index.html">
+                <h1>Genghis</h1>
+                <h4>Bot Battle System</h4>
+            </a>
+        </div>
+    </div>
+    <div class="pure-u-1-1">
+        <div class="shadow">
+            <h4>Game info</h4>
+            <ul id="basic_info">
+            </ul>
+        </div>
+    </div>
+    <!-- Battleground Card-->
+    <div class="pure-u-1-1">
+        <div class="shadow" id="bg-card">
+            <p>
+                Genghis is Loading...
+            </p>
+            <!--            This div populated by JavaScript-->
+        </div>
+    </div>
+    <!--Graphs Card-->
+    <div class="pure-u-1-1">
+        <div class="shadow horizontal-scroll" id="graphs-card">
+            <!--This div populated by JavaScript-->
+        </div>
+    </div>
+</div>
+
+<script src="diff_match_patch.js"></script>
+<script type="module">
+    import {
+        get_param,
+        update_bg_card,
+        create_bg_card,
+        create_graph_card
+    } from './script.js';
+
+    let game_param = get_param("game", "");
+    if (game_param === '') {
+        // Load up the homepage
+        window.location.href = 'index.html'
+    }
+    let game;
+    $.ajax({
+        url: game_param + "/game.json",
+        dataType: 'text'
+    }).done(game_str => {
+        game = JSON.parse(game_str);
+        // When the game json is loaded, add content to the battleground and graphs cards
+        create_bg_card('bg-card', game);
+        // create_graph_card('graphs-card', game);
+
+        let url = "sse.php?last_seen_tick=" + game.tick + "&game_id=" + game_param.replace('games/', '');
+        var evtSource = new EventSource(url);
+        let dmp = new diff_match_patch();
+
+        evtSource.onopen = function () {
+            console.log("Connection to Server side events established at " + evtSource.url);
+        };
+
+        evtSource.onmessage = function (e) {
+            // console.log("message: " + e.data);
+        };
+
+        evtSource.onerror = function () {
+            console.log("EventSource failed.");
+        };
+
+        // When a patch is received:
+        evtSource.addEventListener("patch", function (e) {
+            // Decode the patches string into a list of DMP patch objects
+            let patch = decodeURI(e.data.replace(/\\ndata: /gm, "%0A"));
+            let sub_patches = dmp.patch_fromText(patch);
+            // Construct a new game json string, although it may not be valid JSON
+            game_str = dmp.patch_apply(sub_patches, game_str)[0];
+            // Attempt to parse the newly patched game.json string and apply it to the game
+            try {
+                game = JSON.parse(game_str);
+                // Update the first card, which contains some general game information
+                let ul = document.getElementById("basic_info");
+                let move_string = "";
+                game['bots'].forEach((b) => {
+                    if (game['moving'] === b.bot_icon) {
+                        console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving: " + JSON.stringify(b.move_dict) + ", " + b.stdout + ", " + b.stderr);
+                        move_string += "<b>" + b.bot_icon + "(" + b.username + ")" + "</b>  ";
+                    } else {
+                        move_string += "" + b.bot_icon + "(" + b.username + ")" + "  ";
+                    }
+                })
+                ul.innerHTML = "<li>Bots: " + move_string + "</li>";
+                const total_ticks = 100 * game['bots'].length;
+                const perc_ticks = Math.floor(100 * game['tick'] / total_ticks);
+                ul.innerHTML += "<li>Game Tick: " + (1 + game['tick']) + " out of " + total_ticks + " (" + perc_ticks + "%)" + "</li>";
+
+                if (game['continues'] && game['continues'] === true) {
+                    // TODO make this more fluid, so that you don't skip from turn 100 through to turn 105 instantly.
+                    console.time("Update BG Card");
+                    update_bg_card('bg-card', game);
+                    console.timeEnd("Update BG Card");
+                    // create_graph_card('graphs-card', game);
+                } else {
+                    evtSource.close();
+                    let ul = document.getElementById("basic_info");
+                    ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server'>the Genghis homepage</a> to view other games</li>"
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }, false);
+    });
+
+    // TODO add error message to user when th json game file doesn't load properly
+</script>
+</body>
+</html>

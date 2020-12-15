@@ -352,7 +352,7 @@ class Game:
         with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
-        print("\n\nGame started at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/www/follow.html?game={}".format(
+        print("\n\nGame started at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/follow.html?game={}".format(
             self.game_dir
         ))
 
