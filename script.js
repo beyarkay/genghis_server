@@ -251,7 +251,9 @@ function update_battleground(div_id, bg, game) {
                     tool_tip_content += `Port ${d.text_content} (${d.username})<br>`;
 
                 } else if (game['bot_icons'].includes(cell)) {
+                    console.log(d)
                     tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Health: ${d.bot_data.health}/100<br>`;
                     tool_tip_content += `Coins: [ `;
                     for (let i = 0; i < d.bot_data.coins.length; i++) {
                         let coin = d.bot_data.coins[i];

@@ -102,6 +102,8 @@
 
         evtSource.onerror = function () {
             console.log("EventSource failed.");
+            let ul = document.getElementById("basic_info");
+            ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server'>the Genghis homepage</a> to view other games</li>"
         };
 
         // When a patch is received:
@@ -145,6 +147,10 @@
                 console.log(e);
             }
         }, false);
+    }).fail(() => {
+        let bg_card = document.getElementById("bg-card");
+        bg_card.innerHTML = `<p>Game load failed, visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server'>the Genghis homepage</a> to view other games</p>`;
+         
     });
 
     // TODO add error message to user when th json game file doesn't load properly

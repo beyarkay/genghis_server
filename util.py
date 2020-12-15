@@ -122,11 +122,12 @@ class Game:
             elif graph['id'] == 'bot_locs':
                 for bg in self.battlegrounds:
                     for bot in bg.bots:
-                        graph['data'].append({
-                            'tick': self.tick,
-                            'bg_port_icon': bg.port_icon,
-                            'bot_icon': bot.bot_icon,
-                        })
+                        if bot.health > 0:
+                            graph['data'].append({
+                                'tick': self.tick,
+                                'bg_port_icon': bg.port_icon,
+                                'bot_icon': bot.bot_icon,
+                            })
             # elif graph['id'] == 'cpb':
             #     pass
             # elif graph['id'] == 'cpb':
@@ -174,6 +175,7 @@ class Game:
 
         else:
             # DEPRECATED
+            print('doing deprecated things')
             for bg in self.battlegrounds:
                 # write out the visual representation of every bg map to a file
                 lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
@@ -237,14 +239,14 @@ class Game:
                 json.dump(self.to_dict(), game_file)
             os.chmod("game.json", 0o755)
 
-    def print_logs(self):
-        # print out the current state of every bg map to stdout
-        for bg in self.battlegrounds:
-            lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
-            print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines)))
-
-        for bot in self.bots:
-            print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.to_dict(), indent=2)))
+#     def print_logs(self):
+#         # print out the current state of every bg map to stdout
+#         for bg in self.battlegrounds:
+#             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
+#             print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines)))
+# 
+#         for bot in self.bots:
+#             print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.to_dict(), indent=2)))
 
     def init_game(self):
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
@@ -359,44 +361,50 @@ class Game:
 
 class Bot:
     def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations):
-        self.game_dir = game_dir
-        self.username = username
+        self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
+        self.attack_strength = 25
         self.bot_filename = bot_filename
+        self.bot_icon = ""
+        self.bot_url = bot_url
+        self.coin_icon = ""
+        self.coins = []  # an array of Coin objects
+        self.game_dir = game_dir
+        self.health = 100
+        self.move_dict = {}
+        self.name = name
+        self.stderr = ""
+        self.stdout = ""
+        self.username = username
         self.bot_path = os.path.join(self.game_dir, username, bot_filename)
+
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
             os.mkdir(os.path.join(self.game_dir, username))
-        self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
-        self.bot_url = bot_url
-        self.name = name
-        self.coin_icon = ""
-        self.bot_icon = ""
+
+        # Actually collect the bot
         r = requests.get(self.bot_url)
         assert r.ok, "request for {} not ok: {}".format(self.bot_url, r.text)
         # add in the bot file to the local system
         with open(self.bot_path, 'w+') as bot_file:
             bot_file.write(r.text)
-        # Give a stderr, stdout for debugging
-        self.stderr = ""
-        self.stdout = ""
-        self.move_dict = {}
-        self.coins = []  # an array of Coin objects
 
     def to_dict(self):
         d = {}
-        d['game_dir'] = self.game_dir
-        d['username'] = self.username
-        d['bot_path'] = self.bot_path
         d['abbreviations'] = self.abbreviations
-        d['bot_url'] = self.bot_url
-        d['name'] = self.name
-        d['coin_icon'] = self.coin_icon
+        d['attack_strength'] = self.attack_strength
         d['bot_icon'] = self.bot_icon
+        d['bot_path'] = self.bot_path
+        d['bot_url'] = self.bot_url
+        d['coin_icon'] = self.coin_icon
+        d['coins'] = [coin.to_dict() for coin in self.coins]
+        d['game_dir'] = self.game_dir
+        d['health'] = self.health
+        d['len(coins)'] = len(self.coins)
+        d['move_dict'] = self.move_dict
+        d['name'] = self.name
         d['stderr'] = self.stderr
         d['stdout'] = self.stdout
-        d['move_dict'] = self.move_dict
-        d['coins'] = [coin.to_dict() for coin in self.coins]
-        d['len(coins)'] = len(self.coins)
+        d['username'] = self.username
         return d
 
     def add_coins(self, new_coins):
@@ -518,68 +526,83 @@ class Bot:
 
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] != '':
-            # print("\tBot is attacking")
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
             print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
-            is_hit = True
             dropped = ''
             dropped_on = ''
             #  check that there's actually a bot at the defending location
-            if is_hit and defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
-                print("\t\t {} hits {}".format(attacker_icon, defender_icon))
+            if defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
+                print("\t {} hits {}".format(attacker_icon, defender_icon))
                 attacker, defender = None, None
                 for bot in curr_bg.bots:
                     if bot.bot_icon == defender_icon:
                         defender = bot
-
                     elif bot.bot_icon == attacker_icon:
                         attacker = bot
                     if attacker and defender:
                         break
-                # Check that the defender actually has coins to give
-                if defender.coins and sum([coin.value for coin in defender.coins]):
-                    # Choose a random coin to remove
-                    # dropped = None
-                    random.shuffle(defender.coins)
-                    for coin in defender.coins:
-                        if coin.value > 0:
-                            coin.value -= 1
-                            dropped = Coin(coin.originator, 1)
-                            print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon,
-                                                                             defender_icon))
-                            break
-                    # Add that dropped coin onto the map
-                    all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
-                    defender_location = curr_bg.find_icon(defender_icon)
-                    assert len(defender_location) == 1
-                    defender_location = defender_location[0]
+                if defender.health > 0:
+                    # Remove health from the defender
+                    defender.health -= attacker.attack_strength
+                if defender.health <= 0:
+                    print('Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
+                    # Remove the defender from the game.
 
-                    legal_deltas = []
-                    droppable_icons = [bot.bot_icon for bot in curr_bg.bots] + [IC_AIR]
-                    for delta in all_deltas:
-                        if curr_bg.get_cell(defender_location, delta) in droppable_icons:
-                            legal_deltas.append(delta)
-                    coin_delta = random.choice(legal_deltas)
-                    coin_loc = [
-                        defender_location[0] + coin_delta[0],
-                        defender_location[1] + coin_delta[1]
-                    ]
-                    landed_icon = curr_bg.get_cell(defender_location, coin_delta)
-                    print("\t\t coin({}) lands at {}".format(coin.originator.coin_icon, coin_loc))
-                    # Check to see if the coin landed on a bot
-                    if landed_icon is not IC_AIR:
-                        # Add the coin immediately to the bot that it landed on
-                        for bot in curr_bg.bots:
-                            if bot.bot_icon == landed_icon:
-                                bot.add_coins(Coin(dropped.originator, 1))
-                                dropped_on = bot.bot_icon
-                                break
-                    else:
-                        # The coin landed on air, so just add it to the map
-                        curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
-                        dropped_on = ' '
+                    # FIXME this is removeing the attacker, not the defender, from the game
+                    curr_bg.set_cell(bot_loc, bot_move['direction'], IC_AIR)
+                    curr_bg.bots.remove(defender)
+                    idx = -1
+                    for i, bot in enumerate(game.bots):
+                        if bot.bot_icon == defender_icon:
+                            idx = i
+                            break
+                    assert idx != -1
+                    game.bots.pop(i)
+
+#                 # Check that the defender actually has coins to give
+#                 if defender.coins and sum([coin.value for coin in defender.coins]):
+#                     # Choose a random coin to remove
+#                     # dropped = None
+#                     random.shuffle(defender.coins)
+#                     for coin in defender.coins:
+#                         if coin.value > 0:
+#                             coin.value -= 1
+#                             dropped = Coin(coin.originator, 1)
+#                             print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon,
+#                                                                              defender_icon))
+#                             break
+#                     # Add that dropped coin onto the map
+#                     all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
+#                     defender_location = curr_bg.find_icon(defender_icon)
+#                     assert len(defender_location) == 1
+#                     defender_location = defender_location[0]
+# 
+#                     legal_deltas = []
+#                     droppable_icons = [bot.bot_icon for bot in curr_bg.bots] + [IC_AIR]
+#                     for delta in all_deltas:
+#                         if curr_bg.get_cell(defender_location, delta) in droppable_icons:
+#                             legal_deltas.append(delta)
+#                     coin_delta = random.choice(legal_deltas)
+#                     coin_loc = [
+#                         defender_location[0] + coin_delta[0],
+#                         defender_location[1] + coin_delta[1]
+#                     ]
+#                     landed_icon = curr_bg.get_cell(defender_location, coin_delta)
+#                     print("\t\t coin({}) lands at {}".format(coin.originator.coin_icon, coin_loc))
+#                     # Check to see if the coin landed on a bot
+#                     if landed_icon is not IC_AIR:
+#                         # Add the coin immediately to the bot that it landed on
+#                         for bot in curr_bg.bots:
+#                             if bot.bot_icon == landed_icon:
+#                                 bot.add_coins(Coin(dropped.originator, 1))
+#                                 dropped_on = bot.bot_icon
+#                                 break
+#                     else:
+#                         # The coin landed on air, so just add it to the map
+#                         curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
+#                         dropped_on = ' '
 
             for graph in game.graphs:
                 if graph['id'] == 'events':
@@ -587,7 +610,6 @@ class Bot:
                         'tick': game.tick,
                         'bot_icon': self.bot_icon,
                         'event_id': 'attack',
-                        'is_hit': is_hit,
                         'defender': defender_icon,
                         'dropped': '' if not dropped else dropped.originator.coin_icon,
                         'on': dropped_on,
@@ -657,7 +679,7 @@ class Coin:
 class Battleground:
     def __init__(self, game_dir, username,
                  battleground_filename, battleground_url,
-                 name, num_coins=5):
+                 name, num_coins=1):
         self.game_dir = game_dir
         self.username = username
         self.battleground_path = os.path.join(self.game_dir, username, battleground_filename)
@@ -703,6 +725,24 @@ class Battleground:
                 if item == icon:
                     returner.append((x, y))
         return returner
+
+    def set_cell(self, bot_loc, cmd, icon):
+        pos = list(bot_loc[:])
+        if type(cmd) is str:
+            # cmd is a string made up of l, r, u, d characters
+            cmd = ''.join(set(cmd))  # Remove all duplicated characters
+            for c in cmd:
+                pos[0] += CMD_DICT[c][0]
+                pos[1] += CMD_DICT[c][1]
+        elif type(cmd) is tuple and len(cmd) == 2:
+            # cmd is a 2-tuple indicating the change in position from bot_loc
+            pos[0] += cmd[0]
+            pos[1] += cmd[1]
+
+        if not (0 <= pos[0] < len(self.bg_map) or 0 <= pos[1] < len(self.bg_map[0])):
+            return False  # trying to walk off the map
+        self.bg_map[pos[0]][pos[1]] = icon
+        return True
 
     def get_cell(self, bot_loc, cmd):
         pos = list(bot_loc[:])
