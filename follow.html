@@ -77,7 +77,13 @@
         url: game_param + "/game.json",
         dataType: 'text'
     }).done(game_str => {
-        game = JSON.parse(game_str);
+        try {
+            game = JSON.parse(game_str);
+        } catch (e) {
+            let bg_card = document.getElementById("bg-card");
+            bg_card.innerHTML = `<p>Game load failed, reloading page</p>`;
+            location.reload(true);
+        }
         // When the game json is loaded, add content to the battleground and graphs cards
         create_bg_card('bg-card', game);
         // create_graph_card('graphs-card', game);

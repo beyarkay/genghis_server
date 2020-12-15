@@ -224,6 +224,7 @@ function update_battleground(div_id, bg, game) {
         }
     }
     const mouseover_from_cell = (cell) => {
+        // Tool tip vibes
         if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell) || game['coin_icons'].includes(cell)) {
             return (mouseEvent, d) => {
                 let tool_tip_content;
@@ -245,15 +246,27 @@ function update_battleground(div_id, bg, game) {
                         }
                     }
                 }
+                tool_tip_content = `Location: ${d.map_row}, ${d.map_col}<br>`;
                 if (game['port_icons'].includes(cell)) {
-                    tool_tip_content = `Port ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Port ${d.text_content} (${d.username})<br>`;
 
                 } else if (game['bot_icons'].includes(cell)) {
-                    tool_tip_content = `Bot ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Coins: [ `;
+                    for (let i = 0; i < d.bot_data.coins.length; i++) {
+                        let coin = d.bot_data.coins[i];
+                        tool_tip_content += `${coin.value}x '${coin.originator_icon.toLowerCase()}'`;
+                        if (i !== d.bot_data.coins.length - 1 ) {
+                            tool_tip_content += `, `;
+                        }
+                    }
+                    tool_tip_content += ` ]<br>`;
+                    tool_tip_content += `Last move: ${d.bot_data.move_dict.action} ${d.bot_data.move_dict.direction}<br>`;
+
                 } else if (game['coin_icons'].includes(cell)) {
-                    tool_tip_content = `Coin ${d.text_content}<br>`;
+                    tool_tip_content += `Coin ${d.text_content}<br>`;
                 }
-                tool_tip_content += `Battleground ${d.map_port_icon} at (${d.map_row},${d.map_col})`;
+
                 d3.select(".tooltip").transition()
                     .duration(200)
                     .style("opacity", .9);
@@ -276,10 +289,6 @@ function update_battleground(div_id, bg, game) {
             d3.select(this).style("fill", rect_fill_from_cell(cell))
 
         }
-        // } else {
-        //     return (d) => {
-        //     };
-        // }
     }
     const username_from_cell = (cell) => {
         if (game['port_icons'].includes(cell)) {
@@ -298,6 +307,16 @@ function update_battleground(div_id, bg, game) {
             return 'undefined'
         }
     }
+    const bot_from_cell = (cell) => {
+        if (game['bot_icons'].includes(cell)) {
+            for (let i = 0; i < game['bots'].length; i++) {
+                if (game['bots'][i]['bot_icon'] === cell) {
+                    return game['bots'][i];
+                }
+            }
+        } 
+        return ''
+    }
     
 
     let data = [];
@@ -311,6 +330,7 @@ function update_battleground(div_id, bg, game) {
                 map_port_icon: bg['port_icon'],
                 map_row: row,
                 map_col: col,
+                bot_data: bot_from_cell(bg['bg_map'][row][col]),
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
@@ -536,7 +556,6 @@ function create_graph(div_id, graph, game) {
     //     .attr("cx", d => xScale(d[graph.x_key]))
     //     .attr("cy", d => yScale(d[graph.y_key]))
     //     .style("fill", (d, i, j) => colour(series[j].name));
-
 }
 
 
