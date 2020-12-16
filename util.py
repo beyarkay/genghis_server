@@ -397,10 +397,10 @@ class Bot:
                 bot_is_broke = False
                 replacement_icon = IC_AIR
             
-            print("Attempting to walk/hop: intermediary_is_hoppable={} and cell_is_walkable={} and not bot_is_broke={}".format(intermediary_is_hoppable, cell_is_walkable, bot_is_broke))
+          #  print("Attempting to walk/hop: intermediary_is_hoppable={} and cell_is_walkable={} and not bot_is_broke={}".format(intermediary_is_hoppable, cell_is_walkable, bot_is_broke))
 
             if intermediary_is_hoppable and cell_is_walkable and not bot_is_broke:
-                print("bot {} at {} walk/hop in dir {} onto '{}'".format(self.bot_icon, bot_loc, motion, cell))
+              #  print("bot {} at {} walk/hop in dir {} onto '{}'".format(self.bot_icon, bot_loc, motion, cell))
                 if cell == IC_AIR:
                     # Replace the current spot with air
                     curr_bg.set_cell(bot_loc, '', replacement_icon)
@@ -444,7 +444,7 @@ class Bot:
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] != '':
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
-            print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
+          #  print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
             dropped = ''
             dropped_on = ''
@@ -596,7 +596,7 @@ class Coin:
 class Battleground:
     def __init__(self, game_dir, username,
                  battleground_filename, battleground_url,
-                 name, num_coins=1):
+                 name, num_coins=9):
         self.game_dir = game_dir
         self.username = username
         self.battleground_path = os.path.join(self.game_dir, username, battleground_filename)
@@ -644,7 +644,7 @@ class Battleground:
         return returner
 
     def set_cell(self, bot_loc, cmd, icon, allow_repeats=False):
-        print('setting cell at {}+{} to {}'.format(bot_loc, cmd, icon))
+        #print('setting cell at {}+{} to {}'.format(bot_loc, cmd, icon))
         pos = list(bot_loc[:])
         if type(cmd) is str:
             # cmd is a string made up of l, r, u, d characters

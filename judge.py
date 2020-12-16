@@ -86,7 +86,7 @@ def step(game):
                     bot.stderr = "Feature Unimplemented"
                     bot.stdout = "Feature Unimplemented"
                     debug_log["ret_code"] = "0"
-                    print("Ran bot {} the proper way".format(module))
+                    # print("Ran bot {} the proper way".format(module))
                 except IndexError:
                     print(util.Colours.OKBLUE, end='')
                     os.chdir(bot.username)
