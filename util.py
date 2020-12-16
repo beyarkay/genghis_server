@@ -9,6 +9,7 @@ import pandas as pd
 import diff_match_patch as dmp_module
 
 PORT_ICONS = [str(i) for i in range(1, 10)] + ["!", "@", "$", "%", "^", "&", "*", "(", ")"]
+ACTION_HOP = "hop"
 ACTION_WALK = "walk"
 ACTION_DROP = "drop"
 ACTION_ATTACK = "attack"
@@ -39,7 +40,7 @@ class Game:
         self.port_icons = []
         self.iteration = 0
         self.tick = 0
-        self.turn_time = 0.05
+        self.turn_time = 0.5
         self.continues = True 
         self.moving = None
         self.graphs = [{
@@ -176,77 +177,6 @@ class Game:
         else:
             # DEPRECATED
             print('doing deprecated things')
-            for bg in self.battlegrounds:
-                # write out the visual representation of every bg map to a file
-                lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
-                with open(bg.port_icon + ".log", "w+") as bg_file:
-                    bg_file.writelines(lines)
-                os.chmod(bg.port_icon + ".log", 0o755)
-                # write out the current state of every bg json to a file
-                with open(bg.port_icon + ".json", "w+") as bg_file:
-                    json.dump(bg.to_dict(), bg_file, indent=2)
-                os.chmod(bg.port_icon + ".json", 0o755)
-
-            # write out the current state of every bot to a file
-            for bot in self.bots:
-                with open(bot.bot_icon + ".json", "w+") as bot_file:
-                    # write out the current state of the bg map to a file
-                    json.dump(bot.to_dict(), bot_file, indent=2)
-                os.chmod(bot.bot_icon + ".json", 0o755)
-
-            # Also log some historic files for graphs
-            # iteration vs total coins / bot
-            BOT_INFO_PATH = 'bot_info.json'
-            if os.path.exists(BOT_INFO_PATH):
-                bot_info = pd.read_json(BOT_INFO_PATH, orient='records')
-            else:
-                bot_info = pd.DataFrame()
-            for bot in self.bots:
-                bg_port_icon = None
-                for bg in self.battlegrounds:
-                    if bot.bot_icon in [bg_bot.bot_icon for bg_bot in bg.bots]:
-                        bg_port_icon = bg.port_icon
-                        break
-                bot_info = bot_info.append({
-                    'tick': self.tick,
-                    'bot_icon': bot.bot_icon,
-                    'bg_port_icon': bg_port_icon,
-                    'total_coins': sum([coin.value for coin in bot.coins]),
-                }, ignore_index=True)
-            bot_info.to_json(BOT_INFO_PATH, orient='records', indent=2)
-            os.chmod(BOT_INFO_PATH, 0o755)
-
-            # iteration vs num-coins/bots on each bg
-            BG_INFO_PATH = 'bg_info.json'
-            if os.path.exists(BG_INFO_PATH):
-                bg_info = pd.read_json(BG_INFO_PATH, orient='records')
-            else:
-                bg_info = pd.DataFrame()
-            for bg in self.battlegrounds:
-                bg_info = bg_info.append({
-                    'tick': self.tick,
-                    'bg_port_icon': bg.port_icon,
-                    'num_bots': len(bg.bots),
-                }, ignore_index=True)
-            bg_info.to_json(BG_INFO_PATH, orient='records', indent=2)
-            os.chmod(BG_INFO_PATH, 0o755)
-
-            # Pickle the game object so it can be used by the monitoring system
-            with open("game.pickle", "wb") as game_pkl:
-                pickle.dump(self, game_pkl)
-
-            with open("game.json", "w+") as game_file:
-                json.dump(self.to_dict(), game_file)
-            os.chmod("game.json", 0o755)
-
-#     def print_logs(self):
-#         # print out the current state of every bg map to stdout
-#         for bg in self.battlegrounds:
-#             lines = [''.join(list(i)) + '\n' for i in zip(*bg.bg_map)]
-#             print("============ BATTLE GROUND {} ============\n{}".format(bg.port_icon, ''.join(lines)))
-# 
-#         for bot in self.bots:
-#             print(" Bot {}: \n{}".format(bot.bot_icon, json.dumps(bot.to_dict(), indent=2)))
 
     def init_game(self):
         # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
@@ -274,6 +204,7 @@ class Game:
             })
 
         # connect the individual nodes together with links in a way that d3.js will work with
+        self.port_icons.sort()
         for i, port_icon in enumerate(self.port_icons):
             self.port_graph['links'].append({
                 "source": port_icon,
@@ -287,7 +218,7 @@ class Game:
             })
             self.port_graph['links'].append({
                 "source": port_icon,
-                "target": self.port_icons[random.randrange(0, len(self.port_icons))],
+                "target": random.choice([icon for icon in self.port_icons if icon != port_icon]),
                 "value": 1
             })
 
@@ -297,17 +228,14 @@ class Game:
         for bot1 in [bot for bot in self.bots if not bot.bot_icon]:
             index = 0
             while len(bot1.abbreviations) > index:
-                #                print("bot1.abbr length is {}, index is {}".format(', '.join(bot1.abbreviations), index))
                 for bot2 in [bot for bot in self.bots if bot.bot_icon]:
                     # if this icon is already taken, increment index
                     if bot2.bot_icon == bot1.abbreviations[index]:
-                        #                        print("icon {} is taken by bot at {}".format(bot2.bot_icon, bot2.bot_filename))
                         index += 1
                         break
                 else:  # no other bot has this icon, so use it
                     bot1.bot_icon = bot1.abbreviations[index]
                     bot1.coin_icon = bot1.abbreviations[index].lower()
-                    #                    print("bot at {} is now using icon {}".format(bot1.bot_filename, bot1.bot_icon))
                     break
             else:
                 # we've gone through all the abbreviations and they're all taken.
@@ -316,7 +244,6 @@ class Game:
                 assert remaining_icons
                 bot1.bot_icon = remaining_icons[0]
                 bot1.coin_icon = remaining_icons[0].lower()
-            #                print("bot at {} forced to use icon {}".format(bot1.bot_filename, bot1.bot_icon))
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
 
@@ -423,6 +350,7 @@ class Bot:
         """ Given a requested bot move and game state,
         attempt to perform that move (if it's legal)
         """
+        assert self.health > 0
         self.move_dict = bot_move
         # print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
@@ -439,90 +367,78 @@ class Bot:
                                                                                         self.bot_icon)
         bot_loc = list(bot_locs[0])
 
-        # If the bot is just walking around (possibly into a port or air)
-        if bot_move['action'] == ACTION_WALK:
-            cell = curr_bg.get_cell(bot_loc, bot_move['direction'])
+        # If the bot is just walking around (possibly into a port or air) or maybe hopping around
+        if bot_move['action'] == ACTION_WALK or (bot_move.get('action') == ACTION_HOP and \
+                    bot_move.get('direction') != '' and \
+                    bot_move.get('type') != ''):
+            """
+            The bot is allowed to jump 2 spaces, iff the bot leaves a coin at the location
+            from which they jumped. This does not allow them to jump over walls
+            """
+            motion = bot_move['direction'] + (bot_move['direction'] if bot_move.get('action') == ACTION_HOP else '')
 
-            # If the bot is walking into air
-            if cell == IC_AIR:
-                # print("\tBot is walking to air")
-                # Replace the current spot with air
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
-                # Calculate the new location
-                cmd = ''.join(set(bot_move['direction']))  # Remove all duplicated characters
-                for c in cmd:
-                    bot_loc[0] += CMD_DICT[c][0]
-                    bot_loc[1] += CMD_DICT[c][1]
+            walkable_icons = [IC_AIR] + game.port_icons + game.coin_icons
+            cell = curr_bg.get_cell(bot_loc, motion, allow_repeats=bot_move.get('action') == ACTION_HOP)
+            cell_is_walkable = cell in walkable_icons
 
-                # Replace the new spot with the bot's icon
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = self.bot_icon
+            hoppable_icons = [IC_AIR] + game.port_icons + game.bot_icons + game.coin_icons
+            intermediary = curr_bg.get_cell(bot_loc, bot_move['direction'])
+            intermediary_is_hoppable = bot_move.get('action') == ACTION_WALK or intermediary in hoppable_icons
 
-            # If the bot is walking into a coin
-            elif cell in game.coin_icons:
-                print("\tBot is walking into a coin")
-                # Figure out what the coin associated with the given coin_icon is
-                for bot in game.bots:
-                    if bot.coin_icon == cell:
-                        self.add_coins(Coin(bot, 1))
-                        break
-                # Replace the current spot with air
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
-                # Calculate the new location
-                cmd = ''.join(set(bot_move['direction']))  # Remove all duplicated characters
-                for c in cmd:
-                    bot_loc[0] += CMD_DICT[c][0]
-                    bot_loc[1] += CMD_DICT[c][1]
-
-                # Replace the new spot with the bot's icon
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = self.bot_icon
-
-                # Add the event to the events graph
-                for graph in game.graphs:
-                    if graph['id'] == 'events':
-                        graph['data'].append({
-                            'tick': game.tick,
-                            'bot_icon': self.bot_icon,
-                            'event_id': 'coin_pickup',
-                            'bg': curr_bg.port_icon,
-                            'content': cell,
-                        })
-                        break
-
-            # If the bot is walking into a port
-            elif cell in game.port_icons:
-                # Figure out the next battleground
-                next_bg = None
-                for bg in game.battlegrounds:
-                    if bg.port_icon == cell:
-                        next_bg = bg
-                        break
-                print("\tBot is walking into a port going to {}".format(next_bg.port_icon))
-                # Figure out the index of the current bot so as to pop it from the
-                # Current battlegrounds list of bots
-                for i, bot in enumerate(curr_bg.bots):
-                    if bot.bot_icon == self.bot_icon:
-                        remove_idx = i
-                        break
-                # Remove the current bot from the current battleground, and add
-                # it to the next battleground.
-                next_bg.spawn_bot(curr_bg.bots.pop(remove_idx))
-                # And remove the bot's icon from the current battleground
-                curr_bg.bg_map[bot_loc[0]][bot_loc[1]] = IC_AIR
-                for graph in game.graphs:
-                    if graph['id'] == 'events':
-                        graph['data'].append({
-                            'tick': game.tick,
-                            'bot_icon': self.bot_icon,
-                            'event_id': 'port',
-                            'from': curr_bg.port_icon,
-                            'to': next_bg.port_icon,
-                        })
-                        break
-
+            bot_is_broke = True
+            coin_type = bot_move.get('type')
+            if bot_move.get('action') == ACTION_HOP:
+                for coin in self.coins:
+                    if coin.originator.coin_icon == coin_type and coin.value > 0:
+                        coin.value -= 1
+                        replacement_icon = coin_type 
+                        bot_is_broke = False
             else:
-                # If the bot tries to walk anywhere illegal, don't allow it and
-                # just stay still
-                pass
+                bot_is_broke = False
+                replacement_icon = IC_AIR
+            
+            print("Attempting to walk/hop: intermediary_is_hoppable={} and cell_is_walkable={} and not bot_is_broke={}".format(intermediary_is_hoppable, cell_is_walkable, bot_is_broke))
+
+            if intermediary_is_hoppable and cell_is_walkable and not bot_is_broke:
+                print("bot {} at {} walk/hop in dir {} onto '{}'".format(self.bot_icon, bot_loc, motion, cell))
+                if cell == IC_AIR:
+                    # Replace the current spot with air
+                    curr_bg.set_cell(bot_loc, '', replacement_icon)
+                    curr_bg.set_cell(bot_loc, motion, self.bot_icon, allow_repeats=True)
+                    
+                # If the bot is walking into a coin
+                elif cell in game.coin_icons:
+                    # Figure out what the coin associated with the given coin_icon is
+                    for bot in game.bots:
+                        if bot.coin_icon == cell:
+                            self.add_coins(Coin(bot, 1))
+                            break
+                    print("\tBot {} picked up coin {}".format(self.bot_icon, cell))
+                    curr_bg.set_cell(bot_loc, '', replacement_icon)
+                    curr_bg.set_cell(bot_loc, motion, self.bot_icon, allow_repeats=True)
+
+                # If the bot is walking into a port
+                elif cell in game.port_icons:
+                    # Figure out the next battleground
+                    next_bg = None
+                    for bg in game.battlegrounds:
+                        if bg.port_icon == cell:
+                            next_bg = bg
+                            break
+                    print("\tBot {}: {} => {} by port".format(
+                        self.bot_icon,
+                        curr_bg.port_icon,
+                        next_bg.port_icon
+                    ))
+                    # Figure out the index of the current bot so as to pop it from the current battlegrounds list of bots
+                    for i, bot in enumerate(curr_bg.bots):
+                        if bot.bot_icon == self.bot_icon:
+                            remove_idx = i
+                            break
+                    # Remove the current bot from the current battleground, and add it to the next battleground.
+                    next_bg.spawn_bot(curr_bg.bots.pop(remove_idx))
+                    # And remove the bot's icon from the current battleground
+                    curr_bg.set_cell(bot_loc, '', replacement_icon)
 
         # If the bot is attacking another cell
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] != '':
@@ -533,7 +449,7 @@ class Bot:
             dropped = ''
             dropped_on = ''
             #  check that there's actually a bot at the defending location
-            if defender_icon in [bot.bot_icon for bot in curr_bg.bots]:
+            if defender_icon in [bot.bot_icon for bot in curr_bg.bots if bot.health > 0]:
                 print("\t {} hits {}".format(attacker_icon, defender_icon))
                 attacker, defender = None, None
                 for bot in curr_bg.bots:
@@ -550,7 +466,6 @@ class Bot:
                     print('Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
                     # Remove the defender from the game.
 
-                    # FIXME this is removeing the attacker, not the defender, from the game
                     curr_bg.set_cell(bot_loc, bot_move['direction'], IC_AIR)
                     curr_bg.bots.remove(defender)
                     idx = -1
@@ -662,7 +577,9 @@ class Bot:
                                 })
                                 break
                         break
+        
 
+ 
 
 class Coin:
     def __init__(self, originator, value):
@@ -715,7 +632,7 @@ class Battleground:
         d['port_spawn_locations'] = self.port_spawn_locations
         d['port_locations'] = self.port_locations
         d['port_icon'] = self.port_icon
-        d['bot_icons'] = [bot.bot_icon for bot in self.bots]
+        d['bot_icons'] = [bot.bot_icon for bot in self.bots if bot.health > 0]
         return d
 
     def find_icon(self, icon):
@@ -726,11 +643,15 @@ class Battleground:
                     returner.append((x, y))
         return returner
 
-    def set_cell(self, bot_loc, cmd, icon):
+    def set_cell(self, bot_loc, cmd, icon, allow_repeats=False):
+        print('setting cell at {}+{} to {}'.format(bot_loc, cmd, icon))
         pos = list(bot_loc[:])
         if type(cmd) is str:
             # cmd is a string made up of l, r, u, d characters
-            cmd = ''.join(set(cmd))  # Remove all duplicated characters
+            if allow_repeats:
+                cmd = ''.join([c for i, c in enumerate(cmd, 1) if cmd[:i].count(c) <= 2])
+            else:
+                cmd = ''.join(set(cmd))  # Remove all duplicated characters
             for c in cmd:
                 pos[0] += CMD_DICT[c][0]
                 pos[1] += CMD_DICT[c][1]
@@ -744,11 +665,14 @@ class Battleground:
         self.bg_map[pos[0]][pos[1]] = icon
         return True
 
-    def get_cell(self, bot_loc, cmd):
+    def get_cell(self, bot_loc, cmd, allow_repeats=False):
         pos = list(bot_loc[:])
         if type(cmd) is str:
             # cmd is a string made up of l, r, u, d characters
-            cmd = ''.join(set(cmd))  # Remove all duplicated characters
+            if allow_repeats:
+                cmd = ''.join([c for i, c in enumerate(cmd, 1) if cmd[:i].count(c) <= 2])
+            else:
+                cmd = ''.join(set(cmd))  # Remove all duplicated characters
             for c in cmd:
                 pos[0] += CMD_DICT[c][0]
                 pos[1] += CMD_DICT[c][1]
@@ -885,3 +809,17 @@ class Client:
                     item['name'],
                 ))
         assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)
+
+
+
+class Colours:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+

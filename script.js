@@ -33,17 +33,22 @@ export function create_bg_card(div_id, game) {
     pure_g.classList.add('pure-g')
     pure_g.setAttribute('id', `bg-card-pure-g`);
     div.appendChild(pure_g);
-    game['battlegrounds'].sort((a, b) => {
-        return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-    })
+   // game['battlegrounds'].sort((a, b) => {
+   //     return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+   // })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
         let pure_u = document.createElement("div");
-        pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-        pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-        pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-        pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
-        pure_u.setAttribute('id', `bg-card-pure-u-${i + 1}`);
+        pure_u.classList.add('pure-u-lg-6-24');
+        pure_u.classList.add('pure-u-md-8-24');
+        pure_u.classList.add('pure-u-sm-12-24');
+        pure_u.classList.add('pure-u-1-1');
+
+       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+       // pure_u.setAttribute('id', `bg-card-pure-u-${curr_bg['port_icon']}`);
         //pure_u.addEventListener('click', (e) => {
         //    // Re-order the game battlegrounds, then re-draw the whole thing
         //    let removed = game['battlegrounds'].splice(i, 1)[0];
@@ -74,17 +79,17 @@ export function create_bg_card(div_id, game) {
 
 export function update_bg_card(div_id, game) {
     let pure_g = d3.select('#' + div_id + " #bg-card-pure-g")
-    game['battlegrounds'].sort((a, b) => {
-        return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-    })
+  //  game['battlegrounds'].sort((a, b) => {
+  //      return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+  //  })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
-        let pure_u = document.getElementById(`bg-card-pure-u-${i + 1}`);
-        pure_u.className = ""
-        pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-        pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-        pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-        pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        let pure_u = document.getElementById(`bg-card-pure-u-${curr_bg['port_icon']}`);
+       // pure_u.className = ""
+       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
 
         // Update the ith battleground
         // console.time(`update d3-bg-${i}`);

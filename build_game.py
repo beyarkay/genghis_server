@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-import requests
 from pprint import pprint
-import os
 import datetime
 import json
+import os
+import requests
 import shutil
 import subprocess
+import sys
 import util
 
-SERVER_STATE_FILE = 'server_state.json'
+SERVER_STATE_FILE = 'server_state.json' if len(sys.argv) < 2 else sys.argv[1]
 JUDGE_SYSTEM_SCRIPT = 'judge.py'
 
 
@@ -24,7 +25,7 @@ def main():
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
     need_777 = [
-        'server_state.json',
+        SERVER_STATE_FILE
     ]
     need_permissions = [
         'index.html',

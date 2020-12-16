@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import copy
+import importlib
 import datetime
 import glob
 import json
@@ -7,21 +8,21 @@ import os
 import pickle
 import random
 import re
+import requests
 import shutil
+import signal
 import subprocess
+import sys
 import time
 import traceback
-import signal
 
-import requests
-import sys
 # add the server directory to the PATH so we can import the utilities file
 sys.path.append("/home/k/knxboy001/public_html/genghis_server")
 import util
 
 def main():
     def signal_handler(sig, frame):
-        print('Quitting Genghis...')
+        print(util.Colours.ENDC + 'Quitting Genghis...')
         try:
             game.continues = False
             game.log_state(diff_only=True)
@@ -44,6 +45,7 @@ def main():
 def step(game):
     # For each bot:
     for bot in game.bots:
+        start_time = datetime.datetime.now()
         bot_move = {
             'action': '',
             'direction': ''
@@ -60,8 +62,7 @@ def step(game):
         }
         if bot.health > 0:
             game.moving = bot.bot_icon
-            # TODO add more sophisticated waiting so that longer bots don't always get longer turns
-            time.sleep(game.turn_time)
+
             # pickle the current Game object for the bot to use
             with open(os.path.join(bot.username, "game.pickle"),"wb") as game_pkl:
                 pickle.dump(game, game_pkl)
@@ -73,49 +74,64 @@ def step(game):
                     bg_icon = bg.port_icon
 
             try:
-                # Move to the script's location
-                cwd = os.getcwd()
-                os.chdir(bot.username)
 
                 # Execute the bot's script
                 debug_log["start"] = datetime.datetime.now()
-                result = subprocess.run(
-                    ['python3', bot.bot_filename,
-                    '/home/k/knxboy001/public_html/genghis_server',
-                    bot.bot_icon,
-                    bg_icon],
-                    timeout=5,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True
-                )
-                os.chdir(cwd)
+                module = "" + bot.username + "." +  bot.bot_filename.replace(".py", "")
+                cwd = os.getcwd()
+                try:
+                    print(util.Colours.OKGREEN,end='')
+                    bot_script = importlib.import_module(module, package=__package__)
+                    bot_script.main(bot.username, bot.bot_icon, bg_icon)
+                    bot.stderr = "Feature Unimplemented"
+                    bot.stdout = "Feature Unimplemented"
+                    debug_log["ret_code"] = "0"
+                    print("Ran bot {} the proper way".format(module))
+                except IndexError:
+                    print(util.Colours.OKBLUE, end='')
+                    os.chdir(bot.username)
+
+                    result = subprocess.run(
+                        ['python3', bot.bot_filename,
+                        '/home/k/knxboy001/public_html/genghis_server',
+                        bot.bot_icon,
+                        bg_icon],
+                        timeout=5,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        universal_newlines=True
+                    )
+                    os.chdir(cwd)
+                    bot.stdout = result.stdout.strip()
+                    bot.stderr = result.stderr.strip()
+                    debug_log["ret_code"] = result.returncode
+                print(util.Colours.ENDC, end='')
                 debug_log["stop"] = datetime.datetime.now()
-                bot.stdout = result.stdout.strip()
-                bot.stderr = result.stderr.strip()
                 debug_log["has_errors"] = bool(bot.stderr)
-                debug_log["ret_code"] = result.returncode
 
                 with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
                     bot_move = json.load(move_file)
             except Exception as e:
                 os.chdir(cwd)
                 debug_log["stop"] = datetime.datetime.now()
-                print('\n\tBot move for {} was unsuccessful'.format(
-                    os.path.join(bot.username, bot.bot_filename)
-                ))
+
+                print(util.Colours.FAIL)
+                traceback.print_exc()
+                print(util.Colours.ENDC, end='')
                 bot_move = {
                     'action': 'walk',
                     'direction': ''
                 }
-                print("start traceback")
-                traceback.print_exc()
-                print("end traceback")
+            print(util.Colours.ENDC, end='')
 
             # Move the bot in the gamestate
             bot.perform_action(bot_move, game)
             game.log_state(diff_only=True)
             game.tick += 1
+            delta = datetime.datetime.now() - start_time
+            if delta.microseconds/1000000 + delta.seconds < game.turn_time:
+                print('Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
+                time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)
 
         debug_log["move"] = " {:<5} : {:<2}".format(bot_move["action"], bot_move["direction"])
         delta = debug_log["stop"] - debug_log["start"] 
@@ -133,7 +149,15 @@ def step(game):
         ))
 
 def game_continues(game):
-    game.continues = game.tick < len(game.bots) * 100
+    # If all but one of the bots are dead
+    if len([bot for bot in game.bots if bot.health > 0]) <= 1:
+        print("Ending the game, bot healths = {}".format({bot.bot_icon:bot.health for bot in game.bots}))
+        game.continues = False
+    # If the game has gone on for too long
+    if game.tick >= len(game.bots) * 100:
+        print("Ending the game, game.tick {} >= len(game.bots) {} * 100".format(game.tick, len(game.bots)))
+        game.continues = False
+
     if not game.continues:
         game.log_state(diff_only=True)
     return game.continues
