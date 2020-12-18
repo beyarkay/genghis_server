@@ -28,13 +28,14 @@ def main():
         SERVER_STATE_FILE
     ]
     need_permissions = [
-        'index.html',
-        'follow.html',
         'diff_match_patch.js',
-        'script.js',
-        'styles.css',
-        'register_client.php',
+        'follow.html',
         'get_gamestate.php',
+        'index.html',
+        'register_client.php',
+        'script.js',
+        'sse.php',
+        'styles.css',
     ]
     for f in need_777:
         os.chmod(f, 0o777)
