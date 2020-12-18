@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css">
     <!--    Make sure the width is equal to the device's native width-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="www/styles.css" rel="stylesheet" type="text/css"/>
+    <link href="styles.css" rel="stylesheet" type="text/css"/>
 
     <!--    Get jQuery-->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -111,7 +111,7 @@
 
 <script type="module">
     import {
-    } from './www/script.js';
+    } from './script.js';
 
     $.ajax({
         url: "server_state.json"
@@ -134,7 +134,7 @@
                 let game = data['games'][i];
                 let li = document.createElement("li");
                 let a = document.createElement("a");
-                a.setAttribute("href", "www/follow.html?game=" + game['game_dir']);
+                a.setAttribute("href", "follow.html?game=" + game['game_dir'] + "&v=" + Date.now());
                 a.innerHTML = "Game started on " + game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
                 a.style.color = i === 0 ? "#b30c0c" : "#a0a0a0";
                 li.appendChild(a);

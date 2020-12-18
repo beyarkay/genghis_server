@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-import requests
 from pprint import pprint
-import os
 import datetime
 import json
+import os
+import requests
 import shutil
 import subprocess
+import sys
 import util
 
-SERVER_STATE_FILE = 'server_state.json'
+SERVER_STATE_FILE = 'server_state.json' if len(sys.argv) < 2 else sys.argv[1]
 JUDGE_SYSTEM_SCRIPT = 'judge.py'
 
 
@@ -24,15 +25,14 @@ def main():
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
     need_777 = [
-        'server_state.json',
+        SERVER_STATE_FILE
     ]
     need_permissions = [
         'index.html',
-        'www',
-        'www/follow.html',
-        'www/diff_match_patch.js',
-        'www/script.js',
-        'www/styles.css',
+        'follow.html',
+        'diff_match_patch.js',
+        'script.js',
+        'styles.css',
         'register_client.php',
         'get_gamestate.php',
     ]
@@ -44,8 +44,9 @@ def main():
     clients = []
     # Create the game directory
     iso_str = datetime.datetime.now().isoformat()
-    game = util.Game(os.path.join("games", iso_str))
+    game = util.Game(os.path.join("games", iso_str), server_state['endpoint'])
 
+    # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
     for client_obj in server_state['clients']:
         try:
             c = util.Client(

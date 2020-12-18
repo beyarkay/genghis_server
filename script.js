@@ -33,17 +33,22 @@ export function create_bg_card(div_id, game) {
     pure_g.classList.add('pure-g')
     pure_g.setAttribute('id', `bg-card-pure-g`);
     div.appendChild(pure_g);
-    game['battlegrounds'].sort((a, b) => {
-        return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-    })
+   // game['battlegrounds'].sort((a, b) => {
+   //     return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+   // })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
         let pure_u = document.createElement("div");
-        pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-        pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-        pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-        pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
-        pure_u.setAttribute('id', `bg-card-pure-u-${i + 1}`);
+        pure_u.classList.add('pure-u-lg-6-24');
+        pure_u.classList.add('pure-u-md-8-24');
+        pure_u.classList.add('pure-u-sm-12-24');
+        pure_u.classList.add('pure-u-1-1');
+
+       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+       // pure_u.setAttribute('id', `bg-card-pure-u-${curr_bg['port_icon']}`);
         //pure_u.addEventListener('click', (e) => {
         //    // Re-order the game battlegrounds, then re-draw the whole thing
         //    let removed = game['battlegrounds'].splice(i, 1)[0];
@@ -74,17 +79,17 @@ export function create_bg_card(div_id, game) {
 
 export function update_bg_card(div_id, game) {
     let pure_g = d3.select('#' + div_id + " #bg-card-pure-g")
-    game['battlegrounds'].sort((a, b) => {
-        return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-    })
+  //  game['battlegrounds'].sort((a, b) => {
+  //      return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+  //  })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
         let curr_bg = game['battlegrounds'][i]
-        let pure_u = document.getElementById(`bg-card-pure-u-${i + 1}`);
-        pure_u.className = ""
-        pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-        pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-        pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-        pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        let pure_u = document.getElementById(`bg-card-pure-u-${curr_bg['port_icon']}`);
+       // pure_u.className = ""
+       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
 
         // Update the ith battleground
         // console.time(`update d3-bg-${i}`);
@@ -224,6 +229,7 @@ function update_battleground(div_id, bg, game) {
         }
     }
     const mouseover_from_cell = (cell) => {
+        // Tool tip vibes
         if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell) || game['coin_icons'].includes(cell)) {
             return (mouseEvent, d) => {
                 let tool_tip_content;
@@ -245,15 +251,29 @@ function update_battleground(div_id, bg, game) {
                         }
                     }
                 }
+                tool_tip_content = `Location: ${d.map_row}, ${d.map_col}<br>`;
                 if (game['port_icons'].includes(cell)) {
-                    tool_tip_content = `Port ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Port ${d.text_content} (${d.username})<br>`;
 
                 } else if (game['bot_icons'].includes(cell)) {
-                    tool_tip_content = `Bot ${d.text_content} (${d.username})<br>`;
+                    console.log(d)
+                    tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
+                    tool_tip_content += `Health: ${d.bot_data.health}/100<br>`;
+                    tool_tip_content += `Coins: [ `;
+                    for (let i = 0; i < d.bot_data.coins.length; i++) {
+                        let coin = d.bot_data.coins[i];
+                        tool_tip_content += `${coin.value}x '${coin.originator_icon.toLowerCase()}'`;
+                        if (i !== d.bot_data.coins.length - 1 ) {
+                            tool_tip_content += `, `;
+                        }
+                    }
+                    tool_tip_content += ` ]<br>`;
+                    tool_tip_content += `Last move: ${d.bot_data.move_dict.action} ${d.bot_data.move_dict.direction}<br>`;
+
                 } else if (game['coin_icons'].includes(cell)) {
-                    tool_tip_content = `Coin ${d.text_content}<br>`;
+                    tool_tip_content += `Coin ${d.text_content}<br>`;
                 }
-                tool_tip_content += `Battleground ${d.map_port_icon} at (${d.map_row},${d.map_col})`;
+
                 d3.select(".tooltip").transition()
                     .duration(200)
                     .style("opacity", .9);
@@ -276,10 +296,6 @@ function update_battleground(div_id, bg, game) {
             d3.select(this).style("fill", rect_fill_from_cell(cell))
 
         }
-        // } else {
-        //     return (d) => {
-        //     };
-        // }
     }
     const username_from_cell = (cell) => {
         if (game['port_icons'].includes(cell)) {
@@ -298,6 +314,16 @@ function update_battleground(div_id, bg, game) {
             return 'undefined'
         }
     }
+    const bot_from_cell = (cell) => {
+        if (game['bot_icons'].includes(cell)) {
+            for (let i = 0; i < game['bots'].length; i++) {
+                if (game['bots'][i]['bot_icon'] === cell) {
+                    return game['bots'][i];
+                }
+            }
+        } 
+        return ''
+    }
     
 
     let data = [];
@@ -311,6 +337,7 @@ function update_battleground(div_id, bg, game) {
                 map_port_icon: bg['port_icon'],
                 map_row: row,
                 map_col: col,
+                bot_data: bot_from_cell(bg['bg_map'][row][col]),
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
@@ -536,7 +563,6 @@ function create_graph(div_id, graph, game) {
     //     .attr("cx", d => xScale(d[graph.x_key]))
     //     .attr("cy", d => yScale(d[graph.y_key]))
     //     .style("fill", (d, i, j) => colour(series[j].name));
-
 }
 
 

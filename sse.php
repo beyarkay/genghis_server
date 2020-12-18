@@ -35,8 +35,8 @@ while (true) {
         flush();
         if ( connection_aborted() ) break;
         $last_seen_tick = $curr_game_tick;
-        usleep(1000000);
+        usleep(50000);
     }
-    usleep(100000);
+    usleep(50000);
 }
 ?>
