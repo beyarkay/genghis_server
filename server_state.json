@@ -1,12 +1,6 @@
 {
+  "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
   "clients": [
-    {
-      "username": "test_pilot",
-      "abbreviations": [
-        "t"
-      ],
-      "url": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_client"
-    },
     {
       "username": "LucH",
       "abbreviations": [
@@ -51,7 +45,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:00:02.457306",
+      "game_dir": "games/2020-12-18T19:34:59.749556",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -100,7 +94,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:00:41.111618",
+      "game_dir": "games/2020-12-18T19:40:02.460712",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -149,7 +143,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:10:03.214438",
+      "game_dir": "games/2020-12-18T19:50:03.118047",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -198,7 +192,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:20:02.236875",
+      "game_dir": "games/2020-12-18T20:00:02.764569",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -247,7 +241,7 @@
       },
       "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:22:56.086617",
+      "game_dir": "games/2020-12-18T20:10:02.719597",
       "coin_icons": [],
       "bot_icons": [],
       "port_icons": [],
@@ -290,21 +284,13 @@
       ]
     },
     {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:24:04.091172",
-      "coin_icons": [],
       "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
+      "bots": [],
+      "coin_icons": [],
       "continues": true,
-      "turn_time": 0.5,
-      "moving": null,
-      "tick": 0,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2020-12-18T20:20:03.046210",
       "graphs": [
         {
           "id": "events",
@@ -336,24 +322,25 @@
           "series_key": "bot_icon",
           "data": []
         }
-      ]
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
     },
     {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:26:35.859907",
-      "coin_icons": [],
       "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
+      "bots": [],
+      "coin_icons": [],
       "continues": true,
-      "turn_time": 0.5,
-      "moving": null,
-      "tick": 0,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2020-12-18T20:27:22.415586",
       "graphs": [
         {
           "id": "events",
@@ -385,24 +372,25 @@
           "series_key": "bot_icon",
           "data": []
         }
-      ]
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
     },
     {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:29:24.157543",
-      "coin_icons": [],
       "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
+      "bots": [],
+      "coin_icons": [],
       "continues": true,
-      "turn_time": 0.5,
-      "moving": null,
-      "tick": 0,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2020-12-18T20:30:02.742326",
       "graphs": [
         {
           "id": "events",
@@ -434,24 +422,25 @@
           "series_key": "bot_icon",
           "data": []
         }
-      ]
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
     },
     {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:29:40.115789",
-      "coin_icons": [],
       "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
+      "bots": [],
+      "coin_icons": [],
       "continues": true,
-      "turn_time": 0.5,
-      "moving": null,
-      "tick": 0,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2020-12-18T20:32:14.954740",
       "graphs": [
         {
           "id": "events",
@@ -483,24 +472,25 @@
           "series_key": "bot_icon",
           "data": []
         }
-      ]
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
     },
     {
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "bots": [],
       "battlegrounds": [],
-      "game_dir": "games/2020-12-16T21:30:02.147234",
-      "coin_icons": [],
       "bot_icons": [],
-      "port_icons": [],
-      "iteration": 0,
+      "bots": [],
+      "coin_icons": [],
       "continues": true,
-      "turn_time": 0.5,
-      "moving": null,
-      "tick": 0,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2020-12-18T20:33:16.875661",
       "graphs": [
         {
           "id": "events",
@@ -532,7 +522,16 @@
           "series_key": "bot_icon",
           "data": []
         }
-      ]
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
     }
   ]
 }
