@@ -154,7 +154,7 @@ def game_continues(game):
         print("Ending the game, bot healths = {}".format({bot.bot_icon:bot.health for bot in game.bots}))
         game.continues = False
     # If the game has gone on for too long
-    if game.tick >= len(game.bots) * 100:
+    if game.tick >= len(game.bots) * 150:
         print("Ending the game, game.tick {} >= len(game.bots) {} * 100".format(game.tick, len(game.bots)))
         game.continues = False
 
