@@ -27,22 +27,23 @@ CMD_DICT = {
 
 
 class Game:
-    def __init__(self, game_dir):
+    def __init__(self, game_dir, endpoint):
         self.port_graph = {
             "links": [],
             "nodes": []
         }
-        self.bots = []
         self.battlegrounds = []
-        self.game_dir = game_dir
-        self.coin_icons = []
         self.bot_icons = []
-        self.port_icons = []
+        self.bots = []
+        self.coin_icons = []
+        self.continues = True 
+        self.endpoint = endpoint
+        self.game_dir = game_dir
         self.iteration = 0
+        self.moving = None
+        self.port_icons = []
         self.tick = 0
         self.turn_time = 0.5
-        self.continues = True 
-        self.moving = None
         self.graphs = [{
             'id': 'events',
             'title': 'Game-Wide Events',
@@ -87,19 +88,20 @@ class Game:
 
     def to_dict(self):
         d = {}
-        d['port_graph'] = self.port_graph
-        d['bots'] = [bot.to_dict() for bot in self.bots]
         d['battlegrounds'] = [bg.to_dict() for bg in self.battlegrounds]
-        d['game_dir'] = self.game_dir
-        d['coin_icons'] = self.coin_icons
         d['bot_icons'] = self.bot_icons
-        d['port_icons'] = self.port_icons
-        d['iteration'] = self.iteration
+        d['bots'] = [bot.to_dict() for bot in self.bots]
+        d['coin_icons'] = self.coin_icons
         d['continues'] = self.continues
-        d['turn_time'] = self.turn_time
-        d['moving'] = self.moving
-        d['tick'] = self.tick
+        d['endpoint'] = self.endpoint
+        d['game_dir'] = self.game_dir
         d['graphs'] = self.graphs
+        d['iteration'] = self.iteration
+        d['moving'] = self.moving
+        d['port_graph'] = self.port_graph
+        d['port_icons'] = self.port_icons
+        d['tick'] = self.tick
+        d['turn_time'] = self.turn_time
         return d
 
     def add_bot(self, bot):
@@ -179,11 +181,11 @@ class Game:
             print('doing deprecated things')
 
     def init_game(self):
-        # go through every bot and add it to a random battleground (trying to only have 1 bot / battleground)
+        # go through every bot and add it to a random battleground (trying to have less than 2 bots per battleground)
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
         for i, bot in enumerate(self.bots):
-            for bg in [bg for bg in self.battlegrounds if len(bg.bots) == 0]:
+            for bg in [bg for bg in self.battlegrounds if len(bg.bots) <= 2]:
                 bg.add_bot(bot)
                 break
             else:
@@ -251,7 +253,7 @@ class Game:
         # initialise the bg_maps with actual bot icons
         # instead of the placeholder icons
         for battleground in self.battlegrounds:
-            battleground.init_bg_map(self.port_graph, self.battlegrounds)
+            battleground.init_bg_map(self)
         self.continues = True
         print('Battlegrounds:')
         for bg in self.battlegrounds:
@@ -281,7 +283,9 @@ class Game:
         with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
-        print("\n\nGame started at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/follow.html?game={}".format(
+
+        print("\n\nGame started at {}follow.html?game={}".format(
+            self.endpoint,
             self.game_dir
         ))
 
@@ -713,13 +717,14 @@ class Battleground:
             parsed = [line.strip() for line in battleground_file.readlines()]
         self.bg_map = [list(i) for i in zip(*parsed)]
 
-    def init_bg_map(self, port_graph, battlegrounds):
+    def init_bg_map(self, game):
         """
         take the raw template input of the battleground, the bots and ports,
         and replace instances of ic_spawn with bots and ic_port with ports.
         Also add in coins
         """
-
+        port_graph = game.port_graph
+        battlegrounds = game.battlegrounds
         # Go through the entire map and cache the interesting locations
         for x, col in enumerate(self.bg_map):
             for y, item in enumerate(col):
@@ -751,16 +756,15 @@ class Battleground:
             self.port_locations.append((x, y))
 
         # Add in some coins at random air locations:
-        coin_icons = [bot.coin_icon for bot in self.bots]
-        # print("num coins: " + str(self.num_coins))
+#        coin_icons = [bot.coin_icon for bot in self.bots]
+        count = self.num_coins * 2
         for i in range(self.num_coins):
-            while True:
+            while count >= 0:
+                count -= 1
                 rand_row = random.randrange(len(self.bg_map))
                 rand_col = random.randrange(len(self.bg_map[0]))
-                # print(rand_row, rand_col, len(self.bg_map), len(self.bg_map[0]))
                 if self.bg_map[rand_row][rand_col] == IC_AIR:
-                    # print("added coin at {}, {}".format(rand_row, rand_col))
-                    self.bg_map[rand_row][rand_col] = random.choice(coin_icons)
+                    self.bg_map[rand_row][rand_col] = random.choice(game.coin_icons)
                     break
 
 

@@ -44,8 +44,9 @@ def main():
     clients = []
     # Create the game directory
     iso_str = datetime.datetime.now().isoformat()
-    game = util.Game(os.path.join("games", iso_str))
+    game = util.Game(os.path.join("games", iso_str), server_state['endpoint'])
 
+    # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
     for client_obj in server_state['clients']:
         try:
             c = util.Client(
