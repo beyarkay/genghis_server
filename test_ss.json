@@ -1,11 +1,19 @@
 {
+  "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
   "clients": [
     {
-      "username": "Beyarkay",
+      "username": "stu2",
       "abbreviations": [
-        "b"
+        "s"
       ],
-      "url": "https://people.cs.uct.ac.za/~KNXBOY001/boyd_genghis_client"
+      "url": "https://people.cs.uct.ac.za/~MSHSTU001/genghis_client"
+    },
+    {
+      "username": "stu2",
+      "abbreviations": [
+        "s"
+      ],
+      "url": "https://people.cs.uct.ac.za/~MSHSTU001/genghis_client"
     },
     {
       "username": "Beyarkay",

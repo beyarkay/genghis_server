@@ -124,7 +124,7 @@
         evtSource.onerror = function () {
             console.log("EventSource failed.");
             let ul = document.getElementById("basic_info");
-            ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server?v="+Date.now()+"'>the Genghis homepage</a> to view other games</li>"
+            ul.innerHTML = `<li>Game has ended. Visit <a href='${game.endpoint}index.html?v=` + Date.now() + `'>the Genghis homepage</a> to view other games</li>`
         };
 
         // When a patch is received:
@@ -162,7 +162,7 @@
                 } else {
                     evtSource.close();
                     let ul = document.getElementById("basic_info");
-                    ul.innerHTML = "<li>Game has ended. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server?v="+Date.now()+"'>the Genghis homepage</a> to view other games</li>"
+                    ul.innerHTML = `<li>Game has ended. Visit <a href='${game.endpoint}index.html?v=` + Date.now() + `'>the Genghis homepage</a> to view other games</li>`
                 }
             } catch (e) {
                 console.log(e);
@@ -170,7 +170,7 @@
         }, false);
     }).fail(() => {
         let bg_card = document.getElementById("bg-card");
-        bg_card.innerHTML = "<li>Game failed to load. Visit <a href='https://people.cs.uct.ac.za/~KNXBOY001/genghis_server?v="+Date.now()+"'>the Genghis homepage</a> to view other games</li>"
+        bg_card.innerHTML = `<li>Game has failed to load. Visit <a href='${window.location.href.replace(/follow\.html.*/gm, '')}index.html?v=` + Date.now() + `'>the Genghis homepage</a> to view other games</li>`
     });
 
     // TODO add error message to user when th json game file doesn't load properly

@@ -17,7 +17,8 @@ import time
 import traceback
 
 # add the server directory to the PATH so we can import the utilities file
-sys.path.append("/home/k/knxboy001/public_html/genghis_server")
+genghis_root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.append(genghis_root_path)
 import util
 
 def main():
@@ -93,7 +94,7 @@ def step(game):
 
                     result = subprocess.run(
                         ['python3', bot.bot_filename,
-                        '/home/k/knxboy001/public_html/genghis_server',
+                        genghis_root_path,
                         bot.bot_icon,
                         bg_icon],
                         timeout=5,
