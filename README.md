@@ -6,6 +6,8 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## Problems to solve
+* Before pushing `genghis_server`, should split server-state into:
+    * server-config.json and server-state.json
 * Need some way to keep each individual game interesting
     * Maybe provide stages / somethign that changes as the game goes from early to mid to late?
 * Need to allow for different players to have different strategies
