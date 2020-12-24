@@ -4,3 +4,4 @@ server_state.json
 Session.vim
 games/*
 server_state.json
+__pycache__/
