@@ -7,25 +7,25 @@ import requests
 import shutil
 import subprocess
 import sys
+import traceback
 import util
 
-SERVER_STATE_FILE = 'server_state.json' if len(sys.argv) < 2 else sys.argv[1]
 JUDGE_SYSTEM_SCRIPT = 'judge.py'
 
 
-def main():
+def main(server_state_path='server_state.json'):
     """Start a game from scratch
-    create a directory in ./games/
-    Build up a game config file
-    Add in all the players to the game.
-    Add in all the nodes to the game.
-    copy over the judge system script
-    start the game going
+    * create a directory in ./games/
+    * Build up a game config file
+    * Add in all the players to the game.
+    * Add in all the nodes to the game.
+    * copy over the judge system script
+    * start the game going
     """
-    with open(SERVER_STATE_FILE, 'r') as server_state_file:
+    with open(server_state_path, 'r') as server_state_file:
         server_state = json.load(server_state_file)
     need_777 = [
-        SERVER_STATE_FILE
+        server_state_path
     ]
     need_permissions = [
         'diff_match_patch.js',
@@ -50,6 +50,7 @@ def main():
     # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
     for client_obj in server_state['clients']:
         try:
+            print(client_obj)
             c = util.Client(
                 client_obj['username'],
                 client_obj['url'],
@@ -65,6 +66,7 @@ def main():
             for battleground in clients[-1].battlegrounds:
                 game.add_battleground(battleground)
         except:
+            traceback.print_exc()
             print("Client failed to build, ommiting client at url {} from the game".format(client_obj['url']))
 
     game.init_game()
@@ -81,4 +83,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 2:
+        main(sys.argv[1])
+    else:
+        main()
+
