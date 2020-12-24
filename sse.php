@@ -27,10 +27,6 @@ while (true) {
             echo 'data: ' . $sse_formatted , "\n\n";
         }
 
-
-        //echo 'data: curr_game_tick = ' . $curr_game_tick, "\n\n";
-        //echo 'data: game_id = ' . $game_id, "\n\n";
-
         while (ob_get_level() > 0) { ob_end_flush(); }
         flush();
         if ( connection_aborted() ) break;
