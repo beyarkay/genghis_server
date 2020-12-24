@@ -73,6 +73,8 @@ class Game:
             'data': [],
         }]
 
+        if not os.path.exists('games'):
+            os.mkdir('games')
         os.mkdir(self.game_dir)
         os.chmod("games", 0o755)
         os.chmod(self.game_dir, 0o755)
@@ -185,7 +187,7 @@ class Game:
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
         for i, bot in enumerate(self.bots):
-            for bg in [bg for bg in self.battlegrounds if len(bg.bots) <= 2]:
+            for bg in [bg for bg in self.battlegrounds if len(bg.bots) < 2]:
                 bg.add_bot(bot)
                 break
             else:
@@ -218,11 +220,13 @@ class Game:
                 "target": self.port_icons[(i - 1) % len(self.port_icons)],
                 "value": 1
             })
-            self.port_graph['links'].append({
-                "source": port_icon,
-                "target": random.choice([icon for icon in self.port_icons if icon != port_icon]),
-                "value": 1
-            })
+            other_icons = [icon for icon in self.port_icons if icon != port_icon]
+            if other_icons:
+                self.port_graph['links'].append({
+                    "source": port_icon,
+                    "target": random.choice(other_icons),
+                    "value": 1
+                })
 
         # assign bot icons
         self.bot_icons = []
