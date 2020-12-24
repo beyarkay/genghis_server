@@ -109,7 +109,8 @@
         create_bg_card('bg-card', game);
         // create_graph_card('graphs-card', game);
 
-        let url = "sse.php?last_seen_tick=" + game.tick + "&game_id=" + game_param.replace('games/', '');
+        let url = game.endpoint + "sse.php?last_seen_tick=" + game.tick + "&game_id=" + game_param.replace('games/', '');
+        console.log(url)
         var evtSource = new EventSource(url);
         let dmp = new diff_match_patch();
 
