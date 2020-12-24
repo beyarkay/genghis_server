@@ -185,7 +185,7 @@ class Game:
         random.shuffle(self.battlegrounds)
         num_battlegrounds = len(self.battlegrounds)
         for i, bot in enumerate(self.bots):
-            for bg in [bg for bg in self.battlegrounds if len(bg.bots) <= 2]:
+            for bg in [bg for bg in self.battlegrounds if len(bg.bots) <= 1]:
                 bg.add_bot(bot)
                 break
             else:
