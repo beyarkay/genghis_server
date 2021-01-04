@@ -1,28 +1,78 @@
 {
-  "endpoint": "localhost:5000/",
+  "endpoint": "http://localhost:5000/",
   "clients": [
     {
-      "username": "Dev User_0",
+      "username": "Beyarkay_0",
       "abbreviations": [
-        "d"
+        "b"
       ],
       "url": "http://localhost:4000"
     },
     {
-      "username": "Dev User_1",
+      "username": "Beyarkay_1",
       "abbreviations": [
-        "d"
+        "b"
       ],
       "url": "http://localhost:4000"
     },
     {
-      "username": "Dev User_2",
+      "username": "Beyarkay_2",
       "abbreviations": [
-        "d"
+        "b"
       ],
       "url": "http://localhost:4000"
     }
   ],
   "games": [
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "http://localhost:5000/",
+      "game_dir": "games/2021-01-03T12:43:47.301000",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    }
   ]
 }
