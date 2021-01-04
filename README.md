@@ -5,15 +5,18 @@ students compete for resources, trade, and fight each other across
 multiple different battlegrounds. 
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
-## Problems to solve
+## Work in progress:
+* fix the D3 script to now redraw the bg
+* Allow github hosting
+* allow control of the bot from the CLI
 * Before pushing `genghis_server`, should split server-state into:
     * server-config.json and server-state.json
+
+## Problems to solve
 * Need some way to keep each individual game interesting
     * Maybe provide stages / somethign that changes as the game goes from early to mid to late?
 * Need to allow for different players to have different strategies
     * With no strategy being definitively better or worse than the others
-* Need an ending condition upon which the game will terminate
-    * Maybe all players loose health all the time, resulting in all bots dying if they don't actively keep up their health
 * make sure the pro players don't have too much incentive to try 'farm' the weaker players
 * Need some way of encouraging cooperation in the game - to make it more interesting
     * What if the coin drop mechanism was expanded in some way?
@@ -28,16 +31,13 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
   
 
 ## TODO - based on talks
-* Some method of tracking health
-* Ability to hop 2 spaces (over walls) if you leave a coin where you were
 * Coin hot-spots, where a large number of coins are spawned throughout the game around certain points
 * Meta-graphs, tracking how well bots do over many different games
 * Have "playground" games and then "League" games
 * Terminate the game after X ticks of no bot-on-bot interactions
-* Provide a legend describing what everything on the map is / basic rules
 
 ## TODO - Front End revamp
-* TODO instead of re-creating the D3 files, just update them with new data
+* Clicking on an item will persist the tooltip
 * TODO Give more RIGHT NOW information (who's move is it?, what tick is it?)
 * TODO make it more obvoius which game it is (and maybe simplify the game name?)
 * TODO make the schedule of games more obvoius
@@ -51,12 +51,7 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 * TODO When the game ends, add a marker so that the client stops requesting.
 * TODO Add in some error checking for step 5 in the introduction
 
-
 ### Gameplay
-* TODO Bots have health points.
-* TODO attacking a bot decreases it's health points.
-* TODO A bot with 0hp is removed from the game
-* TODO Games end either when there are no bots left or when the timer runs out
 * TODO Bots can spend coins at certain points in the map in order to heal
 * TODO more coins will periodically spawn in throughout the game, on random bgs
 
@@ -68,17 +63,39 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
 
 ### Development
 * TODO Add in a testing script for the developers
-* TODO add in some way of the user's starting up a game at will, with custom bgs, bots, etc
 
 ### Performance
 
 ### brk bot
-* Fix the fast A\* algorithm
+
+### Logging
+* Battleground logs:
+    * Number interactions
+    * Rate of interactions
+    * Number of coins
+    * Rate of picking up coins
+    * Length spent on BG
+    * Which bots spend time on which BG
+    * Number of deaths
+    * Locations of deaths
+
+* Bot Logs: 
+    * Number interactions
+    * Rate of interactions
+    * Number of coins
+    * Rate of picking up coins
+    * Number of deaths
+        * Also stratify by killer
+    * Locations of deaths
+* Per game logs:
+    * percentil values: [p0, p1, p10, p50, p90, p99, p100]
+    * game id, bg id, number of coins, coins [percentiles], deaths [percentiles], interactions [percentiles], durations [percentiles]
 
 ### UI/UX
 * TODO add in a health-points graph
 * TODO add in a port-network graph
-* TODO Clicking on a plot brings it to the front
+* TODO add in a bot-coin graph
+* TODO Have a method for 'replaying' interesting interactions
 * TODO Dark mode
 
 ### Nice to have
