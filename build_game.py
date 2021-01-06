@@ -28,7 +28,9 @@ def main(server_state_path='server_state.json'):
         server_state_path
     ]
     need_permissions = [
+        'cgi-bin',
         'diff_match_patch.js',
+        'favicon.ico',
         'follow.html',
         'get_gamestate.php',
         'index.html',
