@@ -121,76 +121,11 @@ def start_server(directory='', PORT=8000):
 
     os.chdir(directory)
     # Utilities for CGIHTTPRequestHandler
-    def _url_collapse_path(path):
-        """
-        Given a URL path, remove extra '/'s and '.' path elements and collapse
-        any '..' references and returns a collapsed path.
-        Implements something akin to RFC-2396 5.2 step 6 to parse relative paths.
-        The utility of this function is limited to is_cgi method and helps
-        preventing some security attacks.
-        Returns: The reconstituted URL, which will always start with a '/'.
-        Raises: IndexError if too many '..' occur within the path.
-        """
-        # Query component should not be involved.
-        path, _, query = path.partition('?')
-        path = urllib.parse.unquote(path)
-
-        # Similar to os.path.split(os.path.normpath(path)) but specific to URL
-        # path semantics rather than local operating system semantics.
-        path_parts = path.split('/')
-        head_parts = []
-        for part in path_parts[:-1]:
-            if part == '..':
-                head_parts.pop() # IndexError if more '..' than prior parts
-            elif part and part != '.':
-                head_parts.append( part )
-        if path_parts:
-            tail_part = path_parts.pop()
-            if tail_part:
-                if tail_part == '..':
-                    head_parts.pop()
-                    tail_part = ''
-                elif tail_part == '.':
-                    tail_part = ''
-        else:
-            tail_part = ''
-
-        if query:
-            tail_part = '?'.join((tail_part, query))
-
-        splitpath = ('/' + '/'.join(head_parts), tail_part)
-        collapsed_path = "/".join(splitpath)
-
-        return collapsed_path
-
-    nobody = None
-
-    def nobody_uid():
-        """Internal routine to get nobody's uid"""
-        global nobody
-        if nobody:
-            return nobody
-        try:
-            import pwd
-        except ImportError:
-            return -1
-        try:
-            nobody = pwd.getpwnam('nobody')[2]
-        except KeyError:
-            nobody = 1 + max(x[2] for x in pwd.getpwall())
-        return nobody
-
     def executable(path):
         """Test for executable file."""
         return os.access(path, os.X_OK)
 
     class SSEHandler(http.server.SimpleHTTPRequestHandler):
-
-        """Complete HTTP server with GET, HEAD and POST commands.
-        GET and HEAD also support running CGI scripts.
-        The POST command is *only* implemented for CGI scripts.
-        """
-
         # Determine platform specifics
         have_fork = hasattr(os, 'fork')
 
@@ -228,7 +163,35 @@ def start_server(directory='', PORT=8000):
             path begins with one of the strings in self.cgi_directories
             (and the next character is a '/' or the end of the string).
             """
-            collapsed_path = _url_collapse_path(self.path)
+            # Query component should not be involved.
+            path, _, query = self.path.partition('?')
+            path = urllib.parse.unquote(path)
+
+            # Similar to os.path.split(os.path.normpath(path)) but specific to URL
+            # path semantics rather than local operating system semantics.
+            path_parts = path.split('/')
+            head_parts = []
+            for part in path_parts[:-1]:
+                if part == '..':
+                    head_parts.pop() # IndexError if more '..' than prior parts
+                elif part and part != '.':
+                    head_parts.append( part )
+            if path_parts:
+                tail_part = path_parts.pop()
+                if tail_part:
+                    if tail_part == '..':
+                        head_parts.pop()
+                        tail_part = ''
+                    elif tail_part == '.':
+                        tail_part = ''
+            else:
+                tail_part = ''
+
+            if query:
+                tail_part = '?'.join((tail_part, query))
+
+            splitpath = ('/' + '/'.join(head_parts), tail_part)
+            collapsed_path = "/".join(splitpath)
             dir_sep = collapsed_path.find('/', 1)
             while dir_sep > 0 and not collapsed_path[:dir_sep] in self.cgi_directories:
                 dir_sep = collapsed_path.find('/', dir_sep+1)
@@ -238,12 +201,12 @@ def start_server(directory='', PORT=8000):
                 return True
             return False
 
-
+        # TODO try to have a specific script be the cgi 'directory'
         cgi_directories = ['/cgi-bin', '/htbin']
 
         def is_executable(self, path):
             """Test whether argument path is an executable file."""
-            return executable(path)
+            return os.access(path, os.X_OK)
 
         def is_python(self, path):
             """Test whether argument path is a Python script."""
@@ -297,78 +260,74 @@ def start_server(directory='', PORT=8000):
                         "CGI script is not executable (%r)" % scriptname)
                     return
 
-            # Reference: http://hoohoo.ncsa.uiuc.edu/cgi/env.html
-            # XXX Much of the following could be prepared ahead of time!
+#            # Reference: http://hoohoo.ncsa.uiuc.edu/cgi/env.html
+#            # XXX Much of the following could be prepared ahead of time!
             env = copy.deepcopy(os.environ)
-            env['SERVER_SOFTWARE'] = self.version_string()
-            env['SERVER_NAME'] = self.server.server_name
-            env['GATEWAY_INTERFACE'] = 'CGI/1.1'
-            env['SERVER_PROTOCOL'] = self.protocol_version
-            env['SERVER_PORT'] = str(self.server.server_port)
-            env['REQUEST_METHOD'] = self.command
-            uqrest = urllib.parse.unquote(rest)
-            env['PATH_INFO'] = uqrest
-            env['PATH_TRANSLATED'] = self.translate_path(uqrest)
-            env['SCRIPT_NAME'] = scriptname
-            if query:
-                env['QUERY_STRING'] = query
-            env['REMOTE_ADDR'] = self.client_address[0]
-            authorization = self.headers.get("authorization")
-            if authorization:
-                authorization = authorization.split()
-                if len(authorization) == 2:
-                    import base64, binascii
-                    env['AUTH_TYPE'] = authorization[0]
-                    if authorization[0].lower() == "basic":
-                        try:
-                            authorization = authorization[1].encode('ascii')
-                            authorization = base64.decodebytes(authorization).\
-                                            decode('ascii')
-                        except (binascii.Error, UnicodeError):
-                            pass
-                        else:
-                            authorization = authorization.split(':')
-                            if len(authorization) == 2:
-                                env['REMOTE_USER'] = authorization[0]
-            # XXX REMOTE_IDENT
-            if self.headers.get('content-type') is None:
-                env['CONTENT_TYPE'] = self.headers.get_content_type()
-            else:
-                env['CONTENT_TYPE'] = self.headers['content-type']
+#            env['SERVER_SOFTWARE'] = self.version_string()
+#            env['SERVER_NAME'] = self.server.server_name
+#            env['GATEWAY_INTERFACE'] = 'CGI/1.1'
+#            env['SERVER_PROTOCOL'] = self.protocol_version
+#            env['SERVER_PORT'] = str(self.server.server_port)
+#            env['REQUEST_METHOD'] = self.command
+#            uqrest = urllib.parse.unquote(rest)
+#            env['PATH_INFO'] = uqrest
+#            env['PATH_TRANSLATED'] = self.translate_path(uqrest)
+#            env['SCRIPT_NAME'] = scriptname
+#            if query:
+#                env['QUERY_STRING'] = query
+#            env['REMOTE_ADDR'] = self.client_address[0]
+#            authorization = self.headers.get("authorization")
+#            if authorization:
+#                authorization = authorization.split()
+#                if len(authorization) == 2:
+#                    import base64, binascii
+#                    env['AUTH_TYPE'] = authorization[0]
+#                    if authorization[0].lower() == "basic":
+#                        try:
+#                            authorization = authorization[1].encode('ascii')
+#                            authorization = base64.decodebytes(authorization).\
+#                                            decode('ascii')
+#                        except (binascii.Error, UnicodeError):
+#                            pass
+#                        else:
+#                            authorization = authorization.split(':')
+#                            if len(authorization) == 2:
+#                                env['REMOTE_USER'] = authorization[0]
+#            # XXX REMOTE_IDENT
+#            if self.headers.get('content-type') is None:
+#                env['CONTENT_TYPE'] = self.headers.get_content_type()
+#            else:
+#                env['CONTENT_TYPE'] = self.headers['content-type']
+#
+#
+#            length = self.headers.get('content-length')
+#            if length:
+#                env['CONTENT_LENGTH'] = length
+#            referer = self.headers.get('referer')
+#            if referer:
+#                env['HTTP_REFERER'] = referer
+#            accept = self.headers.get_all('accept', ())
+#            env['HTTP_ACCEPT'] = ','.join(accept)
+#            ua = self.headers.get('user-agent')
+#            if ua:
+#                env['HTTP_USER_AGENT'] = ua
+#            co = filter(None, self.headers.get_all('cookie', []))
+#            cookie_str = ', '.join(co)
+#            if cookie_str:
+#                env['HTTP_COOKIE'] = cookie_str
+#            # XXX Other HTTP_* headers
+#            # Since we're setting the env in the parent, provide empty
+#            # values to override previously set values
+#            for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
+#                    'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER'):
+#                env.setdefault(k, "")
 
-
-            length = self.headers.get('content-length')
-            if length:
-                env['CONTENT_LENGTH'] = length
-            referer = self.headers.get('referer')
-            if referer:
-                env['HTTP_REFERER'] = referer
-            accept = self.headers.get_all('accept', ())
-            env['HTTP_ACCEPT'] = ','.join(accept)
-            ua = self.headers.get('user-agent')
-            if ua:
-                env['HTTP_USER_AGENT'] = ua
-            co = filter(None, self.headers.get_all('cookie', []))
-            cookie_str = ', '.join(co)
-            if cookie_str:
-                env['HTTP_COOKIE'] = cookie_str
-            # XXX Other HTTP_* headers
-            # Since we're setting the env in the parent, provide empty
-            # values to override previously set values
-            for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
-                    'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER'):
-                env.setdefault(k, "")
-
-#            self.send_header('Content-Type', 'text/event-stream; charset=UTF-8')
-#            self.send_header('Connection', 'Keep-Alive')
             self.send_response(HTTPStatus.OK, "OK")
             self.send_header('Cache-Control', 'no-cache')
             self.send_header('Content-Type', 'text/event-stream;charset=UTF-8')
             self.send_header('Keep-Alive', 'timeout=5, max=94')
             self.send_header('Connection', 'Keep-Alive')
             self.send_header('Transfer-Encoding', 'chunked')
-
-            if hasattr(self, '_headers_buffer'): print(b"".join(self._headers_buffer))
             self.end_headers()
 
             decoded_query = query.replace('+', ' ')
@@ -378,7 +337,17 @@ def start_server(directory='', PORT=8000):
                 args = [script]
                 if '=' not in decoded_query:
                     args.append(decoded_query)
-                nobody = nobody_uid()
+                """Internal routine to get nobody's uid"""
+                global nobody
+                if not nobody:
+                    try:
+                        import pwd
+                    except ImportError:
+                        nobody = -1
+                    try:
+                        nobody = pwd.getpwnam('nobody')[2]
+                    except KeyError:
+                        nobody = 1 + max(x[2] for x in pwd.getpwall())
                 self.wfile.flush() # Always flush before forking
                 pid = os.fork()
                 if pid != 0:
@@ -464,15 +433,6 @@ def start_server(directory='', PORT=8000):
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-
-#    Handler = http.server.SimpleHTTPRequestHandler
-#    with socketserver.TCPServer(("localhost", PORT), Handler) as httpd:
-#        print("Serving at port {}, on directory {}".format(PORT, directory))
-#        try:
-#            httpd.serve_forever()
-#        except KeyboardInterrupt:
-#            pass
-#        httpd.server_close()
     os.chdir(old_dir)
 
     
