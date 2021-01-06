@@ -1,3 +1,15 @@
+export function keygen() {
+    $.ajax({
+        type: "POST",
+        url: "generate_key.php",
+        data: {},
+        success: function(response) {
+            console.log("Success!");
+            console.log(response);
+        }
+    });
+}
+
 export function get_param(param, defaultvalue) {
     if (window.location.href.indexOf(param) > -1) {
         let vars = {};
