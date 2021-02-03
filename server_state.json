@@ -1,343 +1,7 @@
 {
   "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-  "clients": [
-    {
-      "username": "LucH",
-      "abbreviations": [
-        "l"
-      ],
-      "url": "https://people.cs.uct.ac.za/~HYWLUC001/genghis_client"
-    },
-    {
-      "username": "stu2",
-      "abbreviations": [
-        "s"
-      ],
-      "url": "https://people.cs.uct.ac.za/~MSHSTU001/genghis_client"
-    },
-    {
-      "username": "carlll",
-      "abbreviations": [
-        "c"
-      ],
-      "url": "https://people.cs.uct.ac.za/~CMBCAR007/genghis_client"
-    },
-    {
-      "username": "360SwagSc0p3",
-      "abbreviations": [
-        "s"
-      ],
-      "url": "https://people.cs.uct.ac.za/~LRDJUL001/genghis_client"
-    },
-    {
-      "username": "Beyarkay",
-      "abbreviations": [
-        "b"
-      ],
-      "url": "https://people.cs.uct.ac.za/~KNXBOY001/boyd_genghis_client"
-    }
-  ],
+  "clients": [],
   "games": [
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T20:48:15.842044",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T20:50:01.502166",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T20:56:28.465837",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T21:00:02.135427",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T21:00:43.122762",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
-    {
-      "battlegrounds": [],
-      "bot_icons": [],
-      "bots": [],
-      "coin_icons": [],
-      "continues": true,
-      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
-      "game_dir": "games/2021-02-03T21:02:02.391016",
-      "graphs": [
-        {
-          "id": "events",
-          "title": "Game-Wide Events",
-          "x_label": "Game Tick",
-          "y_label": "Bot",
-          "x_key": "tick",
-          "y_key": "bot_icon",
-          "series_key": "",
-          "data": []
-        },
-        {
-          "id": "cpb",
-          "title": "Coins per Bot",
-          "x_label": "Game Tick",
-          "y_label": "Number of Coins",
-          "x_key": "tick",
-          "y_key": "num_coins",
-          "series_key": "bot_icon",
-          "data": []
-        },
-        {
-          "id": "bot_locs",
-          "title": "Bot Locations",
-          "x_label": "Game Tick",
-          "y_label": "Battleground",
-          "x_key": "tick",
-          "y_key": "bg_port_icon",
-          "series_key": "bot_icon",
-          "data": []
-        }
-      ],
-      "iteration": 0,
-      "moving": null,
-      "port_graph": {
-        "links": [],
-        "nodes": []
-      },
-      "port_icons": [],
-      "tick": 0,
-      "turn_time": 0.5
-    },
     {
       "battlegrounds": [],
       "bot_icons": [],
@@ -496,6 +160,306 @@
       "continues": true,
       "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
       "game_dir": "games/2021-02-03T21:20:01.918417",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:22:37.278081",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:24:47.961094",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:25:18.896980",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:25:39.538963",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:26:57.426614",
+      "graphs": [
+        {
+          "id": "events",
+          "title": "Game-Wide Events",
+          "x_label": "Game Tick",
+          "y_label": "Bot",
+          "x_key": "tick",
+          "y_key": "bot_icon",
+          "series_key": "",
+          "data": []
+        },
+        {
+          "id": "cpb",
+          "title": "Coins per Bot",
+          "x_label": "Game Tick",
+          "y_label": "Number of Coins",
+          "x_key": "tick",
+          "y_key": "num_coins",
+          "series_key": "bot_icon",
+          "data": []
+        },
+        {
+          "id": "bot_locs",
+          "title": "Bot Locations",
+          "x_label": "Game Tick",
+          "y_label": "Battleground",
+          "x_key": "tick",
+          "y_key": "bg_port_icon",
+          "series_key": "bot_icon",
+          "data": []
+        }
+      ],
+      "iteration": 0,
+      "moving": null,
+      "port_graph": {
+        "links": [],
+        "nodes": []
+      },
+      "port_icons": [],
+      "tick": 0,
+      "turn_time": 0.5
+    },
+    {
+      "battlegrounds": [],
+      "bot_icons": [],
+      "bots": [],
+      "coin_icons": [],
+      "continues": true,
+      "endpoint": "https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/",
+      "game_dir": "games/2021-02-03T21:30:01.678428",
       "graphs": [
         {
           "id": "events",
