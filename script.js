@@ -392,10 +392,9 @@ function update_battleground(div_id, bg, game) {
       .join(
         enter => enter.append("text")
             .attr("font-size", (1.2 * cell_width).toString() + 'px')
-            .attr("text-anchor", 'middle')
-            .attr("alignment-baseline", 'middle')
+            .attr("text-anchor", "middle")
             .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+            .attr("y", d => d.rect_y + 0.9 * d.rect_height)
             .attr('fill', d => d.text_fill)
             .attr("font-weight", d => d.text_font_weight)
             .text(d => d.text_content)
@@ -410,7 +409,7 @@ function update_battleground(div_id, bg, game) {
         update => update
           .call(update => update.transition(t)
             .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-            .attr("y", d => d.rect_y + 0.6 * d.rect_height)
+            .attr("y", d => d.rect_y + 0.9 * d.rect_height)
             ),
 
         exit => exit
