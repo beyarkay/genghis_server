@@ -6,8 +6,13 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## Work in progress:
-* fix the D3 script to now redraw the bg
 * Allow github hosting
+    * w+ is not enough regex for github usernames. Need to allow `a-zA-Z0-9-_.`
+    * Everything works up to adding the client to clients.json, but the UI doesn't update
+        after that has happened server-side
+
+
+* fix the D3 script to now redraw the bg
 * allow control of the bot from the CLI
 * Before pushing `genghis_server`, should split server-state into:
     * server-config.json and server-state.json
@@ -92,6 +97,11 @@ See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get star
     * game id, bg id, number of coins, coins [percentiles], deaths [percentiles], interactions [percentiles], durations [percentiles]
 
 ### UI/UX
+* TODO Add stats on index.html, like
+    * Which clients are registered, and are their repositorys accessible?
+    * Which bot has won the most games, and whats their Ao10, Ao100, Ao1000? (Average over XXX )
+    * Various other bot / battleground based stats, presented as averages over a certain number of games:
+        * See 'Logging' for example statistics to show.
 * TODO add in a health-points graph
 * TODO add in a port-network graph
 * TODO add in a bot-coin graph
