@@ -1,0 +1,27 @@
+{
+  "clients": [
+    {
+      "case": "add_new_client",
+      "username": "beyarkay",
+      "repository": "genghis_5",
+      "url": "https://github.com/beyarkay/genghis_5",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5bhp02UesU2ZXr/VY+x1gQscPkkiN3FYO1uxCvWC3RZ3qOTTxW2Lkml83CEHFVUBfa8V2YfyxYbzoEZnQ51sdIBzx7yX0yMwMn2BJVUawv1ENbcDFv2ebf2JktMQHybVYhax960ZeNf6OiA2npllOh35ftYCSu7tMKGzeHnOJWmeaKULQlQ2HQ/PtSHrXxF2R7LVMKNNZAk7A8DLk8qqwizuTJYa8W5CnmLMOPmoPI0jxZ+D63ZSuYicpW2FWX0SDet8BgW5I8xzsNr/rZQ+hiVUUL2uB7GycDr9ur5wYHOpLJqhI6KzDFOfvjStATnWSLBcIpJYRHUBvKe1bfTfR"
+    },
+    {
+      "case": "add_new_client",
+      "username": "brk-testing",
+      "repository": "gg3",
+      "url": "https://github.com/brk-testing/gg3",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDaE5eyWi7KCUUDabydjrLRR8b/GmyEXJyT4wGeQbdbWb3tx6iXFeCoRl3DOJPwXzSa4LUgGNdQgNZIREH5xste5dMbW7W7bDmUh24sd/wziinvZ2CcezVacmyMT+eYj26fRYaCqjorGubSMNtAG+t6H+J7a9EhpW4z6vfLCGUTkrCORk5MDcJm4oXGwGuNtVeNQgDyrPqJu2/wTBZmpL3tOVa1VDWMrHOluFpXXReZofMMZB//i7bZj/V52tcYHkdG0ThQj8bY7m1Y6QPb9s+P2XVzlQXt4zYD1Z2+hUmkRDPnKLGDwxX1Ulx+nLziE0Oy2PcR5C7GoKNFv+y14Ysf",
+      "first_failure": "2021-01-16 20:39:15.960391"
+    },
+    {
+      "case": "add_new_client",
+      "username": "brk-testing",
+      "repository": "gg4",
+      "url": "https://github.com/brk-testing/gg4",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCNOe3/lQc9OMRUiaxI/SjUaqRgah8Nv8ZnAnFfgjNgApN4sMVkvw2sZxiVj+wHtltPI8KWTviV7E+Sqq6yfdfnnBmdxMay6MVeyrmP1L23EeycbqNazhfNhoYDo6Op67zFSiavaSkV+MZSx7CQCwxkR2XuSt5vSEK5B5vNf40O/0cfBFaV9fNkJqKJ5NhO8Fsj5VU/AlGvEC6yvnIbR/Pm5+04WW85s01udso3nRAU2WFmXCtTWSPqFL6rNaTXucKefWqKIHOqqnZOxnTbyXxvWs2Zy+6eo/9g0ryFm+zo8HUpCAKeKsXzLe/gJahV2uWr42tED5Dp1PjZOv5hSra3",
+      "first_failure": "2021-01-16 21:35:10.331049"
+    }
+  ]
+}

@@ -12,51 +12,67 @@ import util
 
 JUDGE_SYSTEM_SCRIPT = 'judge.py'
 
-
-def main(server_state_path='server_state.json'):
-    """Start a game from scratch
-    * create a directory in ./games/
-    * Build up a game config file
-    * Add in all the players to the game.
-    * Add in all the nodes to the game.
-    * copy over the judge system script
-    * start the game going
-    """
-    with open(server_state_path, 'r') as server_state_file:
-        server_state = json.load(server_state_file)
+def allocate_permissions():
     need_777 = [
-        server_state_path
+        'server_state.json',
+        '.new_clients.json',
     ]
-    need_permissions = [
+    for f in need_777:
+        os.chmod(f, 0o777)
+    need_755 = [
         'cgi-bin',
+        'clients.json',
         'diff_match_patch.js',
         'favicon.ico',
         'follow.html',
-        'get_gamestate.php',
         'index.html',
-        'register_client.php',
+        'requests.php',
         'script.js',
         'sse.php',
         'styles.css',
     ]
-    for f in need_777:
-        os.chmod(f, 0o777)
 
-    for f in need_permissions:
+    for f in need_755:
         os.chmod(f, 0o755)
-    clients = []
+
+def main(server_state_path='server_state.json'):
+    """
+    There are several tasks needed to build and start a new game.
+
+    * Give files correct permissions
+    * Read in the list of clients
+    * Import the bots and battleground files from the clients
+    * If required: setup a server on localhost
+    * Create a game object from the util script
+    * Initialise the game's battlegrounds, port networks, etc
+    * Copy over the judge script to the game directory
+    * Actually start the game
+    """
+    with open('clients.json', 'r') as clients_file:
+        clients_json = json.load(clients_file).get('clients', [])
+
+    with open(server_state_path, 'r') as server_state_file:
+        server_state = json.load(server_state_file)
+
+    allocate_permissions()
+
+
     # Create the game directory
     iso_str = datetime.datetime.now().isoformat()
     game = util.Game(os.path.join("games", iso_str), server_state['endpoint'])
 
     # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
-    for client_obj in server_state['clients']:
+    clients = []
+    print(server_state.get('clients'))
+    all_clients = server_state.get('clients', []) + clients_json
+    print("Processing all clients:")
+    for client_obj in all_clients:
         try:
             print(client_obj)
             c = util.Client(
-                client_obj['username'],
-                client_obj['url'],
-                client_obj['abbreviations'],
+                client_obj.get('username'),
+                client_obj.get('url'),
+                client_obj.get('abbreviations'),
                 game.game_dir
             )
             clients.append(c)
@@ -83,7 +99,7 @@ def main(server_state_path='server_state.json'):
         game.game_dir.split('/')[-1]
     ])
 
-
+        
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         main(sys.argv[1])

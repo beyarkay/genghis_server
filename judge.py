@@ -78,7 +78,7 @@ def step(game):
 
                 # Execute the bot's script
                 debug_log["start"] = datetime.datetime.now()
-                module = "" + bot.username + "." +  bot.bot_filename.replace(".py", "")
+                module = "" + bot.username + "." +  bot.bot_filename.replace(".py", "").replace('/', '.')
                 cwd = os.getcwd()
                 try:
                     print(util.Colours.OKGREEN,end='')

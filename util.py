@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 from pprint import pprint
+import diff_match_patch as dmp_module
 import json
-import requests
 import os
 import pickle
 import random
-import pandas as pd
-import diff_match_patch as dmp_module
+import requests
+import subprocess
 
 PORT_ICONS = [str(i) for i in range(1, 10)] + ["!", "@", "$", "%", "^", "&", "*", "(", ")"]
 ACTION_HOP = "hop"
@@ -133,10 +133,6 @@ class Game:
                                 'bg_port_icon': bg.port_icon,
                                 'bot_icon': bot.bot_icon,
                             })
-            # elif graph['id'] == 'cpb':
-            #     pass
-            # elif graph['id'] == 'cpb':
-            #     pass
             else:
                 pass
 
@@ -317,11 +313,16 @@ class Bot:
             os.mkdir(os.path.join(self.game_dir, username))
 
         # Actually collect the bot
-        r = requests.get(self.bot_url)
-        assert r.ok, "request for {} not ok: {}".format(self.bot_url, r.text)
-        # add in the bot file to the local system
-        with open(self.bot_path, 'w+') as bot_file:
-            bot_file.write(r.text)
+        if 'https://github.com/' in self.bot_url:
+            # Github repositories are added in their entirety to the game directory, 
+            # and the bot_path, battleground_path reflects that.
+            pass 
+        else:
+            r = requests.get(self.bot_url)
+            assert r.ok, "request for {} not ok: {}".format(self.bot_url, r.text)
+            # add in the bot file to the local system
+            with open(self.bot_path, 'w+') as bot_file:
+                bot_file.write(r.text)
 
     def to_dict(self):
         d = {}
@@ -585,8 +586,6 @@ class Bot:
                                 })
                                 break
                         break
-        
-
  
 
 class Coin:
@@ -602,9 +601,7 @@ class Coin:
 
 
 class Battleground:
-    def __init__(self, game_dir, username,
-                 battleground_filename, battleground_url,
-                 name, num_coins=9):
+    def __init__(self, game_dir, username, battleground_filename, battleground_url, name, num_coins=9):
         self.game_dir = game_dir
         self.username = username
         self.battleground_path = os.path.join(self.game_dir, username, battleground_filename)
@@ -619,11 +616,17 @@ class Battleground:
         self.port_locations = []
         self.port_icon = ""
 
-        r = requests.get(self.battleground_url)
-        assert r.ok, "request for {} not ok: {}".format(self.battleground_url, r.text)
-        # add in the battleground file to the local system
-        with open(self.battleground_path, 'w+') as battleground_file:
-            battleground_file.write(r.text)
+        # Actually collect the battleground 
+        if 'https://github.com/' in self.battleground_url:
+            # Github repositories are added in their entirety to the game directory, 
+            # and the bot_path, battleground_path reflects that.
+            pass 
+        else:
+            r = requests.get(self.battleground_url)
+            assert r.ok, "request for {} not ok: {}".format(self.battleground_url, r.text)
+            # add in the battleground file to the local system
+            with open(self.battleground_path, 'w+') as battleground_file:
+                battleground_file.write(r.text)
 
         self.bg_map = [[]]
         self.bots = []
@@ -776,48 +779,90 @@ class Client:
     def __init__(self, username, url, abbreviations, game_dir):
         self.username = username
         self.url = url
-        self.abbreviations = abbreviations[:]
-        r = requests.get(self.url + "/config.json")
-        # TODO move bot validity checking to the client side setup / allow feedback to the client
-        assert r.ok, "Attempt to get config.json at path {} failed with error:\n{}".format(
-                self.url + "/config.json", r.text
-                )
+        self.abbreviations = abbreviations[:] if abbreviations else [username[0]]
         self.bots = []
-        json_result = r.json()
-        for item in json_result['bots']:
-            path = self.url + '/' + item['path']
-            r = requests.get(path)
-            if not r.ok:
-                # TODO move bot validity checking to the client side setup / allow feedback to the client
-                print("Attempt to get bot at path {} failed with error:\n{}".format(
-                    path,
-                    r.text
-                ))
-            else:
-                self.bots.append(Bot(
-                    game_dir, self.username, item['path'],
-                    self.url + '/' + item['path'], item['name'],
-                    json_result['abbreviations']
-                ))
-        assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
-
         self.battlegrounds = []
-        for item in json_result['battlegrounds']:
-            path = self.url + '/' + item['path']
-            r = requests.get(path)
-            if not r.ok:
-                print("Attempt to get battleground at path {} failed with error:\n{}".format(
-                    path,
-                    r.text
-                ))
-            else:
-                self.battlegrounds.append(Battleground(
-                    game_dir, self.username,
-                    item['path'], self.url + '/' + item['path'],
-                    item['name'],
-                ))
-        assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)
+        if 'https://github.com/' in self.url:
+            self.repository = self.url.replace('https://github.com/', '').replace(self.username + '/', '')
+            print('\nRepository is ' + self.url)
+            self.client_local_path = os.path.join(game_dir, self.username, self.repository)
+            config_json = {}
+            # Download the repository to game_dir
+            subdirectory = self.url.replace('https://github.com/', '')
+            dirname = "/home/k/knxboy001/.ssh/genghis/{}/".format(subdirectory)
+            cmd = ['ssh-agent', 'bash', '-c', 'ssh-add {} && git clone git@github.com:{}/{}.git {}'.format(
+                dirname + 'id_rsa',
+                self.username,
+                self.repository,
+                self.client_local_path)]
+            print('Cloning from GitHub: ' + ' '.join(cmd))
+            proc = subprocess.run(cmd)
+            assert proc.returncode == 0, print('Github download failed with error code {}:'.format(proc.returncode), proc.stdout,proc.stderr)
+            # Extract the config_json
+            with open(os.path.join(self.client_local_path, 'config.json'), 'r') as config_json_file:
+                config_json = json.load(config_json_file)
+            # Add the bots to the game && assert that bots were actually added
+            for bot in config_json['bots']:
+                if os.path.exists(os.path.join(self.client_local_path, bot.get('path'))):
+                    self.bots.append(Bot(
+                        game_dir, 
+                        self.username,
+                        os.path.join(self.repository, bot['path']),
+                        self.url + '/' + bot['path'],
+                        bot['name'],
+                        config_json['abbreviations']
+                    ))
+            assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
+            # Add the battlegrounds to the game && assert
+            for bg in config_json['battlegrounds']:
+                if os.path.exists(os.path.join(self.client_local_path, bg.get('path'))):
+                    self.battlegrounds.append(Battleground(
+                        game_dir, 
+                        self.username,
+                        os.path.join(self.repository, bg['path']),
+                        self.url + '/' + bg['path'],
+                        bg['name']
+                    ))
+            assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)
+        else:
+            r = requests.get(self.url + "/config.json")
+            # TODO move bot validity checking to the client side setup / allow feedback to the client
+            assert r.ok, "Attempt to get config.json at path {} failed with error:\n{}".format(
+                    self.url + "/config.json", r.text
+                    )
+            config_json = r.json()
+            for item in config_json['bots']:
+                path = self.url + '/' + item['path']
+                r = requests.get(path)
+                if not r.ok:
+                    # TODO move bot validity checking to the client side setup / allow feedback to the client
+                    print("Attempt to get bot at path {} failed with error:\n{}".format(
+                        path,
+                        r.text
+                    ))
+                else:
+                    self.bots.append(Bot(
+                        game_dir, self.username, item['path'],
+                        self.url + '/' + item['path'], item['name'],
+                        config_json['abbreviations']
+                    ))
+            assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
 
+            for item in config_json['battlegrounds']:
+                path = self.url + '/' + item['path']
+                r = requests.get(path)
+                if not r.ok:
+                    print("Attempt to get battleground at path {} failed with error:\n{}".format(
+                        path,
+                        r.text
+                    ))
+                else:
+                    self.battlegrounds.append(Battleground(
+                        game_dir, self.username,
+                        item['path'], self.url + '/' + item['path'],
+                        item['name'],
+                    ))
+            assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)
 
 
 class Colours:
@@ -830,4 +875,3 @@ class Colours:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-

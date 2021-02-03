@@ -89,29 +89,42 @@
                 <li>
                     You'll be taken to a page with lots of stuff. Ignore it all, copy
                     the URL of the repository and paste it below:
-                    <input type="text" style="width: 90%;" id="url" onkeyup="verifyGithubRepo(this, event)"/>
+                    <input type="text" style="width: 90%;" id="url" onkeyup="txtbox_github_url(this, event)"/>
                     <br><code id="err" style="display:none; color:red;"></code>
                 </li>
                 <li>
-                    Run the following lines in a linux/MacOS terminal<span class="blurb">, making sure to
+                    Run the following lines in a *nix/MacOS terminal<span class="blurb">, making sure to
                     replace MY_USERNAME with your github username and MY_REPO_NAME with your repository's 
                     name</span>:
                     <code>
                         git clone --bare https://github.com/beyarkay/genghis_client.git <br>
                         cd genghis_client.git <br>
-                        git push --mirror https://github.com/<span class="username">MY_USERNAME</span>/<span class="repo_name">MY_REPO_NAME</span>.git <br>
+                        git push --mirror git@github.com:<span class="username">MY_USERNAME</span>/<span class="repo_name">MY_REPO_NAME</span>.git <br>
                         cd ..  <br>
                         rm -rf genghis_client.git<br>
-                        git clone https://github.com/<span class="username">MY_USERNAME</span>/<span class="repo_name">MY_REPO_NAME</span>.git<br>
+                        git clone git@github.com:<span class="username">MY_USERNAME</span>/<span class="repo_name">MY_REPO_NAME</span>.git<br>
                         cd <span class="repo_name">MY_REPO_NAME</span><br>
                         git branch -M main<br>
                         git push -u origin main <br>
                     </code>
-                    And now you're able to <a href="https://github.com/beyarkay/genghis_client/wiki/Building-Your-Bot">
+                    <br>If you get an error like:
+                    <code>
+                        ERROR: Repository not found.
+                        <br>fatal: Could not read from remote repository.
+                    </code>
+                    Then you github doesn't know that the computer you're using actually belongs to you, 
+                    and that it's allowed to access your private repository. You'll need to 
+                    <a href="https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent" target="_blank">
+                    generate a new ssh key</a>, add it to the ssh-agent (follow the instructions in the link), and then
+                    <a href="https://docs.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account" target="_blank">
+                    add that ssh key to your github account</a>.
+                    <br>Once you've added the ssh key to your github account, run the lines of code again and it will 
+                    succeed.
+                </li>
+                <li>
+                    And now you're able to <a href="https://github.com/beyarkay/genghis_client/wiki/Building-Your-Bot" target="_blank">
                     start building your bot</a>. However, if you want to compete against other bots
-                    on
-                    <a href="https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/index.html">
-                    the genghis server</a>, you'll want to:
+                    on the genghis server, you'll want to:
                 </li>
             </ol>
             <br>
@@ -128,10 +141,11 @@
                     Now click: The three little dots in the top right &gt; Settings &gt; Deploy Keys &gt; Add Deploy Key.
                 </li>
                 <li>
-                    Choose a title for the deploy key, something like 'Genghis Server Deploy Key', then copy the below code block and paste it where you see the text area labeled 'Key':
-                    <code>
-                    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILeU0wJ2HTqV5V/GokwYiBhA/bzx5yfBPYSYBY1yBGhO knxboy001@nightmare
-                    </code>
+                    Choose a title for the deploy key, something like 'Genghis Server Deploy Key', then click the button below to copy your generated public deploy key to your clipboard:
+                    <code id='public_key'>Enter a valid GitHub URL under the 'Make your own bot' heading to generate your public deploy key</code>
+                    <button type="button" onclick="btn_copy_public_key()" style="display: none;" id="btn_copy_public_key">
+                        Copy public deploy key to clipboard</button> 
+                    Paste this public deploy key in the big text box labeled 'Key' on GitHub.
                     <br>This key will give the Genghis Battle System read-only access to your repository, so that it's
                     code can be run and your bots can be included in battles.
                 </li>
@@ -140,11 +154,11 @@
                     key has been added.
                 </li>
                 <li>
-                    Click <button type="button" onclick="registerClient()">
-                        Verify Private Repository 
-                        '<span class="username">MY_USERNAME</span>/<span class="repo_name">MY_REPO_NAME</span>'
-                    </button> to check that everything has been setup properly and that Genghis can read your
-                    repository.
+                    Almost done! The Genghis Server knows about your repository, but is just checking that 
+                    everything's in order and that it can read your repository correctly. This page will
+                    automatically update when you've been verified. Please make sure you can see the key you just
+                    created <span id='span_to_view_key'>at your repository's Deploy keys tab under Settings</span>.
+                    <br><br>While you wait, you can continue to the next section if you'd like.
                     <br><code id='register_err' style='display:none;color:red;'></code>
                 </li>
                 <li id="final" style="display:none">
@@ -195,36 +209,35 @@
 <script>
 let username;
 let repo_name;
-function registerClient() {
-    if (typeof username !== 'undefined') {
-        document.getElementById("register_err").style.display = 'none';
-
-        $.post("register_client.php", {
-            type:"github",
-            username: `${username}`,
-            repository: `${repo_name}`
-        }).done(function(d) {
-            console.log(d);
-            console.log( "success" );
-            document.getElementById('final').style.display = 'block';
-        }).fail(function() {
-                console.log( "error" );
-        });        
-    } else {
-        document.getElementById("register_err").innerHTML = "Error: You haven't entered a valid url into the text box under the 'Make your own bot' header";
-        document.getElementById("register_err").style.display = 'block';
-    }
-}
-function verifyGithubRepo(input_element, event) {
-    const regex = /^https:\/\/github\.com\/\w*\/\w*$/gm;
+let url;
+function txtbox_github_url(input_element, event) {
+    /*
+    When a user enters their github repo URL, there are several things
+    that get done automagically to make the process easier:
+    0. Check that the given URL matches a github url regex.
+    1. Extract the github username and repository name, then use
+        these values to populate the rest of the page with correct
+        commands for their use case
+    2. Make a POST request to the server to generate a new keypair for
+        each new user.
+        - The public key is returned and displayed to the user to copy.
+    */
+    const regex = /^https:\/\/github\.com\/(\w|-|\.|_)+\/(\w|-|\.|_)+$/gm;
+    // Check if the given url matches a github repository URL regex
     if (regex.test(input_element.value)) {
-        const url = input_element.value;
+        // Calculate & get some useful values
+        url = input_element.value;
         username = url.split('/')[3];
         repo_name = url.split('/')[4];
         const url_deploy = url + "/settings/keys/new";
-        document.getElementById("li_to_deploy_key").innerHTML = `Click <a href='${url_deploy}' target="_blank">here</a> to add a new key to your repository.`;
+        // Update the quick link to add a new deploy key
+        document.getElementById("li_to_deploy_key").innerHTML = 
+            `Click <a href='${url_deploy}' target="_blank">here</a> to add a new key to your repository.`;
+        document.getElementById("span_to_view_key").innerHTML = `<a href='${url}/settings/keys' target="_blank">here</a>`;
+        // Remove any error messages that might exist from previous failed attempts
         document.getElementById("err").style.display = 'none';
         document.getElementById("register_err").style.display = 'none';
+        // Go through all the username / repo / blurb placeholders and replace them appropriately
         let usernames = document.getElementsByClassName("username");
         for (let i = 0; i < usernames.length; i++) {
             usernames[i].innerHTML = username;
@@ -237,10 +250,65 @@ function verifyGithubRepo(input_element, event) {
         for (let i = 0; i < blurbs.length; i++) {
             blurbs[i].style.display = 'none';
         }
+
+        // Get and populate an ssh key
+        document.getElementById('public_key').innerHTML =
+            `${new Date().toLocaleTimeString()}: A request to generate a public deploy key for you has been sent...`;
+        $.post("requests.php", JSON.stringify({
+            case: 'add_new_client',
+            username: `${username}`,
+            repository: `${repo_name}`,
+            url: `${url}`,
+        })).done(function(d) {
+            console.log(d);
+            document.getElementById('public_key').innerHTML += 
+                `<br>${new Date().toLocaleTimeString()}: Your public deploy key is being generated...`;
+            // Make another request, this time to actually get the public key
+            $.post("requests.php", JSON.stringify({
+                case: 'wait_for_public_key',
+                username: `${username}`,
+                repository: `${repo_name}`,
+                url: `${url}`,
+            })).done(function(d) {
+                console.log(d);
+                document.getElementById('public_key').textContent = d['public_key'];
+                document.getElementById('public_key').style = 'display: none;';
+                document.getElementById('btn_copy_public_key').style = 'display: block;';
+            }).fail(function(d) {
+                console.log(d['responseText']);
+                document.getElementById('public_key').innerHTML += 
+                    `<br>${new Date().toLocaleTimeString()}: Your public deploy key was generated, but could not be retrieved from the server.`;
+            });        
+        }).fail(function(d) {
+            console.log(d['responseText']);
+            document.getElementById('public_key').innerHTML = `Your public deploy key failed to generate: ${d['response_text']['message']}`;
+        });        
     } else {
-        document.getElementById("err").innerHTML = "Error: the URL you entered doesn't match the regex ^https:\/\/github\.com\/\w*\/\w*$"
-        document.getElementById("err").style.display = 'block'
+        document.getElementById("err").innerHTML = "Error: the URL you entered doesn't match the regex " + regex;
+        document.getElementById("err").style.display = 'block';
     }
+}
+function btn_copy_public_key() {
+    let public_key = document.getElementById('public_key').innerHTML;
+    navigator.clipboard.writeText(public_key).then(function() {
+        document.getElementById('btn_copy_public_key').innerHTML = "Copied!";
+        console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+        document.getElementById('public_key').style = 'display: block;';
+    });
+    $.post("requests.php", JSON.stringify({
+        case: 'wait_for_access_granted',
+        username: `${username}`,
+        repository: `${repo_name}`,
+        url: `${url}`,
+    })).done(function(d) {
+        document.getElementById('final').style = 'display: block;';
+        console.log(d);
+    }).fail(function(d) {
+        console.log(d['responseText']);
+        console.log(d);
+    });        
 }
 </script>
 <script type="module">
