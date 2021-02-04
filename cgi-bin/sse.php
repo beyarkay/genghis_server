@@ -15,9 +15,9 @@ header("Connection: keep-alive");
 // header("Access-Control-Allow-Methods: POST");
 // header('Access-Control-Allow-Origin: *');
 
-//$queryString = $_SERVER['QUERY_STRING'];
 //echo 'start dump';
-//var_dump($queryString);
+//var_dump($_SERVER);
+//var_dump($_GET);
 //echo 'end dump';
 
 if (isset($_GET['game_id'])){

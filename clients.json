@@ -1,39 +1,25 @@
 {
   "clients": [
     {
-      "username": "LucH",
-      "abbreviations": [
-        "l"
-      ],
-      "url": "https://people.cs.uct.ac.za/~HYWLUC001/genghis_client"
-    },
-    {
-      "username": "stu2",
-      "abbreviations": [
-        "s"
-      ],
-      "url": "https://people.cs.uct.ac.za/~MSHSTU001/genghis_client"
-    },
-    {
-      "username": "carlll",
-      "abbreviations": [
-        "c"
-      ],
-      "url": "https://people.cs.uct.ac.za/~CMBCAR007/genghis_client"
-    },
-    {
-      "username": "360SwagSc0p3",
-      "abbreviations": [
-        "s"
-      ],
-      "url": "https://people.cs.uct.ac.za/~LRDJUL001/genghis_client"
-    },
-    {
-      "username": "Beyarkay",
+      "username": "Beyarkay_0",
       "abbreviations": [
         "b"
       ],
-      "url": "https://people.cs.uct.ac.za/~KNXBOY001/boyd_genghis_client"
+      "url": "http://localhost:4000"
+    },
+    {
+      "username": "Beyarkay_1",
+      "abbreviations": [
+        "b"
+      ],
+      "url": "http://localhost:4000"
+    },
+    {
+      "username": "Beyarkay_2",
+      "abbreviations": [
+        "b"
+      ],
+      "url": "http://localhost:4000"
     }
   ]
 }

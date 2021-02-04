@@ -17,7 +17,11 @@ import urllib.parse
 from http import HTTPStatus
 
 nobody = None
-SERVER_STATE_FILE = 'server_state.json' if len(sys.argv) == 4 else sys.argv[1]
+SERVER_STATE_FILE = 'server_state.json'
+
+# TODO: This file doesn't know about the new clients.json file
+#       Which is where all the clients should be added to.
+#       Rather refactor to not have to override existing client files
 
 def main():
     """
@@ -36,7 +40,7 @@ def main():
     ```
     """
     print("At any time, enter a question mark (?) and then press <ENTER> for help.")
-    genghis_client_dir = "" if len(sys.argv) != 4 else sys.argv[2]
+    genghis_client_dir = "" if len(sys.argv) != 3 else sys.argv[1]
     default = '~/genghis_client'
     while not genghis_client_dir:
         genghis_client_dir = input("genghis_client directory ['{}']: ".format(default)).strip()
@@ -55,7 +59,7 @@ def main():
             # TODO Do some checking for the bot path
     genghis_client_dir = os.path.expanduser(genghis_client_dir)
     
-    repetitions = "" if len(sys.argv) != 4 else sys.argv[3]
+    repetitions = "" if len(sys.argv) != 3 else sys.argv[2]
     default = "5"
     while not repetitions:
         repetitions = input("Number of Repetitions ['{}']: ".format(default)).strip()
@@ -88,6 +92,8 @@ def main():
     process_game.start()
     process_client.start()
 
+    with open('clients.json', 'r') as clients_file:
+        clients_dict = json.load(clients_file)
     # Now build up a server_state.json file
     with open(SERVER_STATE_FILE, 'r') as server_state_file:
         server_state = json.load(server_state_file)
@@ -96,18 +102,50 @@ def main():
         c_config = json.load(client_config)
 
     server_state['clients'] = []
+    clients_dict['clients'] = []
     server_state['games'] = []
     for i in range(int(repetitions)):
+        clients_dict['clients'].append({
+            "username": c_config['username'] + "_" + str(i),
+            "abbreviations": c_config['abbreviations'],
+            "url": 'http://localhost:' + str(CLIENT_PORT) 
+        })
         server_state['clients'].append({
             "username": c_config['username'] + "_" + str(i),
             "abbreviations": c_config['abbreviations'],
             "url": 'http://localhost:' + str(CLIENT_PORT) 
         })
     
+    print(clients_dict.get('clients', []))
+    with open('clients.json', 'w+') as clients_file:
+        json.dump(clients_dict, clients_file, indent=2)
+
+    print(server_state.get('clients', []))
     with open(SERVER_STATE_FILE, 'w+') as server_state_file:
         json.dump(server_state, server_state_file, indent=2)
 
     time.sleep(1)
+    print('''
+
+===============================================================================
+
+                                              ,,          ,,          
+  .g8"""bgd                                 `7MM          db          
+.dP'     `M                                   MM                      
+dM'       `   .gP"Ya  `7MMpMMMb.   .P"Ybmmm   MMpMMMb.  `7MM  ,pP"Ybd 
+MM           ,M'   Yb   MM    MM  :MI  I8     MM    MM    MM  8I   `" 
+MM.    `7MMF'8M""""""   MM    MM   WmmmP"     MM    MM    MM  `YMMMa. 
+`Mb.     MM  YM.    ,   MM    MM  8M          MM    MM    MM  L.   I8 
+  `"bmmmdPY   `Mbmmd' .JMML  JMML. YMMMMMb  .JMML  JMML..JMML.M9mmmP' 
+                                  6'     dP                           
+   Genghis Bot Battle System      Ybmmmd'                             
+   View the main game at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/
+
+===============================================================================
+     
+    ''')
+    input("You can view your game at http://localhost:{}.\nWhen you're ready, press any key to begin.\n".format(GAME_PORT))
+
     import build_game
     build_game.main(SERVER_STATE_FILE)
 
@@ -201,7 +239,7 @@ def start_server(directory='', PORT=8000):
                 return True
             return False
 
-        # TODO try to have a specific script be the cgi 'directory'
+        # TODO: try to have a specific script be the cgi 'directory'
         cgi_directories = ['/cgi-bin', '/htbin']
 
         def is_executable(self, path):
@@ -215,6 +253,7 @@ def start_server(directory='', PORT=8000):
 
         def run_cgi(self):
             """Execute a CGI script."""
+            print("doing cgi")
             dir, rest = self.cgi_info
             path = dir + '/' + rest
             i = path.find('/', len(dir)+1)
@@ -263,64 +302,64 @@ def start_server(directory='', PORT=8000):
 #            # Reference: http://hoohoo.ncsa.uiuc.edu/cgi/env.html
 #            # XXX Much of the following could be prepared ahead of time!
             env = copy.deepcopy(os.environ)
-#            env['SERVER_SOFTWARE'] = self.version_string()
-#            env['SERVER_NAME'] = self.server.server_name
-#            env['GATEWAY_INTERFACE'] = 'CGI/1.1'
-#            env['SERVER_PROTOCOL'] = self.protocol_version
-#            env['SERVER_PORT'] = str(self.server.server_port)
-#            env['REQUEST_METHOD'] = self.command
-#            uqrest = urllib.parse.unquote(rest)
-#            env['PATH_INFO'] = uqrest
-#            env['PATH_TRANSLATED'] = self.translate_path(uqrest)
-#            env['SCRIPT_NAME'] = scriptname
-#            if query:
-#                env['QUERY_STRING'] = query
-#            env['REMOTE_ADDR'] = self.client_address[0]
-#            authorization = self.headers.get("authorization")
-#            if authorization:
-#                authorization = authorization.split()
-#                if len(authorization) == 2:
-#                    import base64, binascii
-#                    env['AUTH_TYPE'] = authorization[0]
-#                    if authorization[0].lower() == "basic":
-#                        try:
-#                            authorization = authorization[1].encode('ascii')
-#                            authorization = base64.decodebytes(authorization).\
-#                                            decode('ascii')
-#                        except (binascii.Error, UnicodeError):
-#                            pass
-#                        else:
-#                            authorization = authorization.split(':')
-#                            if len(authorization) == 2:
-#                                env['REMOTE_USER'] = authorization[0]
-#            # XXX REMOTE_IDENT
-#            if self.headers.get('content-type') is None:
-#                env['CONTENT_TYPE'] = self.headers.get_content_type()
-#            else:
-#                env['CONTENT_TYPE'] = self.headers['content-type']
-#
-#
-#            length = self.headers.get('content-length')
-#            if length:
-#                env['CONTENT_LENGTH'] = length
-#            referer = self.headers.get('referer')
-#            if referer:
-#                env['HTTP_REFERER'] = referer
-#            accept = self.headers.get_all('accept', ())
-#            env['HTTP_ACCEPT'] = ','.join(accept)
-#            ua = self.headers.get('user-agent')
-#            if ua:
-#                env['HTTP_USER_AGENT'] = ua
-#            co = filter(None, self.headers.get_all('cookie', []))
-#            cookie_str = ', '.join(co)
-#            if cookie_str:
-#                env['HTTP_COOKIE'] = cookie_str
-#            # XXX Other HTTP_* headers
-#            # Since we're setting the env in the parent, provide empty
-#            # values to override previously set values
-#            for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
-#                    'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER'):
-#                env.setdefault(k, "")
+            env['SERVER_SOFTWARE'] = self.version_string()
+            env['SERVER_NAME'] = self.server.server_name
+            env['GATEWAY_INTERFACE'] = 'CGI/1.1'
+            env['SERVER_PROTOCOL'] = self.protocol_version
+            env['SERVER_PORT'] = str(self.server.server_port)
+            env['REQUEST_METHOD'] = self.command
+            uqrest = urllib.parse.unquote(rest)
+            env['PATH_INFO'] = uqrest
+            env['PATH_TRANSLATED'] = self.translate_path(uqrest)
+            env['SCRIPT_NAME'] = scriptname
+            if query:
+                env['QUERY_STRING'] = query
+            env['REMOTE_ADDR'] = self.client_address[0]
+            authorization = self.headers.get("authorization")
+            if authorization:
+                authorization = authorization.split()
+                if len(authorization) == 2:
+                    import base64, binascii
+                    env['AUTH_TYPE'] = authorization[0]
+                    if authorization[0].lower() == "basic":
+                        try:
+                            authorization = authorization[1].encode('ascii')
+                            authorization = base64.decodebytes(authorization).\
+                                            decode('ascii')
+                        except (binascii.Error, UnicodeError):
+                            pass
+                        else:
+                            authorization = authorization.split(':')
+                            if len(authorization) == 2:
+                                env['REMOTE_USER'] = authorization[0]
+            # XXX REMOTE_IDENT
+            if self.headers.get('content-type') is None:
+                env['CONTENT_TYPE'] = self.headers.get_content_type()
+            else:
+                env['CONTENT_TYPE'] = self.headers['content-type']
+
+
+            length = self.headers.get('content-length')
+            if length:
+                env['CONTENT_LENGTH'] = length
+            referer = self.headers.get('referer')
+            if referer:
+                env['HTTP_REFERER'] = referer
+            accept = self.headers.get_all('accept', ())
+            env['HTTP_ACCEPT'] = ','.join(accept)
+            ua = self.headers.get('user-agent')
+            if ua:
+                env['HTTP_USER_AGENT'] = ua
+            co = filter(None, self.headers.get_all('cookie', []))
+            cookie_str = ', '.join(co)
+            if cookie_str:
+                env['HTTP_COOKIE'] = cookie_str
+            # XXX Other HTTP_* headers
+            # Since we're setting the env in the parent, provide empty
+            # values to override previously set values
+            for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
+                    'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER'):
+                env.setdefault(k, "")
 
             self.send_response(HTTPStatus.OK, "OK")
             self.send_header('Cache-Control', 'no-cache')
