@@ -140,7 +140,7 @@
             ul.innerHTML = "<li>Bots: " + move_string + "</li>";
             const total_ticks = 100 * game['bots'].length;
             const perc_ticks = Math.floor(100 * game['tick'] / total_ticks);
-            ul.innerHTML += "<li>Game Tick: " + (1 + game['tick']) + " out of " + total_ticks + " (" + perc_ticks + "%)" + "</li>";
+            ul.innerHTML += "<li>Game Tick: " + (1 + game['tick']) + "</li>";
 
             if (game['continues'] && game['continues'] === true) {
                 // TODO make this more fluid, so that you don't skip from turn 100 through to turn 105 instantly.

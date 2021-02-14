@@ -152,11 +152,11 @@ def step(game):
 def game_continues(game):
     # If all but one of the bots are dead
     if len([bot for bot in game.bots if bot.health > 0]) <= 1:
-        print("Ending the game, bot healths = {}".format({bot.bot_icon:bot.health for bot in game.bots}))
+        print("Ending the game, bot healths = {}".format({bot.bot_icon : bot.health for bot in game.bots}))
         game.continues = False
-    # If the game has gone on for too long
-    if game.tick >= len(game.bots) * 250:
-        print("Ending the game, game.tick {} >= len(game.bots) {} * 100".format(game.tick, len(game.bots)))
+
+    if (datetime.datetime.now() - datetime.datetime.fromisoformat(game.start_time)) >= datetime.timedelta(minutes=10):
+        print("Ending the game, time limit reached")
         game.continues = False
 
     if not game.continues:
