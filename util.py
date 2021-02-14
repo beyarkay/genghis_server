@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import datetime
 from pprint import pprint
 import diff_match_patch as dmp_module
 import json
@@ -42,6 +43,7 @@ class Game:
         self.iteration = 0
         self.moving = None
         self.port_icons = []
+        self.start_time = datetime.datetime.now().isoformat()
         self.tick = 0
         self.turn_time = 0.5
         self.graphs = [{
@@ -102,6 +104,7 @@ class Game:
         d['moving'] = self.moving
         d['port_graph'] = self.port_graph
         d['port_icons'] = self.port_icons
+        d['start_time'] = self.start_time
         d['tick'] = self.tick
         d['turn_time'] = self.turn_time
         return d
@@ -238,6 +241,7 @@ class Game:
                 else:  # no other bot has this icon, so use it
                     bot1.bot_icon = bot1.abbreviations[index]
                     bot1.coin_icon = bot1.abbreviations[index].lower()
+                    # Every Bot starts off with 2 coins, as a bounty
                     break
             else:
                 # we've gone through all the abbreviations and they're all taken.
@@ -248,6 +252,10 @@ class Game:
                 bot1.coin_icon = remaining_icons[0].lower()
             self.bot_icons.append(bot1.bot_icon)
             self.coin_icons.append(bot1.coin_icon)
+
+        # Each bot starts with 2 coins
+        for bot in self.bots:
+            bot.add_coins(Coin(bot, 2))
 
         # now that we know which bots are where & which ports go where,
         # initialise the bg_maps with actual bot icons
@@ -307,7 +315,6 @@ class Bot:
         self.stdout = ""
         self.username = username
         self.bot_path = os.path.join(self.game_dir, username, bot_filename)
-
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
             os.mkdir(os.path.join(self.game_dir, username))
@@ -473,8 +480,10 @@ class Bot:
                     defender.health -= attacker.attack_strength
                 if defender.health <= 0:
                     print('Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
+                    # Give all the defender's coins to the attacker
+                    for c in defender.coins:
+                        attacker.add_coins(c)
                     # Remove the defender from the game.
-
                     curr_bg.set_cell(bot_loc, bot_move['direction'], IC_AIR)
                     curr_bg.bots.remove(defender)
                     idx = -1
@@ -483,7 +492,7 @@ class Bot:
                             idx = i
                             break
                     assert idx != -1
-                    game.bots.pop(i)
+                    game.bots.pop(idx)
 
 #                 # Check that the defender actually has coins to give
 #                 if defender.coins and sum([coin.value for coin in defender.coins]):
@@ -561,7 +570,7 @@ class Bot:
                         dropped_on = ''
                         for bg_bot in curr_bg.bots:
                             if bg_bot.bot_icon == cell:
-                                bg_bot.add_coins(Coin(coin.originator.coin_icon, 1))
+                                bg_bot.add_coins(Coin(coin.originator, 1))
                                 dropped_on = bg_bot.bot_icon
                                 break
                         else:  # cell is IC_AIR
@@ -704,7 +713,7 @@ class Battleground:
         self.bots.append(bot)
 
     def spawn_bot(self, bot):
-        self.bots.append(bot)
+        self.add_bot(bot)
         random.shuffle(self.spawn_locations)
         for x, y in self.spawn_locations:
             if self.bg_map[x][y] == IC_AIR:
