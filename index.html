@@ -16,7 +16,7 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <link rel="icon" type="image/ico" href="./favicon.ico"/>
- 
+    <meta http-equiv="refresh" content="300" />
     <title>Genghis Bot Battle System</title>
 </head>
 <body>
@@ -33,41 +33,21 @@
 </div>
 <!--Live now Card-->
 <div class="pure-g">
-    <div class="pure-u-1-1">
-        <div class="shadow">
-            <!--            Group for the left list-->
-            <div class="pure-g">
-                <div class="pure-u-1-1">
-                    <h2>Games:</h2>
-                    <ul id="games_list">
-                        <li>No Games</li>
-                    </ul>
-                </div>
-                <!--                Group for the RHS preview-->
-                <!--
-                <div class="pure-u-16-24" id="cpb_plot">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100%" height="100%" fill="lightgrey"/>
-                        <text x="20" y="30">Loading Game Preview...</text>
-                    </svg>
-
-                </div>
-                -->
-            </div>
+    <div class="shadow">
+        <div class="pure-u-1-1 pure-u-lg-1-2">
+            <h2>Games:</h2>
+            <ul id="games_list">
+                <li>No Games</li>
+            </ul>
         </div>
-    </div>
-</div>
-<!--What's this Card-->
-<div class="pure-g">
-    <div class="pure-u-1-1">
-        <div class="shadow">
+        <div class="pure-u-1-1 pure-u-lg-1-2">
             <h2>What is This?</h2>
-                Using the Genghis Battle System by
-                <a href="https://github.com/beyarkay">Boyd Kane</a>,
-                bots built by Computer Science students compete for
-                resources, trade, and fight each other across
-                multiple different battlegrounds.
-                <br><br>Click the red link above to see a game in action.
+            Using the Genghis Battle System by
+            <a href="https://github.com/beyarkay">Boyd Kane</a>,
+            bots built by Computer Science students compete for
+            resources, trade, and fight each other across
+            multiple different battlegrounds.
+            <br><br>Click the red link to see a game in action.
         </div>
     </div>
 </div>
@@ -389,7 +369,8 @@ function btn_copy_public_key() {
                 let a = document.createElement("a");
                 a.setAttribute("href", "follow.html?game=" + game['game_dir'] + "&v=" + Date.now());
                 let prompt_text = i === 0 ? "View the most recent game started at " : "View an old game started at ";
-                a.innerHTML = prompt_text + game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
+                let datetime = game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
+                a.innerHTML = prompt_text + datetime;
                 a.style.color = i === 0 ? "#b30c0c" : "#a0a0a0";
                 li.appendChild(a);
                 ul.appendChild(li);
