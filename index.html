@@ -87,13 +87,17 @@
                     <br> Leave all the checkboxes unticked and click 'Create repository'.
                 </li>
                 <li>
-                    You'll be taken to a page with lots of stuff. Ignore it all, copy
-                    the URL of the repository and paste it below:
+                    You'll be taken to a page with lots of stuff, and it probably has a big
+                    header that says 'Quick setup — if you’ve done this kind of thing before'. 
+                    Ignore it all, copy the URL of that page and paste it below. 
+                    (It should look something like 'https://github.com/MY-USERNAME-HERE/MY-REPOSITORY-NAME-HERE):
                     <input type="text" style="width: 90%;" id="url" onkeyup="txtbox_github_url(this, event)"/>
                     <br><code id="err" style="display:none; color:red;"></code>
                 </li>
                 <li>
-                    Run the following lines in a *nix/MacOS terminal<span class="blurb">, making sure to
+                    Run the following lines in a *nix/MacOS terminal in the directory where
+                    you want your bot code to live. It will create a repository for you and 
+                    copy some code to get you started<span class="blurb">, making sure to
                     replace MY_USERNAME with your github username and MY_REPO_NAME with your repository's 
                     name</span>:
                     <code>
@@ -107,6 +111,35 @@
                         git branch -M main<br>
                         git push -u origin main <br>
                     </code>
+                    If it all goes correctly, you'll see something like this:
+                    <code>
+                        Cloning into bare repository 'genghis_client.git'...<br>
+                        remote: Enumerating objects: 132, done.<br>
+                        remote: Counting objects: 100% (132/132), done.<br>
+                        remote: Compressing objects: 100% (84/84), done.<br>
+                        remote: Total 132 (delta 72), reused 103 (delta 43), pack-reused 0<br>
+                        Receiving objects: 100% (132/132), 26.55 KiB | 117.00 KiB/s, done.<br>
+                        Resolving deltas: 100% (72/72), done.<br>
+                        Enumerating objects: 132, done.<br>
+                        Counting objects: 100% (132/132), done.<br>
+                        Delta compression using up to 4 threads<br>
+                        Compressing objects: 100% (55/55), done.<br>
+                        Writing objects: 100% (132/132), 26.55 KiB | 13.28 MiB/s, done.<br>
+                        Total 132 (delta 72), reused 132 (delta 72)<br>
+                        remote: Resolving deltas: 100% (72/72), done.<br>
+                        To github.com:<span class="username">brk-testing</span>/<span class="repo_name">my_genghis_client</span>.git<br>
+                        * [new branch]      main -> main<br>
+                        Cloning into '<span class="repo_name">my_genghis_client</span>'...<br>
+                        remote: Enumerating objects: 132, done.<br>
+                        remote: Counting objects: 100% (132/132), done.<br>
+                        remote: Compressing objects: 100% (55/55), done.<br>
+                        remote: Total 132 (delta 72), reused 132 (delta 72), pack-reused 0<br>
+                        Receiving objects: 100% (132/132), 26.55 KiB | 242.00 KiB/s, done.<br>
+                        Resolving deltas: 100% (72/72), done.<br>
+                        Branch 'main' set up to track remote branch 'main' from 'origin'.<br>
+                        Everything up-to-date
+                    </code>
+
                     <br>If you get an error like:
                     <code>
                         ERROR: Repository not found.
@@ -122,16 +155,17 @@
                     succeed.
                 </li>
                 <li>
-                    And now you're able to <a href="https://github.com/beyarkay/genghis_client/wiki/Building-Your-Bot" target="_blank">
-                    start building your bot</a>. However, if you want to compete against other bots
-                    on the genghis server, you'll want to:
+                    Now you've got everything you need to start coding your bot, but your bot doesn't have anyone
+                    to fight against. Follow the next section to let the Genghis server know that your bot exists,
+                    which will allow it to include your bot in the next game.
                 </li>
             </ol>
             <br>
             <h2>Register your bot with the Genghis Server</h2>
                 In this step you add a <a href="https://docs.github.com/en/free-pro-team@latest/developers/overview/managing-deploy-keys#deploy-keys">deploy key</a> to your private repository. This will let Genghis
                 (and only Genghis) have read-only access to your repository so that it can fetch the code
-                you write and execute it in an actual game.
+                you write and execute it in an actual game. You should have already followed all the steps
+                for 'Make your own bot'.
             <ol>
                 <li class="blurb">
                     First, go back to 'Make your own bot' and copy the URL of your github repository 
@@ -150,10 +184,10 @@
                     code can be run and your bots can be included in battles.
                 </li>
                 <li>
-                    Click 'Add key', and then enter your password. You'll get an email letting you know that a new
+                    Click 'Add key', and then enter your password. You'll probably get an email letting you know that a new
                     key has been added.
                 </li>
-                <li>
+                <li id='pending'>
                     Almost done! The Genghis Server knows about your repository, but is just checking that 
                     everything's in order and that it can read your repository correctly. This page will
                     automatically update when you've been verified. Please make sure you can see the key you just
@@ -168,39 +202,59 @@
                     using the deploy key and then attempt to run the bot it finds in your repository.
                     <br>Simply pushing your changes to your github repository will cause them to be included in 
                     the next Genghis game.
-                    <br><br> So this is all good, but you can't actually <i>run</i> your bot just yet. For that 
-                    you'll need a copy of the Genghis server which will allow you to:
+                    <br>You're almost all setup, there's one last step that's required if you want to be able to
+                    test your bot before it gets included in a game.
                 </li>
             </ol>
             <br>
             <h2>Test your bot on localhost</h2>
                 So far you've got what you need to write your bot, and the Genghis Battle System
                 will grab your code from the GitHub repository and run your bot against all 
-                the other bots, but you can't actually <i>run</i> your bot code.
-                <br><br>This step shows you how to download the Genghis Server, so that you can
-                start up your own game where you can fight your bot against copies of itself
-                and make sure your bot code does what you want it to do. 
+                the other bots, but you can't easily test your bot yourself, before it gets thrown
+                into a game.
+                <br><br>This step shows you how to download a copy the Genghis Server, so that you can
+                start up your own game where you can set up your bot to fight against copies of itself,
+                so that you can make sure your bot code does what you want it to do. 
             <ol>
                 <li>
                    Run the following lines in a linux/MacOS terminal to clone 
                    the <a href="https://github.com/beyarkay/genghis_server">genghis_server</a> 
-                   github repository. 
+                   github repository. You can clone it from anywhere, but it'll be easiest if the
+                   genghis_server repository is in the same directory as your 
+                   <span class="repo_name">genghis client</span> repository.
                    <code>
                         git clone https://github.com/beyarkay/genghis_server.git <br>
                         cd genghis_server<br>
-                        chmod +x build_game.py
+                        chmod +x build_game.py<br>
                     </code> 
+                    You should see some output like:
+                    <code>
+                        Cloning into 'genghis_server'... <br>
+                        remote: Enumerating objects: 1885, done. <br>
+                        remote: Counting objects: 100% (1885/1885), done. <br>
+                        remote: Compressing objects: 100% (473/473), done. <br>
+                        remote: Total 3988 (delta 1463), reused 1825 (delta 1406), pack-reused 2103 <br>
+                        Receiving objects: 100% (3988/3988), 1.88 MiB | 417.00 KiB/s, done. <br>
+                        Resolving deltas: 100% (2914/2914), done. <br>
+                    </code>
                 </li>
                 <li>
-                    Running the below line will start a game on localhost at port 5000, 
-                    using the two copies of the bot found at ~/<span class="repo_name">genghis_client</span>,
-                    can visit http://localhost:5000/ to view the game.
-                    
+                    To start a game, run this command in the genghis_server directory:
+                    <code>
+                        ./build_test_server.py server_state.json
+                    </code> 
+                    At the prompts, enter the location of the genghis_client repository you cloned earlier, 
+                    and then the number of copies of your bot you want to create (or just leave the 
+                    prompt blank to use the defaults specified in square brackets):
+                    <code>
+                        At any time, enter a question mark (?) and then press <ENTER> for help. <br>
+                        genghis_client directory ['~/genghis_client']: <br>
+                        Number of Repetitions ['5']: <br>
+                    </code>
+                    You'll be able to see your
+                    bots fighting at <a href="http://localhost:5000/" target="_blank">http://localhost:5000/</a>
                     <br>There will also be lots of debugging output printed to the terminal while the game is running.
                     You can press CTRL-C to stop the program at any time.
-                   <code>
-                        ./build_game.py --localhost 5000 --client_dir ~/<span class="repo_name">genghis_client</span> --client_dir ~/<span class="repo_name">genghis_client</span> 
-                    </code> 
                 </li>
             </ol>
         </div>
@@ -241,10 +295,12 @@ function txtbox_github_url(input_element, event) {
         let usernames = document.getElementsByClassName("username");
         for (let i = 0; i < usernames.length; i++) {
             usernames[i].innerHTML = username;
+            usernames[i].style.color = 'teal';
         }
         let repo_names = document.getElementsByClassName("repo_name");
         for (let i = 0; i < repo_names.length; i++) {
             repo_names[i].innerHTML = repo_name;
+            repo_names[i].style.color = 'teal';
         }
         let blurbs = document.getElementsByClassName("blurb");
         for (let i = 0; i < blurbs.length; i++) {
@@ -253,7 +309,9 @@ function txtbox_github_url(input_element, event) {
 
         // Get and populate an ssh key
         document.getElementById('public_key').innerHTML =
-            `${new Date().toLocaleTimeString()}: A request to generate a public deploy key for you has been sent...`;
+            `${new Date().toLocaleTimeString()} - The Genghis Server will generate a key for you, and when it is ready this textbox will disappear and be replaced with your public deploy key. This shouldn't take more than 2 minutes.`;
+        document.getElementById('public_key').innerHTML =
+            `${new Date().toLocaleTimeString()} - A request to generate a public deploy key for you has been sent...`;
         $.post("requests.php", JSON.stringify({
             case: 'add_new_client',
             username: `${username}`,
@@ -303,6 +361,7 @@ function btn_copy_public_key() {
         repository: `${repo_name}`,
         url: `${url}`,
     })).done(function(d) {
+        document.getElementById('pending').style = 'display: none;';
         document.getElementById('final').style = 'display: block;';
         console.log(d);
     }).fail(function(d) {
@@ -316,25 +375,21 @@ function btn_copy_public_key() {
         url: "server_state.json"
     }).done(data => {
         if (data && data['games']) {
-            console.log("Data found: ", data['games']);
+            console.log("Games found: ", data['games']);
             // Update the list of games
             let ul = document.getElementById("games_list");
             ul.innerHTML = "";
             data['games'].sort((a, b) => a['game_dir'] > b['game_dir'] ? -1 : 1)
             for (let i = 0; i < data['games'].length; i++) {
-                if (i > 10) {
-                    let li = document.createElement("li");
-                    // let a = document.createElement("a");
-                    li.innerHTML = '...';
-                    // li.appendChild(a);
-                    ul.appendChild(li);
+                if (i > 3) {
                     break;
                 }
                 let game = data['games'][i];
                 let li = document.createElement("li");
                 let a = document.createElement("a");
                 a.setAttribute("href", "follow.html?game=" + game['game_dir'] + "&v=" + Date.now());
-                a.innerHTML = "Game started on " + game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
+                let prompt_text = i === 0 ? "View the most recent game started at " : "View an old game started at ";
+                a.innerHTML = prompt_text + game['game_dir'].replace('games/', '').replace("T", " at ").replace(/:\d{2}\.\d{6}/, "" );
                 a.style.color = i === 0 ? "#b30c0c" : "#a0a0a0";
                 li.appendChild(a);
                 ul.appendChild(li);
