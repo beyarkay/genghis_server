@@ -260,15 +260,12 @@ function update_battleground(div_id, bg, game) {
                     console.log(d)
                     tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
                     tool_tip_content += `Health: ${d.bot_data.health}/100<br>`;
-                    tool_tip_content += `Coins: [ `;
+
+                    let num_coins = 0;
                     for (let i = 0; i < d.bot_data.coins.length; i++) {
-                        let coin = d.bot_data.coins[i];
-                        tool_tip_content += `${coin.value}x '${coin.originator_icon.toLowerCase()}'`;
-                        if (i !== d.bot_data.coins.length - 1 ) {
-                            tool_tip_content += `, `;
-                        }
+                        num_coins += d.bot_data.coins[i].value;
                     }
-                    tool_tip_content += ` ]<br>`;
+                    tool_tip_content += `Coins: ` + num_coins + `<br>`
                     tool_tip_content += `Last move: ${d.bot_data.move_dict.action} ${d.bot_data.move_dict.direction}<br>`;
 
                 } else if (game['coin_icons'].includes(cell)) {
@@ -345,7 +342,7 @@ function update_battleground(div_id, bg, game) {
                 rect_height: cell_height,
                 rect_fill: rect_fill_from_cell(bg['bg_map'][row][col]),
                 rect_stroke: rect_stroke_from_cell(bg['bg_map'][row][col]),
-                text_content: bg['bg_map'][row][col],
+                text_content: bg['bg_map'][row][col].toUpperCase() === bg['bg_map'][row][col] ? bg['bg_map'][row][col] : "💰",
                 text_fill: text_fill_from_cell(bg['bg_map'][row][col]),
                 text_font_weight: text_font_weight_from_cell(bg['bg_map'][row][col]),
                 mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
