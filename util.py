@@ -859,7 +859,7 @@ class Client:
                         os.path.join(self.repository, bot['path']),
                         self.url + '/' + bot['path'],
                         bot['name'],
-                        config_json['abbreviations']
+                        config_json.get('abbreviations', list(self.username))
                     ))
             assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
             # Add the battlegrounds to the game && assert
@@ -896,7 +896,7 @@ class Client:
                         item['path'],
                         self.url + '/' + item['path'],
                         item['name'],
-                        config_json['abbreviations']
+                        config_json.get('abbreviations', list(self.username))
                     ))
             assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
 
