@@ -1,7 +1,7 @@
 
 export function get_param(param, defaultvalue) {
     if (window.location.href.indexOf(param) > -1) {
-        let vars = {};
+       let vars = {};
         let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
             (m, key, value) => {
                 vars[key] = value;
@@ -162,6 +162,7 @@ function create_battleground(div_id, bg, game) {
     let div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+    
     update_battleground(div_id, bg, game);
 }
 
@@ -174,6 +175,7 @@ function update_battleground(div_id, bg, game) {
     const cell_height = (height - margin.bottom - margin.top) / bg['bg_map'].length;
     const svg = d3.select('#' + div_id + " svg g")
     const div = d3.select(".tooltip")
+
     const text_fill_from_cell = (cell) => {
         if (cell === '#') {
             return "#626262";
@@ -193,14 +195,6 @@ function update_battleground(div_id, bg, game) {
     const rect_fill_from_cell = (cell) => {
         if (cell === '#') {
             return text_fill_from_cell(cell);
-            // } else if (game['bot_icons'].indexOf(cell) >= 0) {
-            //     // return "none"
-            //     let hue = hue_from_icon(game['bot_icons'], cell)
-            //     return `hsl(${hue}, 20%, 80%)`;
-            // } else if (game['port_icons'].indexOf(cell) >= 0) {
-            //     return "none"
-            // let hue = hue_from_icon(game['port_icons'], cell)
-            // return `hsl(${hue}, 20%, 80%)`
         } else {
             return "#d9d9d9"
         }
@@ -208,12 +202,6 @@ function update_battleground(div_id, bg, game) {
     const rect_stroke_from_cell = (cell) => {
         if (cell === '#') {
             return text_fill_from_cell(cell);
-            // } else if (game['bot_icons'].indexOf(cell) >= 0) {
-            //     // let hue = hue_from_icon(game['bot_icons'], cell)
-            //     // return `hsl(${hue}, 100%, 80%)`;
-            //     return rect_fill_from_cell(cell);
-            // } else if (game['port_icons'].indexOf(cell) >= 0) {
-            //     return rect_fill_from_cell(cell);
         } else if (cell_width < 10) {
             return rect_fill_from_cell(cell);
         } else {
@@ -257,7 +245,7 @@ function update_battleground(div_id, bg, game) {
                     tool_tip_content += `Port ${d.text_content} (${d.username})<br>`;
 
                 } else if (game['bot_icons'].includes(cell)) {
-                    console.log(d)
+                    //console.log(d)
                     tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
                     tool_tip_content += `Health: ${d.bot_data.health}/100<br>`;
 
@@ -324,30 +312,44 @@ function update_battleground(div_id, bg, game) {
     }
     
 
-    let data = [];
+    let bot_data = [];
+    let map_data = [];
     let xpos = 1;
     let ypos = 1;
     for (let col = 0; col < bg['bg_map'].length; col++) {
-        data.push([]);
+        bot_data.push([]);
+        map_data.push([]);
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
-            data[col].push({
-                key: (game['bot_icons'].includes(bg['bg_map'][row][col])) ? bg['bg_map'][row][col] : `${bg["port_icon"]}-${col}-${row}`,
-                map_port_icon: bg['port_icon'],
+            let curr_item = bg['bg_map'][row][col]
+            map_data[col].push({
+                key: (game['bot_icons'].includes(curr_item)) ? curr_item : `${bg["port_icon"]}-${col}-${row}`,
                 map_row: row,
                 map_col: col,
-                bot_data: bot_from_cell(bg['bg_map'][row][col]),
                 rect_x: xpos,
                 rect_y: ypos,
                 rect_width: cell_width,
                 rect_height: cell_height,
-                rect_fill: rect_fill_from_cell(bg['bg_map'][row][col]),
-                rect_stroke: rect_stroke_from_cell(bg['bg_map'][row][col]),
-                text_content: bg['bg_map'][row][col].toUpperCase() === bg['bg_map'][row][col] ? bg['bg_map'][row][col] : "💰",
-                text_fill: text_fill_from_cell(bg['bg_map'][row][col]),
-                text_font_weight: text_font_weight_from_cell(bg['bg_map'][row][col]),
-                mouseover: mouseover_from_cell(bg['bg_map'][row][col]),
-                mouseout: mouseout_from_cell(bg['bg_map'][row][col]),
-                username: username_from_cell(bg['bg_map'][row][col]),
+                rect_fill: rect_fill_from_cell(curr_item),
+                rect_stroke: rect_stroke_from_cell(curr_item)
+            });
+            bot_data[col].push({
+                key: (game['bot_icons'].includes(curr_item)) ? curr_item : `${bg["port_icon"]}-${col}-${row}`,
+                map_port_icon: bg['port_icon'],
+                map_row: row,
+                map_col: col,
+                bot_data: bot_from_cell(curr_item),
+                rect_x: xpos,
+                rect_y: ypos,
+                rect_width: cell_width,
+                rect_height: cell_height,
+                rect_fill: rect_fill_from_cell(curr_item),
+                rect_stroke: rect_stroke_from_cell(curr_item),
+                text_content: curr_item.toUpperCase() === curr_item ? curr_item : "💰",
+                text_fill: text_fill_from_cell(curr_item),
+                text_font_weight: text_font_weight_from_cell(curr_item),
+                mouseover: mouseover_from_cell(curr_item),
+                mouseout: mouseout_from_cell(curr_item),
+                username: username_from_cell(curr_item),
             })
             xpos += cell_width;
         }
@@ -356,10 +358,10 @@ function update_battleground(div_id, bg, game) {
     }
 
     const t = svg.transition()
-        .duration(500);
+        .duration(250);
 
     svg.selectAll("rect")
-      .data(data.flat(), element => element.key)
+      .data(map_data.flat(), d => d.key)
       .join(
         enter => enter.append("rect")
               .attr("x", d => d.rect_x)
@@ -385,7 +387,7 @@ function update_battleground(div_id, bg, game) {
       );
 
     svg.selectAll("text")
-      .data(data.flat(), element => element.key)
+      .data(bot_data.flat(), element => element.key)
       .join(
         enter => enter.append("text")
             .attr("font-size", (1.2 * cell_width).toString() + 'px')

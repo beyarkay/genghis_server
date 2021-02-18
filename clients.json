@@ -1,25 +1,46 @@
 {
   "clients": [
     {
-      "username": "Beyarkay_0",
+      "username": "LucH",
       "abbreviations": [
-        "b"
+        "l"
       ],
-      "url": "http://localhost:4000"
+      "url": "https://people.cs.uct.ac.za/~HYWLUC001/genghis_client"
     },
     {
-      "username": "Beyarkay_1",
+      "username": "stu2",
       "abbreviations": [
-        "b"
+        "s"
       ],
-      "url": "http://localhost:4000"
+      "url": "https://people.cs.uct.ac.za/~MSHSTU001/genghis_client"
     },
     {
-      "username": "Beyarkay_2",
+      "username": "brk-testing",
+      "repository": "my_genghis_client",
+      "url": "https://github.com/brk-testing/my_genghis_client",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDyX7gS+hzsSsOiAgnzIc/Ah4iZSoK/0xPgCVOzl/FWykt4nXIEdk5SQWktcfM+A+KzM2sVCEoCfjfzUdA65Esdu/9cqfTC8t+gYNgg1lPtpvEXyRUS2N1seZAqhZ4F0t5B+DFU4Sm+L3KdeAYRs64oyFR3Ev8ovoB47FSPpq+jkjp44xrF5M4kNxZnd1G72KpSdPBTsAENXl+73M710e4uASEK6XWRvJds8cGjCCQ8fRMkK4tO0ho6QU/6nf/096V2nsvOudK5Y1W5slWmVKJM0tV9Si/yrh8TLLbw53b0us8M6N6U/tvDYFP5Iojp+ljEdz17zVhfROfe38unzeKj",
+      "first_failure": "2021-02-14 11:16:30.133076",
       "abbreviations": [
-        "b"
-      ],
-      "url": "http://localhost:4000"
+        "b",
+        "r",
+        "k"
+      ]
+    },
+    {
+      "username": "beyarkay",
+      "repository": "brk-genghis",
+      "url": "https://github.com/beyarkay/brk-genghis",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc0M3Mg4N4Gy4KBKqC3HumIh7mEvKscMDDAs4tLNhuBlnqqB7BkRCcXZcKzr8nsx0PCqhNY8Beq69vk6Euru2bHiYszgdiFYZNZ+AUUTPNsfuYXpg8rwYFPExaEByJQMZ9z99aXa0E9PMiZzmKT4T1uec7gCo4nonD5PzoRAgkMrJqA7jJyZHp90yplf/0BylEuJCYbNnPTrNgfHklOxC/T4SPfsu1NgxGMfvqbCMHVoVBK/ZqfRquKGwE08qVog0JKAXW1WjZFy0SxGZKWcSzDXEnCglIcmImZdM0mMnOKykRbYZZpzliQ9iT6CvL9f9qtc9Rl7xcdrkgLSXqzr+f",
+      "abbreviations": [
+        "b",
+        "e",
+        "y",
+        "a",
+        "r",
+        "k",
+        "a",
+        "y"
+      ]
     }
   ]
 }

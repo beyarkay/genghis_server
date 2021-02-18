@@ -1,28 +1,6 @@
 {
-  "endpoint": "http://localhost:5000/",
-  "clients": [
-    {
-      "username": "Beyarkay_0",
-      "abbreviations": [
-        "b"
-      ],
-      "url": "http://localhost:4000"
-    },
-    {
-      "username": "Beyarkay_1",
-      "abbreviations": [
-        "b"
-      ],
-      "url": "http://localhost:4000"
-    },
-    {
-      "username": "Beyarkay_2",
-      "abbreviations": [
-        "b"
-      ],
-      "url": "http://localhost:4000"
-    }
-  ],
+  "endpoint": "https://people.cs.uct.ac.za/~knxboy001/genghis_server/",
+  "clients": [],
   "games": [
     {
       "battlegrounds": [],
@@ -30,8 +8,8 @@
       "bots": [],
       "coin_icons": [],
       "continues": true,
-      "endpoint": "http://localhost:5000/",
-      "game_dir": "games/2021-02-04T22:39:37.502158",
+      "endpoint": "https://people.cs.uct.ac.za/~knxboy001/genghis_server/",
+      "game_dir": "games/2021-02-18T19:25:50.419940",
       "graphs": [
         {
           "id": "events",
@@ -71,6 +49,7 @@
         "nodes": []
       },
       "port_icons": [],
+      "start_time": "2021-02-18T19:25:50.419986",
       "tick": 0,
       "turn_time": 0.5
     }
