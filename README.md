@@ -6,16 +6,11 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## Work in progress:
-* Allow github hosting
-    * w+ is not enough regex for github usernames. Need to allow `a-zA-Z0-9-_.`
-    * Everything works up to adding the client to clients.json, but the UI doesn't update
-        after that has happened server-side
-
-
+* remove the different values of coins, it adds nothing.
+* Maybe allow each bot to make 2 actions per turn? (allows more tactics to be involved?)
+* Metrics, and meta-game analysis
 * fix the D3 script to now redraw the bg
 * allow control of the bot from the CLI
-* Before pushing `genghis_server`, should split server-state into:
-    * server-config.json and server-state.json
 
 ## Problems to solve
 * Need some way to keep each individual game interesting
