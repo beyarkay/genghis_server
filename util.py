@@ -4,7 +4,8 @@ from pprint import pprint
 import diff_match_patch as dmp_module
 import json
 import os
-import pickle
+# Dill can pickle functions, but pickle can't
+import dill as pickle 
 import random
 import requests
 import subprocess
@@ -262,6 +263,45 @@ class Game:
         # instead of the placeholder icons
         for battleground in self.battlegrounds:
             battleground.init_bg_map(self)
+
+        # Add in some metrics
+        self.metrics = []
+        
+        def compute_game_totals_coins(game):
+            for bg in game.battlegrounds:
+                bg.num_coins = 0
+                for row in bg.bg_map:
+                    for item in row:
+                        if item.upper() != item: # if the item is lowercase:
+                            bg.num_coins += 1
+            total_coins = sum([bg.num_coins for bg in game.battlegrounds])
+            return (total_coins, game.tick)
+
+        coin_count = MetricSeries(
+            units=MetricSeries.UNITS_COIN,
+            game_dir=self.game_dir,
+            name='game.totals.coins',
+            description='The total number of coins on the ground in the entire game',
+            compute_metric=compute_game_totals_coins
+        )
+        coin_count.compute_and_add(self)
+        self.metrics.append(coin_count)
+
+
+        # Add Metric of
+        def compute_game_totals_bots(game):
+            return (len([bot for bot in game.bots if bot.health > 0]), game.tick)
+
+        bots_counts = MetricSeries(
+            units=MetricSeries.UNITS_BOT,
+            game_dir=self.game_dir,
+            name='game.totals.bots',
+            description='The total number of bots alive in the game',
+            compute_metric=compute_game_totals_bots
+        )
+        bots_counts.compute_and_add(self)
+        self.metrics.append(bots_counts)
+
         self.continues = True
         print('Battlegrounds:')
         for bg in self.battlegrounds:
@@ -291,7 +331,6 @@ class Game:
         with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
-
         print("\n\nGame started at {}follow.html?game={}".format(
             self.endpoint,
             self.game_dir
@@ -300,6 +339,7 @@ class Game:
 
 class Bot:
     def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations):
+        print('Making bot with abbreviations {}'.format(owner_abbreviations))
         self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
         self.attack_strength = 25
         self.bot_filename = bot_filename
@@ -851,8 +891,11 @@ class Client:
                     ))
                 else:
                     self.bots.append(Bot(
-                        game_dir, self.username, item['path'],
-                        self.url + '/' + item['path'], item['name'],
+                        game_dir, 
+                        self.username,
+                        item['path'],
+                        self.url + '/' + item['path'],
+                        item['name'],
                         config_json['abbreviations']
                     ))
             assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
@@ -872,6 +915,27 @@ class Client:
                         item['name'],
                     ))
             assert self.battlegrounds, "Client at {} had no valid battlegrounds to contribute".format(self.url)
+
+
+class MetricSeries:
+    UNITS_COUNT = 'UNITS_COUNT'
+    UNITS_KILL = 'UNITS_KILL'
+    UNITS_BOT = 'UNITS_BOT'
+    UNITS_COIN = 'UNITS_COIN'
+    def __init__(self, units, game_dir, name, description, compute_metric):
+        self.units = units
+        self.game_dir = game_dir
+        self.name = name
+        self.description = description
+        self.values = []
+        self.compute_metric = compute_metric 
+
+    def add(self, value, tick):
+        print('[V] Added metric to {}: {} at {}'.format(self.name, value, tick))
+        self.values.append((value, tick))
+    
+    def compute_and_add(self, game):
+        self.add(*self.compute_metric(game))
 
 
 class Colours:

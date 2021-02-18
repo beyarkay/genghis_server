@@ -5,7 +5,7 @@ import datetime
 import glob
 import json
 import os
-import pickle
+import dill as pickle
 import random
 import re
 import requests
@@ -133,6 +133,9 @@ def step(game):
             if delta.microseconds/1000000 + delta.seconds < game.turn_time:
                 print('Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
                 time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)
+
+        for metric in game.metrics:
+            metric.compute_and_add(game)
 
         debug_log["move"] = " {:<5} : {:<2}".format(bot_move["action"], bot_move["direction"])
         delta = debug_log["stop"] - debug_log["start"] 
