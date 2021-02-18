@@ -100,7 +100,7 @@
         console.log("Connection to Server side events established at " + evtSource.url);
     };
     let event_source_onmessage = function (e, url, game, evtSource, dmp) {
-        console.log("message: " + e.data);
+        //console.log("message: " + e.data);
     };
     let event_source_onerror = function (e, url, game, evtSource, dmp) {
         if (!url.includes('cgi-bin')) {
@@ -117,7 +117,7 @@
         }
     };
     let event_source_patch = function (e, url, game, evtSource, dmp) {
-        console.log("Patch Received")
+        //console.log("Patch Received")
         // Decode the patches string into a list of DMP patch objects
         let patch = decodeURI(e.data.replace(/\\ndata: /gm, "%0A"));
         let sub_patches = dmp.patch_fromText(patch);
@@ -131,7 +131,7 @@
             let move_string = "";
             game['bots'].forEach((b) => {
                 if (game['moving'] === b.bot_icon) {
-                    console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving: " + JSON.stringify(b.move_dict) + ", " + b.stdout + ", " + b.stderr);
+                    //console.log("Bot " + b.bot_icon + " (" + b.username + ") is moving: " + JSON.stringify(b.move_dict) + ", " + b.stdout + ", " + b.stderr);
                     move_string += "<b>" + b.bot_icon + "(" + b.username + ")" + "</b>  ";
                 } else {
                     move_string += "" + b.bot_icon + "(" + b.username + ")" + "  ";
@@ -144,9 +144,9 @@
 
             if (game['continues'] && game['continues'] === true) {
                 // TODO make this more fluid, so that you don't skip from turn 100 through to turn 105 instantly.
-                console.time("Update BG Card");
+                //console.time("Update BG Card");
                 update_bg_card('bg-card', game);
-                console.timeEnd("Update BG Card");
+                //console.timeEnd("Update BG Card");
                 // create_graph_card('graphs-card', game);
             } else {
                 evtSource.close();
