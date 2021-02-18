@@ -107,7 +107,7 @@ def main():
     for i in range(int(repetitions)):
         clients_dict['clients'].append({
             "username": c_config['username'] + "_" + str(i),
-            "abbreviations": c_config['abbreviations'],
+            "abbreviations": c_config.get('abbreviations', list(c_config['username'])),
             "url": 'http://localhost:' + str(CLIENT_PORT) 
         })
         server_state['clients'].append({
