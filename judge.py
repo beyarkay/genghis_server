@@ -23,7 +23,7 @@ import util
 
 def main():
     def signal_handler(sig, frame):
-        print(util.Colours.ENDC + 'Quitting Genghis...')
+        print(util.Colours.ENDC + '[E] Quitting Genghis...')
         try:
             game.continues = False
             game.log_state(diff_only=True)
@@ -38,7 +38,7 @@ def main():
     # Figure out a global order
     random.shuffle(game.bots)
     # Start stepping through the bots
-    print("Game {:<35}".format(game.game_dir))
+    print("[I] Game {:<35}".format(game.game_dir))
     while game_continues(game):
         step(game)
         game.iteration += 1
@@ -131,7 +131,7 @@ def step(game):
             game.tick += 1
             delta = datetime.datetime.now() - start_time
             if delta.microseconds/1000000 + delta.seconds < game.turn_time:
-                print('Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
+                print('[V] Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
                 time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)
 
         for metric in game.metrics:
@@ -139,7 +139,7 @@ def step(game):
 
         debug_log["move"] = " {:<5} : {:<2}".format(bot_move["action"], bot_move["direction"])
         delta = debug_log["stop"] - debug_log["start"] 
-        print("{:<3} | {:<1} | {:<3} | {:<15.15} | {:<12} | {:<6.6} | {:<12} | {:<20} | {:<10} | {:<3}".format(
+        print("[D] {:<3} | {:<1} | {:<3} | {:<15.15} | {:<12} | {:<6.6} | {:<12} | {:<20} | {:<10} | {:<3}".format(
             game.tick,
             debug_log["bot_icon"],
             debug_log["bot_health"],
@@ -155,11 +155,11 @@ def step(game):
 def game_continues(game):
     # If all but one of the bots are dead
     if len([bot for bot in game.bots if bot.health > 0]) <= 1:
-        print("Ending the game, bot healths = {}".format({bot.bot_icon : bot.health for bot in game.bots}))
+        print("[I] Ending the game, bot healths = {}".format({bot.bot_icon : bot.health for bot in game.bots}))
         game.continues = False
 
     if (datetime.datetime.now() - datetime.datetime.fromisoformat(game.start_time)) >= datetime.timedelta(minutes=10):
-        print("Ending the game, time limit reached")
+        print("[I] Ending the game, time limit reached")
         game.continues = False
 
     if not game.continues:

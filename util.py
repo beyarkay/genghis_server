@@ -42,6 +42,7 @@ class Game:
         self.endpoint = endpoint
         self.game_dir = game_dir
         self.iteration = 0
+        self.metrics = []
         self.moving = None
         self.port_icons = []
         self.start_time = datetime.datetime.now().isoformat()
@@ -100,7 +101,8 @@ class Game:
         d['continues'] = self.continues
         d['endpoint'] = self.endpoint
         d['game_dir'] = self.game_dir
-        d['graphs'] = self.graphs
+        d['metrics'] = [metric.to_dict() for metric in self.metrics]
+        # d['graphs'] = self.graphs
         d['iteration'] = self.iteration
         d['moving'] = self.moving
         d['port_graph'] = self.port_graph
@@ -145,7 +147,7 @@ class Game:
         This is called from the game directory so needs no prefix other
         than the filename
         """
-        self.add_to_graphs()
+        # self.add_to_graphs()
 
         if diff_only:
             # Just write the line-by-line diff of the game.json file
@@ -180,7 +182,7 @@ class Game:
 
         else:
             # DEPRECATED
-            print('doing deprecated things')
+            print('[E] doing deprecated things')
 
     def init_game(self):
         # go through every bot and add it to a random battleground (trying to have less than 2 bots per battleground)
@@ -264,10 +266,11 @@ class Game:
         for battleground in self.battlegrounds:
             battleground.init_bg_map(self)
 
+        # ===================
         # Add in some metrics
-        self.metrics = []
+        # ===================
         
-        def compute_game_totals_coins(game):
+        def compute_game_totals_coins(game, identifiers):
             for bg in game.battlegrounds:
                 bg.num_coins = 0
                 for row in bg.bg_map:
@@ -288,8 +291,7 @@ class Game:
         self.metrics.append(coin_count)
 
 
-        # Add Metric of
-        def compute_game_totals_bots(game):
+        def compute_game_totals_bots(game, identifiers):
             return (len([bot for bot in game.bots if bot.health > 0]), game.tick)
 
         bots_counts = MetricSeries(
@@ -302,10 +304,62 @@ class Game:
         bots_counts.compute_and_add(self)
         self.metrics.append(bots_counts)
 
+        for bot in self.bots:
+            # ======================================
+            # Compute metrics about the bot's health
+            # ======================================
+            def compute_bot_total_health(game, identifiers):
+                bot_url = identifiers.get('bot_url')
+                curr_bot = [bot for bot in game.bots if bot.bot_url == identifiers.get('bot_url')]
+                if bot_url and curr_bot:
+                    curr_bot = curr_bot[0]
+                    return (curr_bot.health, game.tick)
+                else:
+                    # Return null if the bot's been killed...
+                    return (None, game.tick)
+
+            metric = MetricSeries(
+                units=MetricSeries.UNITS_HEALTH,
+                game_dir=self.game_dir,
+                name='bot.totals.heath',
+                description='The total health of bot {} at url {}'.format(bot.name, bot.bot_url),
+                identifiers={"bot_url": bot.bot_url},
+                compute_metric=compute_bot_total_health
+            )
+            metric.compute_and_add(self)
+            self.metrics.append(metric)
+
+            # =====================================
+            # Compute metrics about the bot's coins
+            # =====================================
+            def compute_bot_totals_coins(game, identifiers):
+                bot_url = identifiers.get('bot_url')
+                curr_bot = [bot for bot in game.bots if bot.bot_url == identifiers.get('bot_url')]
+                if bot_url and curr_bot:
+                    curr_bot = curr_bot[0]
+                    return (sum([coin.value for coin in curr_bot.coins]), game.tick)
+                else:
+                    # Return null if the bot's been killed...
+                    return (None, game.tick)
+
+            bots_counts = MetricSeries(
+                units=MetricSeries.UNITS_BOT,
+                game_dir=self.game_dir,
+                name='bot.totals.coins',
+                description='The total coins held by bot {} at url {}'.format(bot.name, bot.bot_url),
+                identifiers={"bot_url": bot.bot_url},
+                compute_metric=compute_bot_totals_coins
+            )
+            bots_counts.compute_and_add(self)
+            self.metrics.append(bots_counts)
+
+        # ==================
+        # Log some log lines
+        # ==================
         self.continues = True
-        print('Battlegrounds:')
+        print('[V] Battlegrounds:')
         for bg in self.battlegrounds:
-            print("{:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
+            print("[V] {:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
                 self.tick,
                 bg.port_icon,
                 bg.username,
@@ -313,9 +367,9 @@ class Game:
                 bg.battleground_url
             ))
 
-        print('Bots:')
+        print('[V] Bots:')
         for bot in self.bots:
-            print("{:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
+            print("[V] {:<3} | {:<1} | {:<15.15} | {:<15.15} | {}".format(
                 self.tick,
                 bot.bot_icon,
                 bot.username,
@@ -331,7 +385,7 @@ class Game:
         with open(os.path.join(self.game_dir, "game.pickle"), "wb") as game_pkl:
             pickle.dump(self, game_pkl)
 
-        print("\n\nGame started at {}follow.html?game={}".format(
+        print("\n\n[I] Game started at {}follow.html?game={}".format(
             self.endpoint,
             self.game_dir
         ))
@@ -339,7 +393,7 @@ class Game:
 
 class Bot:
     def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations):
-        print('Making bot with abbreviations {}'.format(owner_abbreviations))
+        print('[I] Making bot with abbreviations {}'.format(owner_abbreviations))
         self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
         self.attack_strength = 25
         self.bot_filename = bot_filename
@@ -408,7 +462,6 @@ class Bot:
         """
         assert self.health > 0
         self.move_dict = bot_move
-        # print("Bot {} wants to do action {}".format(self.bot_filename, str(bot_move)))
         # Figure out which battleground the bot is on
         curr_bg = None
         for bg in game.battlegrounds:
@@ -453,10 +506,8 @@ class Bot:
                 bot_is_broke = False
                 replacement_icon = IC_AIR
             
-          #  print("Attempting to walk/hop: intermediary_is_hoppable={} and cell_is_walkable={} and not bot_is_broke={}".format(intermediary_is_hoppable, cell_is_walkable, bot_is_broke))
 
             if intermediary_is_hoppable and cell_is_walkable and not bot_is_broke:
-              #  print("bot {} at {} walk/hop in dir {} onto '{}'".format(self.bot_icon, bot_loc, motion, cell))
                 if cell == IC_AIR:
                     # Replace the current spot with air
                     curr_bg.set_cell(bot_loc, '', replacement_icon)
@@ -469,7 +520,7 @@ class Bot:
                         if bot.coin_icon == cell:
                             self.add_coins(Coin(bot, 1))
                             break
-                    print("\tBot {} picked up coin {}".format(self.bot_icon, cell))
+                    print("[D] \tBot {} picked up coin {}".format(self.bot_icon, cell))
                     curr_bg.set_cell(bot_loc, '', replacement_icon)
                     curr_bg.set_cell(bot_loc, motion, self.bot_icon, allow_repeats=True)
 
@@ -481,7 +532,7 @@ class Bot:
                         if bg.port_icon == cell:
                             next_bg = bg
                             break
-                    print("\tBot {}: {} => {} by port".format(
+                    print("[D] \tBot {}: {} => {} by port".format(
                         self.bot_icon,
                         curr_bg.port_icon,
                         next_bg.port_icon
@@ -500,13 +551,12 @@ class Bot:
         elif bot_move['action'] == ACTION_ATTACK and bot_move['direction'] != '':
             defender_icon = curr_bg.get_cell(bot_loc, bot_move['direction'])
             attacker_icon = curr_bg.get_cell(bot_loc, '')
-          #  print("\t\t {} attacks  {}".format(attacker_icon, defender_icon))
 
             dropped = ''
             dropped_on = ''
             #  check that there's actually a bot at the defending location
             if defender_icon in [bot.bot_icon for bot in curr_bg.bots if bot.health > 0]:
-                print("\t {} hits {}".format(attacker_icon, defender_icon))
+                print("[D] \t {} hits {}".format(attacker_icon, defender_icon))
                 attacker, defender = None, None
                 for bot in curr_bg.bots:
                     if bot.bot_icon == defender_icon:
@@ -519,7 +569,7 @@ class Bot:
                     # Remove health from the defender
                     defender.health -= attacker.attack_strength
                 if defender.health <= 0:
-                    print('Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
+                    print('[D] Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
                     # Give all the defender's coins to the attacker
                     for c in defender.coins:
                         attacker.add_coins(c)
@@ -544,7 +594,6 @@ class Bot:
 #                         if coin.value > 0:
 #                             coin.value -= 1
 #                             dropped = Coin(coin.originator, 1)
-#                             print("\t\t {} removes coin({}) from  {}".format(attacker_icon, coin.originator.coin_icon,
 #                                                                              defender_icon))
 #                             break
 #                     # Add that dropped coin onto the map
@@ -564,7 +613,6 @@ class Bot:
 #                         defender_location[1] + coin_delta[1]
 #                     ]
 #                     landed_icon = curr_bg.get_cell(defender_location, coin_delta)
-#                     print("\t\t coin({}) lands at {}".format(coin.originator.coin_icon, coin_loc))
 #                     # Check to see if the coin landed on a bot
 #                     if landed_icon is not IC_AIR:
 #                         # Add the coin immediately to the bot that it landed on
@@ -578,17 +626,17 @@ class Bot:
 #                         curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
 #                         dropped_on = ' '
 
-            for graph in game.graphs:
-                if graph['id'] == 'events':
-                    graph['data'].append({
-                        'tick': game.tick,
-                        'bot_icon': self.bot_icon,
-                        'event_id': 'attack',
-                        'defender': defender_icon,
-                        'dropped': '' if not dropped else dropped.originator.coin_icon,
-                        'on': dropped_on,
-                    })
-                    break
+            #for graph in game.graphs:
+            #    if graph['id'] == 'events':
+            #        graph['data'].append({
+            #            'tick': game.tick,
+            #            'bot_icon': self.bot_icon,
+            #            'event_id': 'attack',
+            #            'defender': defender_icon,
+            #            'dropped': '' if not dropped else dropped.originator.coin_icon,
+            #            'on': dropped_on,
+            #        })
+            #        break
 
         # If the bot is dropping a coin on the floor (to trade possibly)
         elif bot_move.get('action') == ACTION_DROP and \
@@ -625,16 +673,16 @@ class Bot:
                             curr_bg.bg_map[coin_position[0]][coin_position[1]] = coin.originator.coin_icon
                             dropped_on = ' '
 
-                        for graph in game.graphs:
-                            if graph['id'] == 'events':
-                                graph['data'].append({
-                                    'tick': game.tick,
-                                    'bot_icon': self.bot_icon,
-                                    'event_id': 'drop',
-                                    'dropped': coin_type,
-                                    'on': dropped_on,
-                                })
-                                break
+                        #for graph in game.graphs:
+                        #    if graph['id'] == 'events':
+                        #        graph['data'].append({
+                        #            'tick': game.tick,
+                        #            'bot_icon': self.bot_icon,
+                        #            'event_id': 'drop',
+                        #            'dropped': coin_type,
+                        #            'on': dropped_on,
+                        #        })
+                        #        break
                         break
  
 
@@ -705,7 +753,6 @@ class Battleground:
         return returner
 
     def set_cell(self, bot_loc, cmd, icon, allow_repeats=False):
-        #print('setting cell at {}+{} to {}'.format(bot_loc, cmd, icon))
         pos = list(bot_loc[:])
         if type(cmd) is str:
             # cmd is a string made up of l, r, u, d characters
@@ -834,7 +881,7 @@ class Client:
         self.battlegrounds = []
         if 'https://github.com/' in self.url:
             self.repository = self.url.replace('https://github.com/', '').replace(self.username + '/', '')
-            print('\nRepository is ' + self.url)
+            print('[D] \nRepository is ' + self.url)
             self.client_local_path = os.path.join(game_dir, self.username, self.repository)
             config_json = {}
             # Download the repository to game_dir
@@ -845,9 +892,9 @@ class Client:
                 self.username,
                 self.repository,
                 self.client_local_path)]
-            print('Cloning from GitHub: ' + ' '.join(cmd))
+            print('[D] Cloning from GitHub: ' + ' '.join(cmd))
             proc = subprocess.run(cmd)
-            assert proc.returncode == 0, print('Github download failed with error code {}:'.format(proc.returncode), proc.stdout,proc.stderr)
+            assert proc.returncode == 0, print('[E] Github download failed with error code {}:'.format(proc.returncode), proc.stdout,proc.stderr)
             # Extract the config_json
             with open(os.path.join(self.client_local_path, 'config.json'), 'r') as config_json_file:
                 config_json = json.load(config_json_file)
@@ -886,7 +933,7 @@ class Client:
                 r = requests.get(path)
                 if not r.ok:
                     # TODO move bot validity checking to the client side setup / allow feedback to the client
-                    print("Attempt to get bot at path {} failed with error:\n{}".format(
+                    print("[E] Attempt to get bot at path {} failed with error:\n{}".format(
                         path,
                         r.text
                     ))
@@ -905,7 +952,7 @@ class Client:
                 path = self.url + '/' + item['path']
                 r = requests.get(path)
                 if not r.ok:
-                    print("Attempt to get battleground at path {} failed with error:\n{}".format(
+                    print("[E] Attempt to get battleground at path {} failed with error:\n{}".format(
                         path,
                         r.text
                     ))
@@ -920,23 +967,44 @@ class Client:
 
 class MetricSeries:
     UNITS_COUNT = 'UNITS_COUNT'
+    UNITS_HEALTH = 'UNITS_HEALTH'
     UNITS_KILL = 'UNITS_KILL'
     UNITS_BOT = 'UNITS_BOT'
     UNITS_COIN = 'UNITS_COIN'
-    def __init__(self, units, game_dir, name, description, compute_metric):
+    def __init__(self, units, game_dir, name, description, compute_metric, identifiers=None):
+        if identifiers is None:
+            identifiers = {}
         self.units = units
         self.game_dir = game_dir
         self.name = name
         self.description = description
         self.values = []
+        self.identifiers = {
+            "game_dir" : game_dir,
+            "description" : description,
+            "name" : name
+        }
+        self.identifiers.update(identifiers)
         self.compute_metric = compute_metric 
 
+    def to_dict(self):
+        d = {}
+        d['units'] = self.units
+        d['game_dir'] = self.game_dir
+        d['name'] = self.name
+        d['description'] = self.description
+        d['values'] = self.values
+        d['identifiers'] = self.identifiers
+        return d
+
     def add(self, value, tick):
-        print('[V] Added metric to {}: {} at {}'.format(self.name, value, tick))
-        self.values.append((value, tick))
+        print('[V] Metric Added {}: {} at {}, identifiers={}'.format(self.name, value, tick, self.identifiers))
+        self.values.append((tick, value))
     
     def compute_and_add(self, game):
-        self.add(*self.compute_metric(game))
+        computed_metric, tick = self.compute_metric(game, self.identifiers)
+        self.add(computed_metric, tick)
+
 
 
 class Colours:
