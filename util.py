@@ -526,13 +526,14 @@ class Bot:
                     # Remove the defender from the game.
                     curr_bg.set_cell(bot_loc, bot_move['direction'], IC_AIR)
                     curr_bg.bots.remove(defender)
-                    idx = -1
-                    for i, bot in enumerate(game.bots):
-                        if bot.bot_icon == defender_icon:
-                            idx = i
-                            break
-                    assert idx != -1
-                    game.bots.pop(idx)
+                    # Do not remove bots from the games.bots array
+                    # idx = -1
+                    # for i, bot in enumerate(game.bots):
+                    #     if bot.bot_icon == defender_icon:
+                    #         idx = i
+                    #         break
+                    # assert idx != -1
+                    # game.bots.pop(idx)
 
 #                 # Check that the defender actually has coins to give
 #                 if defender.coins and sum([coin.value for coin in defender.coins]):
