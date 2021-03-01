@@ -1,7 +1,10 @@
+let div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 export function get_param(param, defaultvalue) {
     if (window.location.href.indexOf(param) > -1) {
-       let vars = {};
+        let vars = {};
         let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
             (m, key, value) => {
                 vars[key] = value;
@@ -28,28 +31,28 @@ export function create_bg_card(div_id, game) {
     // </div>
 
 
-    let div = document.getElementById(div_id)
+    let div = document.getElementById(div_id);
     div.innerHTML = "";
     let pure_g = document.createElement("div");
-    pure_g.classList.add('pure-g')
+    pure_g.classList.add('pure-g');
     pure_g.setAttribute('id', `bg-card-pure-g`);
     div.appendChild(pure_g);
-   // game['battlegrounds'].sort((a, b) => {
-   //     return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-   // })
+    // game['battlegrounds'].sort((a, b) => {
+    //     return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+    // })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
-        let curr_bg = game['battlegrounds'][i]
+        let curr_bg = game['battlegrounds'][i];
         let pure_u = document.createElement("div");
         pure_u.classList.add('pure-u-lg-6-24');
         pure_u.classList.add('pure-u-md-8-24');
         pure_u.classList.add('pure-u-sm-12-24');
         pure_u.classList.add('pure-u-1-1');
 
-       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
-       // pure_u.setAttribute('id', `bg-card-pure-u-${curr_bg['port_icon']}`);
+        // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+        // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+        // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+        // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        // pure_u.setAttribute('id', `bg-card-pure-u-${curr_bg['port_icon']}`);
         //pure_u.addEventListener('click', (e) => {
         //    // Re-order the game battlegrounds, then re-draw the whole thing
         //    let removed = game['battlegrounds'].splice(i, 1)[0];
@@ -79,66 +82,114 @@ export function create_bg_card(div_id, game) {
 }
 
 export function update_bg_card(div_id, game) {
-    let pure_g = d3.select('#' + div_id + " #bg-card-pure-g")
-  //  game['battlegrounds'].sort((a, b) => {
-  //      return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
-  //  })
+    let pure_g = d3.select('#' + div_id + " #bg-card-pure-g");
+    //  game['battlegrounds'].sort((a, b) => {
+    //      return a['bot_icons'].length > b['bot_icons'].length ? -1 : 1;
+    //  })
     for (let i = 0; i < game['battlegrounds'].length; i++) {
-        let curr_bg = game['battlegrounds'][i]
+        let curr_bg = game['battlegrounds'][i];
         let pure_u = document.getElementById(`bg-card-pure-u-${curr_bg['port_icon']}`);
-       // pure_u.className = ""
-       // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
-       // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
-       // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
-       // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
+        // pure_u.className = ""
+        // pure_u.classList.add(i < 4 ? 'pure-u-lg-6-24' : 'pure-u-lg-3-24');
+        // pure_u.classList.add(i < 3 ? 'pure-u-md-8-24' : 'pure-u-md-4-24');
+        // pure_u.classList.add(i < 2 ? 'pure-u-sm-12-24' : 'pure-u-sm-6-24');
+        // pure_u.classList.add(i < 1 ? 'pure-u-1-1' : 'pure-u-12-24');
 
         // Update the ith battleground
         // console.time(`update d3-bg-${i}`);
         //if (curr_bg['bot_icons'].includes(game.moving)) {
-            update_battleground(`d3-bg-${i}`, curr_bg, game)
+        update_battleground(`d3-bg-${i}`, curr_bg, game)
         //}
         //  console.timeEnd(`update d3-bg-${i}`);
     }
 }
 
 export function create_graph_card(div_id, game) {
-    let div = document.getElementById(div_id)
+    let div = document.getElementById(div_id);
     div.innerHTML = "";
     let pure_g = document.createElement("div");
-    pure_g.classList.add('pure-g')
+    pure_g.classList.add('pure-g');
     div.appendChild(pure_g);
-    for (let i = 0; i < game['graphs'].length; i++) {
-        let curr_graph = game['graphs'][i];
-        if (curr_graph['id'] === 'events') {
-            continue;
+
+
+    let metrics = game['metrics'];
+
+    const graph_details = {
+        "game.totals.coins": {
+            title: "Total Coins in the Game",
+            x_axis_label: "Game ticks",
+            x_axis_units: "",
+            y_axis_label: "Number of Coins",
+            y_axis_units: ""
+        },
+        "game.totals.bots": {
+            title: "Total Bots in the Game",
+            x_axis_label: "Game ticks",
+            x_axis_units: "",
+            y_axis_label: "Number of Bots",
+            y_axis_units: ""
+        },
+        "bot.totals.coins": {
+            title: "Coins per Bot over time",
+            x_axis_label: "Game ticks",
+            x_axis_units: "",
+            y_axis_label: "Number of Coins",
+            y_axis_units: ""
+        },
+        "bot.totals.health": {
+            title: "Health per Bot over time",
+            x_axis_label: "Game ticks",
+            x_axis_units: "",
+            y_axis_label: "Bot Health",
+            y_axis_units: ""
+        },
+    };
+
+    let graphs = [];
+
+    console.log(graph_details);
+    for (let i = 0; i < metrics.length; i++) {
+        if (!graphs.map(e => e.name).includes(metrics[i]['name'])) {
+            console.log(metrics[i]['name']);
+            graphs.push({
+                name: metrics[i]['name'],
+                list_of_values: [],
+                config: graph_details[metrics[i]['name']],
+                series: []
+            });
         }
+        let curr_graph = graphs.find(e => e.name === metrics[i]['name']);
+        curr_graph.list_of_values.push(
+            metrics[i]['values']
+        );
+        let bot = game.bots.find(bot => {
+            return bot.bot_url === metrics[i]['identifiers']['bot_url'];
+        });
+        curr_graph.series.push({
+            series_url: bot !== undefined ? bot.bot_url : "",
+            series_label: bot !== undefined ? bot.name : `Series ${curr_graph.list_of_values.length}`,
+            series_id: `id${curr_graph.list_of_values.length - 1}`,
+        });
+    }
 
-        let pure_u = document.createElement("div");
-        pure_u.classList.add('pure-u-1');
 
-        let bg_title = document.createElement("h3");
-        bg_title.classList.add('chart-title');
-        bg_title.innerHTML = curr_graph.title;
-        pure_u.appendChild(bg_title);
-
+    for (let i = 0; i < graphs.length; i++) {
+        let curr_graph = graphs[i];
+        console.log(curr_graph);
         let chart_div = document.createElement('div');
         chart_div.setAttribute('id', `d3-chart-${i}`);
+        let pure_u = document.createElement("div");
+        pure_u.classList.add('pure-u-md-1-2', 'pure-u-1');
         pure_u.appendChild(chart_div);
-
         pure_g.appendChild(pure_u);
+        create_graph(
+            `d3-chart-${i}`,
+            curr_graph,
+            game
+        );
 
-
-        create_graph(`d3-chart-${i}`, curr_graph, game);
-
-        // let svg = d3.select(`#d3-chart-${i}`).append("svg")
-        // let width = Math.random() * 1000 + 400;
-        // svg.attr('width', width + 'px')
-        //     .attr('height', '300px')
-        //     .append('rect')
-        //     .attr('width', width + 'px')
-        //     .attr('height', '300px')
-        //     .attr('fill', `hsl(${300 - i * 20}, 90%, 60%)`);
     }
+
 }
 
 function hue_from_icon(array, cell) {
@@ -159,10 +210,7 @@ function create_battleground(div_id, bg, game) {
         .attr("width", width + margin.left + margin.right)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    let div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-    
+
     update_battleground(div_id, bg, game);
 }
 
@@ -173,32 +221,32 @@ function update_battleground(div_id, bg, game) {
     const height = document.getElementById(div_id).offsetHeight;
     const cell_width = (width - margin.left - margin.right) / bg['bg_map'][0].length;
     const cell_height = (height - margin.bottom - margin.top) / bg['bg_map'].length;
-    const svg = d3.select('#' + div_id + " svg g")
-    const div = d3.select(".tooltip")
+    const svg = d3.select('#' + div_id + " svg g");
+    const div = d3.select(".tooltip");
 
     const text_fill_from_cell = (cell) => {
         if (cell === '#') {
             return "#626262";
         } else if (game['bot_icons'].indexOf(cell) >= 0) {
-            let hue = hue_from_icon(game['bot_icons'], cell)
+            let hue = hue_from_icon(game['bot_icons'], cell);
             return `hsl(${hue}, 100%, 50%)`;
         } else if (game['port_icons'].indexOf(cell) >= 0) {
-            let hue = hue_from_icon(game['port_icons'], cell)
+            let hue = hue_from_icon(game['port_icons'], cell);
             return `hsl(${hue}, 100%, 25%)`;
         } else if (game['coin_icons'].indexOf(cell) >= 0) {
-            let hue = hue_from_icon(game['coin_icons'], cell)
+            let hue = hue_from_icon(game['coin_icons'], cell);
             return `hsl(${hue}, 100%, 50%)`;
         } else {
             return "#000000";
         }
-    }
+    };
     const rect_fill_from_cell = (cell) => {
         if (cell === '#') {
             return text_fill_from_cell(cell);
         } else {
             return "#d9d9d9"
         }
-    }
+    };
     const rect_stroke_from_cell = (cell) => {
         if (cell === '#') {
             return text_fill_from_cell(cell);
@@ -207,7 +255,7 @@ function update_battleground(div_id, bg, game) {
         } else {
             return "#cbcbcb"
         }
-    }
+    };
     const text_font_weight_from_cell = (cell) => {
         if (cell === '#') {
             return 'light';
@@ -216,7 +264,7 @@ function update_battleground(div_id, bg, game) {
         } else {
             return "bold"
         }
-    }
+    };
     const mouseover_from_cell = (cell) => {
         // Tool tip vibes
         if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell) || game['coin_icons'].includes(cell)) {
@@ -225,12 +273,12 @@ function update_battleground(div_id, bg, game) {
                 let pos = [];
                 let port_icon = '';
                 if (cell !== '' || cell !== '#') {
-                    for (let bgi = 0; bgi < game['battlegrounds'].length; bgi++){
+                    for (let bgi = 0; bgi < game['battlegrounds'].length; bgi++) {
                         if (game['battlegrounds'][bgi]['bot_icons'].includes(cell)) {
                             port_icon = game['battlegrounds'][bgi]['port_icon'];
                             let bg_map = game['battlegrounds'][bgi]['bg_map'];
-                            for (let r = 0; r < bg_map.length; r ++) {
-                                for (let c = 0; c < bg_map[r].length; c ++) {
+                            for (let r = 0; r < bg_map.length; r++) {
+                                for (let c = 0; c < bg_map[r].length; c++) {
                                     if (bg_map[r][c] === cell) {
                                         pos = [r, c];
                                         break;
@@ -245,7 +293,6 @@ function update_battleground(div_id, bg, game) {
                     tool_tip_content += `Port ${d.text_content} (${d.username})<br>`;
 
                 } else if (game['bot_icons'].includes(cell)) {
-                    //console.log(d)
                     tool_tip_content += `Bot ${d.text_content} (${d.username})<br>`;
                     tool_tip_content += `Health: ${d.bot_data.health}/100<br>`;
 
@@ -253,7 +300,7 @@ function update_battleground(div_id, bg, game) {
                     for (let i = 0; i < d.bot_data.coins.length; i++) {
                         num_coins += d.bot_data.coins[i].value;
                     }
-                    tool_tip_content += `Coins: ` + num_coins + `<br>`
+                    tool_tip_content += `Coins: ` + num_coins + `<br>`;
                     tool_tip_content += `Last move: ${d.bot_data.move_dict.action} ${d.bot_data.move_dict.direction}<br>`;
 
                 } else if (game['coin_icons'].includes(cell)) {
@@ -272,7 +319,7 @@ function update_battleground(div_id, bg, game) {
             return (d) => {
             };
         }
-    }
+    };
     const mouseout_from_cell = (cell) => {
         // if (game['port_icons'].includes(cell) || game['bot_icons'].includes(cell)) {
         return (d) => {
@@ -282,7 +329,7 @@ function update_battleground(div_id, bg, game) {
             d3.select(this).style("fill", rect_fill_from_cell(cell))
 
         }
-    }
+    };
     const username_from_cell = (cell) => {
         if (game['port_icons'].includes(cell)) {
             for (let i = 0; i < game['battlegrounds'].length; i++) {
@@ -299,7 +346,7 @@ function update_battleground(div_id, bg, game) {
         } else {
             return 'undefined'
         }
-    }
+    };
     const bot_from_cell = (cell) => {
         if (game['bot_icons'].includes(cell)) {
             for (let i = 0; i < game['bots'].length; i++) {
@@ -307,10 +354,10 @@ function update_battleground(div_id, bg, game) {
                     return game['bots'][i];
                 }
             }
-        } 
+        }
         return ''
-    }
-    
+    };
+
 
     let bot_data = [];
     let map_data = [];
@@ -320,7 +367,7 @@ function update_battleground(div_id, bg, game) {
         bot_data.push([]);
         map_data.push([]);
         for (let row = 0; row < bg['bg_map'][0].length; row++) {
-            let curr_item = bg['bg_map'][row][col]
+            let curr_item = bg['bg_map'][row][col];
             map_data[col].push({
                 key: (game['bot_icons'].includes(curr_item)) ? curr_item : `${bg["port_icon"]}-${col}-${row}`,
                 map_row: row,
@@ -350,7 +397,7 @@ function update_battleground(div_id, bg, game) {
                 mouseover: mouseover_from_cell(curr_item),
                 mouseout: mouseout_from_cell(curr_item),
                 username: username_from_cell(curr_item),
-            })
+            });
             xpos += cell_width;
         }
         xpos = 1;
@@ -361,122 +408,110 @@ function update_battleground(div_id, bg, game) {
         .duration(250);
 
     svg.selectAll("rect")
-      .data(map_data.flat(), d => d.key)
-      .join(
-        enter => enter.append("rect")
-              .attr("x", d => d.rect_x)
-              .attr("y", d => d.rect_y)
-              .attr("width", d => d.rect_width)
-              .attr("height", d => d.rect_height)
-              .style("stroke", d => d.rect_stroke)
-              .style("fill", d => d.rect_fill)
-          .call(enter => enter.transition(t)
-            ),
+        .data(map_data.flat(), d => d.key)
+        .join(
+            enter => enter.append("rect")
+                .attr("x", d => d.rect_x)
+                .attr("y", d => d.rect_y)
+                .attr("width", d => d.rect_width)
+                .attr("height", d => d.rect_height)
+                .style("stroke", d => d.rect_stroke)
+                .style("fill", d => d.rect_fill)
+                .call(enter => enter.transition(t)
+                ),
 
-        update => update
-            .attr("x", d => d.rect_x)
-            .attr("y", d => d.rect_y)
-          .call(update => update.transition(t)
-            ),
+            update => update
+                .attr("x", d => d.rect_x)
+                .attr("y", d => d.rect_y)
+                .call(update => update.transition(t)
+                ),
 
-        exit => exit
-            .attr("opacity", "1")
-          .call(exit => exit.transition(t)
-            .attr("opacity", "0").remove()
-          )
-      );
+            exit => exit
+                .attr("opacity", "1")
+                .call(exit => exit.transition(t)
+                    .attr("opacity", "0").remove()
+                )
+        );
 
     svg.selectAll("text")
-      .data(bot_data.flat(), element => element.key)
-      .join(
-        enter => enter.append("text")
-            .attr("font-size", (1.2 * cell_width).toString() + 'px')
-            .attr("text-anchor", "middle")
-            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-            .attr("y", d => d.rect_y + 0.9 * d.rect_height)
-            .attr('fill', d => d.text_fill)
-            .attr("font-weight", d => d.text_font_weight)
-            .text(d => d.text_content)
-            .on('mouseover', (mouseEvent, d) => d.mouseover(mouseEvent, d))
-            .on('mouseout', (mouseEvent, d) => d.mouseout(mouseEvent, d))
-            .on('mouseout', (d, i) => i.mouseout(i))
-            .attr("opacity", "0")
-          .call(enter => enter.transition(t)
-              .attr("opacity", "1")
-            ),
+        .data(bot_data.flat(), element => element.key)
+        .join(
+            enter => enter.append("text")
+                .attr("font-size", (1.2 * cell_width).toString() + 'px')
+                .attr("text-anchor", "middle")
+                .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+                .attr("y", d => d.rect_y + 0.9 * d.rect_height)
+                .attr('fill', d => d.text_fill)
+                .attr("font-weight", d => d.text_font_weight)
+                .text(d => d.text_content)
+                .on('mouseover', (mouseEvent, d) => d.mouseover(mouseEvent, d))
+                .on('mouseout', (mouseEvent, d) => d.mouseout(mouseEvent, d))
+                .attr("opacity", "0")
+                .call(enter => enter.transition(t)
+                    .attr("opacity", "1")
+                ),
 
-        update => update
-          .call(update => update.transition(t)
-            .attr("x", d => d.rect_x + 0.5 * d.rect_width)
-            .attr("y", d => d.rect_y + 0.9 * d.rect_height)
-            ),
+            update => update
+                .call(update => update.transition(t)
+                    .attr("x", d => d.rect_x + 0.5 * d.rect_width)
+                    .attr("y", d => d.rect_y + 0.9 * d.rect_height)
+                ),
 
-        exit => exit
-            .attr("opacity", "1")
-          .call(exit => exit.transition(t)
-            .attr("opacity", "0").remove()
-          )
-      );
-}
-
-function init_graph() {
-}
-
-function create_coins_per_bot() {
-}
-
-function update_coins_per_bot() {
-}
-
-function create_bot_locations() {
-}
-
-function update_bot_locations() {
+            exit => exit
+                .attr("opacity", "1")
+                .call(exit => exit.transition(t)
+                    .attr("opacity", "0").remove()
+                )
+        );
 }
 
 function create_graph(div_id, graph, game) {
-    const COLOURS = ["#c4ad3a",
-        "#715fcd",
-        "#73b638",
-        "#c24cb5",
-        "#4fbd6a",
-        "#da4478",
-        "#55b48f",
-        "#d04934",
-        "#49b9d3",
-        "#d9842d",
-        "#6380c5",
-        "#687428",
-        "#be86dd",
-        "#3d7d3e",
-        "#d983b3",
-        "#a3b165",
-        "#97487a",
-        "#97692f",
-        "#b35355",
-        "#e29371"]
+    let datas = graph.list_of_values;
+    let graph_config = graph.config;
+    // console.log(datas);
+    // set the dimensions and margins of the datas
+    const margin = {top: 30, right: 10, bottom: 40, left: 40};
+    const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right;
+    const height = 200 - margin.top - margin.bottom;
 
-    // set the dimensions and margins of the graph
-    const tick_width = 10
-    const margin = {top: 10, right: 10, bottom: 40, left: 40};
-    const width = game.tick * tick_width;
-    const height = 300;
-
-    let unique_series = [];
-    let per_series_data = []
-    for (let i = 0; i < graph.data.length; i++) {
-        if (!unique_series.includes(graph.data[i][graph.series_key])) {
-            unique_series.push(graph.data[i][graph.series_key]);
-            per_series_data.push([]);
+    let data = [];
+    let extent_x = [0, 0];
+    let extent_y = [0, 0];
+    for (let ds_idx = 0; ds_idx < datas.length; ds_idx++) {
+        let coords = [];
+        for (let item_idx = 0; item_idx < datas[ds_idx].length; item_idx++) {
+            extent_y[0] = Math.min(extent_y[0], datas[ds_idx][item_idx][0]);
+            extent_y[1] = Math.max(extent_y[1], datas[ds_idx][item_idx][0]);
+            extent_x[0] = Math.min(extent_x[0], datas[ds_idx][item_idx][1]);
+            extent_x[1] = Math.max(extent_x[1], datas[ds_idx][item_idx][1]);
+            coords.push({
+                y: datas[ds_idx][item_idx][0],
+                x: datas[ds_idx][item_idx][1],
+                id: `${ds_idx}`
+            })
         }
-    }
-    unique_series.sort((a, b) => (a < b) ? -1 : 1);
-    // Restructure the data. Each element in data corrosponds to a different series' data
-    for (let i = 0; i < graph.data.length; i++) {
-        per_series_data[unique_series.indexOf(graph.data[i][graph.series_key])].push(graph.data[i]);
-    }
+        data.push({
+            id: `${ds_idx}`,
+            coords: coords,
+            series_label: graph.series[ds_idx].series_label,
+            series_id: graph.series[ds_idx].series_id,
+            series_url: graph.series[ds_idx].series_url
+        })
 
-    // append the svg object to the body of the page
+    }
+    // console.log(data);
+    const xScale = d3.scaleLinear()
+        .range([0, width])
+        .domain(extent_x);
+
+    const yScale = d3.scaleLinear()
+        .rangeRound([height, 0])
+        .domain(extent_y);
+
+
+    // ---------------------------------------------
+    // Append the svg object to the body of the page
+    // ---------------------------------------------
     d3.select('#' + div_id).selectAll("svg").remove();
     const svg = d3.select('#' + div_id)
         .append("svg")
@@ -485,83 +520,128 @@ function create_graph(div_id, graph, game) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const xScale = d3.scaleLinear()
-        .domain([game.tick, 0])
-        .range([0, width]);
+    const yaxis = d3.axisLeft().scale(yScale);
+    const xaxis = d3.axisBottom().scale(xScale);
 
-    const yScale = d3.scaleLinear()
-        .domain(d3.extent(graph.data, d => d[graph.y_key]))
-        .range([height, 0]);
-
-    const colour = d3.scaleOrdinal()
-        .domain(unique_series)
-        .range(COLOURS.splice(0, unique_series.length));
-
-    // Filter out all the fractional ticks:
-    const yAxisTicks = yScale.ticks()
-        .filter(tick => Number.isInteger(tick));
-    const yAxis = d3.axisLeft(yScale)
-        .tickValues(yAxisTicks)
-        .tickFormat(d3.format('d'));
-
-
-    const lineGenerator = d3.line()
-        .x(d => xScale(d[graph.x_key]))
-        .y(d => yScale(d[graph.y_key]));
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xScale))
-        .append("text")
-        .attr("y", '2.5em')
-        .attr("x", 0)
-        .style("text-anchor", "start")
-        .style("alignment-baseline", "bottom")
-        .text(graph.x_label);
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", '-1.5em')
-        .attr("x", 0)
-        .style("text-anchor", "end")
-        .text(graph.y_label);
-
-    let series = svg.selectAll(".series")
-        .data(per_series_data)
-        .enter().append("g")
-        .attr("class", "series");
-
-    series.append("path")
-        .attr("class", "line")
-        .attr("d", d => lineGenerator(d))
-        .style("stroke", d => {
-            return colour(d[0].bot_icon);
+    const lineCreator = d3.line()
+        .x(function (d) {
+            return xScale(d.x);
+        })
+        .y(function (d) {
+            return yScale(d.y);
         });
 
-    // series.append("text")
-    //     .datum(function (d) {
-    //         return {
-    //             name: d.name,
-    //             value: d.values[d.values.length - 1]
-    //         };
-    //     })
-    //     .attr("transform", d => "translate(" + xScale(d.value[graph.x_key]) + "," + yScale(d.value[graph.y_key]) + ")")
-    //     .attr("x", 3)
-    //     .attr("dy", ".35em")
-    //     .text(d => d.name);
 
-    // series.selectAll("circle")
-    //     .data(d => d.values)
-    //     .enter()
-    //     .append("circle")
-    //     .attr("r", 3)
-    //     .attr("cx", d => xScale(d[graph.x_key]))
-    //     .attr("cy", d => yScale(d[graph.y_key]))
-    //     .style("fill", (d, i, j) => colour(series[j].name));
+    // ----------
+    // Title text
+    // ----------
+    svg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," +
+            (-margin.top * 0.2) + ")")
+        .style("text-anchor", "middle")
+        .style("font-weight", "middle")
+        .style("font-size", "18px")
+        .text(graph_config.title);
+
+    // ---------------------
+    // X axis label and axes
+    // ---------------------
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xaxis);
+
+    let x_axis_text = `${graph_config.x_axis_label}`;
+    if (graph_config.x_axis_units !== "") {
+        x_axis_text += ` (${graph_config.x_axis_units})`
+    }
+    svg.append("text")
+        .attr("transform", "translate(" + (width) + " ," +
+            (height + margin.bottom * 0.9) + ")")
+        .style("text-anchor", "end")
+        .style("font-size", "15px")
+        .text(x_axis_text);
+
+    // ---------------------
+    // Y axis label and axes
+    // ---------------------
+    svg.append("g")
+        .attr("class", "axis")
+        .call(yaxis);
+
+    let y_axis_text = `${graph_config.y_axis_label}`;
+    if (graph_config.y_axis_units !== "") {
+        y_axis_text += ` (${graph_config.y_axis_units})`
+    }
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("font-size", "15px")
+        .text(y_axis_text);
+
+
+    // -----------------------------
+    // Lines and path configurations
+    // -----------------------------
+    const lines = svg.selectAll("lines")
+        .data(data)
+        .enter()
+        .append("g");
+
+    lines.append("path")
+        .attr("d", d => lineCreator(d.coords))
+        .on("mouseout", (mouseEvent, d) => {
+            d3.selectAll(".bot-id" + d.id)
+                .classed("selected", false);
+        })
+        .on("mouseover", (mouseEvent, d) => {
+            d3.selectAll(".bot-id" + d.id)
+                .classed("selected", true);
+        })
+        .attr("class", (d) => "bot-id" + d.id + " line should-color")
+        .style("stroke", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`);
+
+    // -------------------------
+    // Legend and legend entries
+    // -------------------------
+    if (data.length > 1) {
+        let legend_entries = svg.append("g")
+            .attr("class", "legend_group")
+            .selectAll("g");
+
+        legend_entries
+            .data(data).enter()
+            .append("text")
+            .attr("x", (d) => (d.id * 50))
+            .attr("y", height + margin.bottom * 0.9)
+            .attr("class", (d) => "bot-id" + d.id + " ")
+            .style("font-size", "12px")
+            .on("mouseout", (mouseEvent, d) => {
+                d3.selectAll(".bot-id" + d.id)
+                    .classed("selected", false);
+            })
+            .on("mouseover", (mouseEvent, d) => {
+                d3.selectAll(".bot-id" + d.id)
+                    .classed("selected", true);
+            })
+            .text((d) => d.series_label);
+
+        legend_entries.data(data).enter().append("circle")
+            .attr("class", (d) => "bot-id" + d.id + " should-color")
+            .style("fill", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`)
+            .attr("cx", (d) => (d.id * 50) - 5)
+            .attr("cy", height + margin.bottom * 0.9 - 4)
+            .on("mouseout", (mouseEvent, d) => {
+                d3.selectAll(".bot-id" + d.id).classed("selected", false);
+            })
+            .on("mouseover", (mouseEvent, d) => {
+                d3.selectAll(".bot-id" + d.id).classed("selected", true);
+            })
+            .attr("r", 3);
+    }
 }
 
 

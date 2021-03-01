@@ -40,6 +40,7 @@
             <h4>Game info</h4>
             <ul id="basic_info">
             </ul>
+            <div id="graphs-card"></div>
         </div>
     </div>
     <!-- Battleground Card-->
@@ -70,12 +71,6 @@
                 Each of the lower case letters (a, b, c, ...) are coins. These are the different types
                 of resources that a bot (A, B, C, ...) can try to collect
             </p>
-        </div>
-    </div>
-    <!--Graphs Card-->
-    <div class="pure-u-1-1">
-        <div class="shadow horizontal-scroll" id="graphs-card">
-            <!--This div populated by JavaScript-->
         </div>
     </div>
 </div>
@@ -172,7 +167,7 @@
         }
         // When the game json is loaded, add content to the battleground and graphs cards
         create_bg_card('bg-card', game);
-        // create_graph_card('graphs-card', game);
+        create_graph_card('graphs-card', game);
 
         let url = game.endpoint + "sse.php?last_seen_tick=" + game.tick + "&game_id=" + game_param.replace('games/', '');
         let dmp = new diff_match_patch();

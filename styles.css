@@ -106,13 +106,26 @@ pre {
 }
 
 .axis text {
-    font-size: 15px;
     fill: #000000;
 }
 
 .line {
     fill: none;
+    stroke-width: 2px;
+    opacity: 0.7;
+}
+
+path.selected {
     stroke-width: 3px;
+    opacity: 1.0;
+}
+
+text.selected {
+    font-weight: bolder;
+}
+
+circle.selected {
+    r: 5;
 }
 
 .square-box-outer {
