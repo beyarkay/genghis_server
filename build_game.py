@@ -63,12 +63,10 @@ def main(server_state_path='server_state.json'):
 
     # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
     clients = []
-    print(server_state.get('clients'))
     all_clients = server_state.get('clients', []) + clients_json
-    print("Processing all clients:")
+    print("Processing {} clients:".format(len(all_clients)))
     for client_obj in all_clients:
         try:
-            print(client_obj)
             c = util.Client(
                 client_obj.get('username'),
                 client_obj.get('url'),
