@@ -305,6 +305,30 @@ class Game:
         self.metrics.append(bots_counts)
 
         for bot in self.bots:
+            # =======================================================
+            # Compute metrics about the bot's time to make a decision
+            # =======================================================
+            def compute_bot_total_ttdecision(game, identifiers):
+                bot_url = identifiers.get('bot_url')
+                curr_bot = [bot for bot in game.bots if bot.bot_url == identifiers.get('bot_url')]
+                if bot_url and curr_bot:
+                    curr_bot = curr_bot[0]
+                    return (curr_bot.tt_decision, game.tick)
+                else:
+                    # Return null if the bot's been killed...
+                    return (None, game.tick)
+
+            metric = MetricSeries(
+                units=MetricSeries.UNITS_HEALTH,
+                game_dir=self.game_dir,
+                name='bot.totals.ttdecision',
+                description='The time to make a decision of bot {} at url {}'.format(bot.name, bot.bot_url),
+                identifiers={"bot_url": bot.bot_url},
+                compute_metric=compute_bot_total_ttdecision
+            )
+            metric.compute_and_add(self)
+            self.metrics.append(metric)
+
             # ======================================
             # Compute metrics about the bot's health
             # ======================================
@@ -315,13 +339,13 @@ class Game:
                     curr_bot = curr_bot[0]
                     return (curr_bot.health, game.tick)
                 else:
-                    # Return null if the bot's been killed...
-                    return (None, game.tick)
+                    # Return 0 if the bot's been killed...
+                    return (0, game.tick)
 
             metric = MetricSeries(
                 units=MetricSeries.UNITS_HEALTH,
                 game_dir=self.game_dir,
-                name='bot.totals.heath',
+                name='bot.totals.health',
                 description='The total health of bot {} at url {}'.format(bot.name, bot.bot_url),
                 identifiers={"bot_url": bot.bot_url},
                 compute_metric=compute_bot_total_health
@@ -329,6 +353,52 @@ class Game:
             metric.compute_and_add(self)
             self.metrics.append(metric)
 
+            # ================================================
+            # Compute metrics about the distance to other bots
+            # ================================================
+            def compute_bot_totals_dt_closest_bot(game, identifiers):
+                bot_url = identifiers.get('bot_url')
+                curr_bot = [bot for bot in game.bots if bot.bot_url == identifiers.get('bot_url')]
+                if bot_url and curr_bot:
+                    curr_bot = curr_bot[0]
+                    curr_bg = None
+                    for bg in game.battlegrounds:
+                        for bg_bot in bg.bots:
+                            if bg_bot.bot_url == bot_url:
+                                curr_bg = bg
+                                break
+                        if curr_bg is not None:
+                            break
+                    else:
+                        print('Bot {} not found when trying to calculate dt closest bot'.format(curr_bot.bot_icon))
+                    if curr_bg is not None and len(curr_bg.bots) > 1:
+                        other_locs = []
+                        bot_loc = [None, None]
+                        for row_idx, row in enumerate(curr_bg.bg_map):
+                            for col_idx, item in enumerate(row):
+                                if item == curr_bot.bot_icon:
+                                    bot_loc = (row_idx, col_idx)
+                                elif item.lower() != item:
+                                    other_locs.append((row_idx, col_idx))
+                        deltas = [(abs(bot_loc[0] - loc[0]), abs(bot_loc[1] - loc[1])) for loc in other_locs]
+                        distances = [max(delta[0], delta[1]) for delta in deltas]
+                        return (min(distances), game.tick)
+                    else:
+                        return (0, game.tick)
+                else:
+                    # Return None if there are no other bots close to it
+                    return (None, game.tick)
+
+            metric = MetricSeries(
+                units=MetricSeries.UNITS_BOT,
+                game_dir=self.game_dir,
+                name='bot.totals.dt_closest_bot',
+                description='The distance to the closest bot relative to bot {} at url {}'.format(bot.name, bot.bot_url),
+                identifiers={"bot_url": bot.bot_url},
+                compute_metric=compute_bot_totals_dt_closest_bot
+            )
+            metric.compute_and_add(self)
+            self.metrics.append(metric)
             # =====================================
             # Compute metrics about the bot's coins
             # =====================================
@@ -339,8 +409,8 @@ class Game:
                     curr_bot = curr_bot[0]
                     return (sum([coin.value for coin in curr_bot.coins]), game.tick)
                 else:
-                    # Return null if the bot's been killed...
-                    return (None, game.tick)
+                    # Return 0 if the bot's been killed...
+                    return (0, game.tick)
 
             bots_counts = MetricSeries(
                 units=MetricSeries.UNITS_BOT,
@@ -392,23 +462,27 @@ class Game:
 
 
 class Bot:
-    def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations):
+    def __init__(self, game_dir, username, bot_filename, bot_url, name, owner_abbreviations, commit_data=None):
+        if commit_data is None:
+            commit_data = []
         print('[I] Making bot with abbreviations {}'.format(owner_abbreviations))
         self.abbreviations = [abbr.upper() for abbr in owner_abbreviations]
         self.attack_strength = 25
         self.bot_filename = bot_filename
         self.bot_icon = ""
+        self.bot_path = os.path.join(game_dir, username, bot_filename)
         self.bot_url = bot_url
         self.coin_icon = ""
         self.coins = []  # an array of Coin objects
+        self.commit_data = commit_data 
         self.game_dir = game_dir
         self.health = 100
         self.move_dict = {}
         self.name = name
         self.stderr = ""
         self.stdout = ""
+        self.tt_decision = None
         self.username = username
-        self.bot_path = os.path.join(self.game_dir, username, bot_filename)
         # make sure the path exists
         if not os.path.exists(os.path.join(self.game_dir, self.username)):
             os.mkdir(os.path.join(self.game_dir, username))
@@ -434,6 +508,7 @@ class Bot:
         d['bot_url'] = self.bot_url
         d['coin_icon'] = self.coin_icon
         d['coins'] = [coin.to_dict() for coin in self.coins]
+        d['commit_data'] = self.commit_data
         d['game_dir'] = self.game_dir
         d['health'] = self.health
         d['len(coins)'] = len(self.coins)
@@ -573,70 +648,10 @@ class Bot:
                     # Give all the defender's coins to the attacker
                     for c in defender.coins:
                         attacker.add_coins(c)
+                    defender.coins = []
                     # Remove the defender from the game.
                     curr_bg.set_cell(bot_loc, bot_move['direction'], IC_AIR)
                     curr_bg.bots.remove(defender)
-                    # Do not remove bots from the games.bots array
-                    # idx = -1
-                    # for i, bot in enumerate(game.bots):
-                    #     if bot.bot_icon == defender_icon:
-                    #         idx = i
-                    #         break
-                    # assert idx != -1
-                    # game.bots.pop(idx)
-
-#                 # Check that the defender actually has coins to give
-#                 if defender.coins and sum([coin.value for coin in defender.coins]):
-#                     # Choose a random coin to remove
-#                     # dropped = None
-#                     random.shuffle(defender.coins)
-#                     for coin in defender.coins:
-#                         if coin.value > 0:
-#                             coin.value -= 1
-#                             dropped = Coin(coin.originator, 1)
-#                                                                              defender_icon))
-#                             break
-#                     # Add that dropped coin onto the map
-#                     all_deltas = [(dx, dy) for dx in range(-1, 2) for dy in range(-1, 2) if dx != 0 or dy != 0]
-#                     defender_location = curr_bg.find_icon(defender_icon)
-#                     assert len(defender_location) == 1
-#                     defender_location = defender_location[0]
-# 
-#                     legal_deltas = []
-#                     droppable_icons = [bot.bot_icon for bot in curr_bg.bots] + [IC_AIR]
-#                     for delta in all_deltas:
-#                         if curr_bg.get_cell(defender_location, delta) in droppable_icons:
-#                             legal_deltas.append(delta)
-#                     coin_delta = random.choice(legal_deltas)
-#                     coin_loc = [
-#                         defender_location[0] + coin_delta[0],
-#                         defender_location[1] + coin_delta[1]
-#                     ]
-#                     landed_icon = curr_bg.get_cell(defender_location, coin_delta)
-#                     # Check to see if the coin landed on a bot
-#                     if landed_icon is not IC_AIR:
-#                         # Add the coin immediately to the bot that it landed on
-#                         for bot in curr_bg.bots:
-#                             if bot.bot_icon == landed_icon:
-#                                 bot.add_coins(Coin(dropped.originator, 1))
-#                                 dropped_on = bot.bot_icon
-#                                 break
-#                     else:
-#                         # The coin landed on air, so just add it to the map
-#                         curr_bg.bg_map[coin_loc[0]][coin_loc[1]] = dropped.originator.coin_icon
-#                         dropped_on = ' '
-
-            #for graph in game.graphs:
-            #    if graph['id'] == 'events':
-            #        graph['data'].append({
-            #            'tick': game.tick,
-            #            'bot_icon': self.bot_icon,
-            #            'event_id': 'attack',
-            #            'defender': defender_icon,
-            #            'dropped': '' if not dropped else dropped.originator.coin_icon,
-            #            'on': dropped_on,
-            #        })
-            #        break
 
         # If the bot is dropping a coin on the floor (to trade possibly)
         elif bot_move.get('action') == ACTION_DROP and \
@@ -901,13 +916,22 @@ class Client:
             # Add the bots to the game && assert that bots were actually added
             for bot in config_json['bots']:
                 if os.path.exists(os.path.join(self.client_local_path, bot.get('path'))):
+                    # TODO Extract the git commit hashes:
+                    prev_dir = os.getcwd()
+                    commit_data = []
+                    cmd = ['git', '-C', self.client_local_path, 'log', "--format='%aI %H %s'", '--follow', bot.get('path')]
+                    print('[D] Executing: ' + ' '.join(cmd))
+                    proc = subprocess.run(cmd, capture_output=True)
+                    commit_data = [line[1:-1].split(' ') for line in str(proc.stdout, 'utf-8').split('\n')]
+                    commit_data = [(line[0], line[1], line[2:]) for line in commit_data[:-1]]
                     self.bots.append(Bot(
                         game_dir, 
                         self.username,
                         os.path.join(self.repository, bot['path']),
                         self.url + '/' + bot['path'],
                         bot['name'],
-                        config_json.get('abbreviations', list(self.username))
+                        config_json.get('abbreviations', list(self.username)),
+                        commit_data=commit_data
                     ))
             assert self.bots, "Client at {} had no valid bots to contribute".format(self.url)
             # Add the battlegrounds to the game && assert
@@ -998,7 +1022,7 @@ class MetricSeries:
         return d
 
     def add(self, value, tick):
-        print('[V] Metric Added {}: {} at {}, identifiers={}'.format(self.name, value, tick, self.identifiers))
+        # print('[V] Metric Added {}: {} at {}, identifiers={}'.format(self.name, value, tick, self.identifiers))
         self.values.append((tick, value))
     
     def compute_and_add(self, game):

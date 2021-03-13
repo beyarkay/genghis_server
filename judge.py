@@ -45,7 +45,18 @@ def main():
 
 def step(game):
     # For each bot:
+    bot_scripts = []
     for bot in game.bots:
+        module = bot.username + "." +  bot.bot_filename.replace(".py", "").replace('/', '.')
+        cwd = os.getcwd()
+        try:
+            bot_scripts.append(importlib.import_module(module, package=__package__))
+        except IndexError:
+            # The bot isn't using bot_scripts and is instead using deprecated system calls
+            bot_scripts.append(None)
+
+    for bot, bot_script in zip(game.bots, bot_scripts):
+        bot.tt_decision = None
         start_time = datetime.datetime.now()
         bot_move = {
             'action': '',
@@ -75,15 +86,16 @@ def step(game):
                     bg_icon = bg.port_icon
 
             try:
-
                 # Execute the bot's script
-                debug_log["start"] = datetime.datetime.now()
-                module = "" + bot.username + "." +  bot.bot_filename.replace(".py", "").replace('/', '.')
+                #module = "" + bot.username + "." +  bot.bot_filename.replace(".py", "").replace('/', '.')
                 cwd = os.getcwd()
                 try:
                     print(util.Colours.OKGREEN,end='')
-                    bot_script = importlib.import_module(module, package=__package__)
+                    #bot_script = importlib.import_module(module, package=__package__)
+                    debug_log["start"] = datetime.datetime.now()
+                    # FIXME: This doesn't have any limit on bot execution time
                     bot_script.main(bot.username, bot.bot_icon, bg_icon)
+                    debug_log["stop"] = datetime.datetime.now()
                     bot.stderr = "Feature Unimplemented"
                     bot.stdout = "Feature Unimplemented"
                     debug_log["ret_code"] = "0"
@@ -92,6 +104,7 @@ def step(game):
                     print(util.Colours.OKBLUE, end='')
                     os.chdir(bot.username)
 
+                    debug_log["start"] = datetime.datetime.now()
                     result = subprocess.run(
                         ['python3', bot.bot_filename,
                         genghis_root_path,
@@ -102,12 +115,12 @@ def step(game):
                         stderr=subprocess.PIPE,
                         universal_newlines=True
                     )
+                    debug_log["stop"] = datetime.datetime.now()
                     os.chdir(cwd)
                     bot.stdout = result.stdout.strip()
                     bot.stderr = result.stderr.strip()
                     debug_log["ret_code"] = result.returncode
                 print(util.Colours.ENDC, end='')
-                debug_log["stop"] = datetime.datetime.now()
                 debug_log["has_errors"] = bool(bot.stderr)
 
                 with open(os.path.join(bot.username, 'move.json'), 'r') as move_file:
@@ -130,6 +143,7 @@ def step(game):
             game.log_state(diff_only=True)
             game.tick += 1
             delta = datetime.datetime.now() - start_time
+            bot.tt_decision = delta.microseconds / 1000 + delta.seconds * 1000
             if delta.microseconds/1000000 + delta.seconds < game.turn_time:
                 print('[V] Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
                 time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)

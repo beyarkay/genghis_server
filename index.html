@@ -35,12 +35,28 @@
 <div class="pure-g">
     <div class="shadow">
         <div class="pure-u-1-1 pure-u-lg-1-2">
-            <h2>Games:</h2>
+            <h2>Games in the Genghis Battle System:</h2>
+            Click on a link to view that game. The red link is the most recent game.
             <ul id="games_list">
                 <li>No Games</li>
             </ul>
         </div>
         <div class="pure-u-1-1 pure-u-lg-1-2">
+            <h2>Developers in the Genghis Battle System:</h2>
+            If your username is here, then your bots will be included in Genghis Battles.
+            If you get a 404 error saying the repository does not exist, then you are not the
+            owner of that repository.
+            <ul id="clients_list">
+                <li>No developers.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--Known about bots card-->
+<div class="pure-g">
+    <div class="shadow">
+        <div class="pure-u-1">
             <h2>What is This?</h2>
             Using the Genghis Battle System by
             <a href="https://github.com/beyarkay">Boyd Kane</a>,
@@ -59,6 +75,7 @@
             This will guide you through making a private GitHub repository which is
             where the code for your bot will live. It will then show you how to copy some 
             existing code into that repository in order to get you started.
+            <br><br>Please use Google Chrome. Other browsers have not been tested.
             <ol>
                 <li>
                     <a href="https://github.com/new" target="_blank">Click here</a> to create 
@@ -352,10 +369,34 @@ function btn_copy_public_key() {
 </script>
 <script type="module">
     $.ajax({
+        url: "clients.json"
+    }).done(data => {
+        if (data && data['clients']) {
+            console.log(data)
+            let ul = document.getElementById("clients_list");
+            ul.innerHTML = "";
+            data['clients'].sort((a, b) => a['username'] > b['username'] ? -1 : 1)
+            for (let i = 0; i < data['clients'].length; i++) {
+                let client = data['clients'][i];
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                a.setAttribute("href", client['url']);
+                a.setAttribute("target", '_blank');
+                a.innerHTML = client['username']
+                if ('repository' in client) {
+                    a.innerHTML += ' (Github repository: ' + client['repository'] + ')'
+                }
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+        }
+    });
+    $.ajax({
         url: "server_state.json"
     }).done(data => {
         if (data && data['games']) {
-            console.log("Games found: ", data['games']);
+            console.log(data)
+            //console.log("Games found: ", data['games']);
             // Update the list of games
             let ul = document.getElementById("games_list");
             ul.innerHTML = "";

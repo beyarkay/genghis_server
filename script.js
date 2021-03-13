@@ -129,12 +129,26 @@ export function create_graph_card(div_id, game) {
             y_axis_label: "Number of Bots",
             y_axis_units: ""
         },
+        "bot.totals.ttdecision": {
+            title: "Time to decision for each Bot",
+            x_axis_label: "Game tick",
+            x_axis_units: "",
+            y_axis_label: "Script execution time",
+            y_axis_units: "ms"
+        },
         "bot.totals.coins": {
             title: "Coins per Bot over time",
             x_axis_label: "Game ticks",
             x_axis_units: "",
             y_axis_label: "Number of Coins",
             y_axis_units: ""
+        },
+        "bot.totals.dt_closest_bot": {
+            title: "Distance to the closest Bot",
+            x_axis_label: "Game tick",
+            x_axis_units: "",
+            y_axis_label: "Distance",
+            y_axis_units: "Blocks"
         },
         "bot.totals.health": {
             title: "Health per Bot over time",
@@ -147,10 +161,8 @@ export function create_graph_card(div_id, game) {
 
     let graphs = [];
 
-    console.log(graph_details);
     for (let i = 0; i < metrics.length; i++) {
         if (!graphs.map(e => e.name).includes(metrics[i]['name'])) {
-            console.log(metrics[i]['name']);
             graphs.push({
                 name: metrics[i]['name'],
                 list_of_values: [],
@@ -175,7 +187,6 @@ export function create_graph_card(div_id, game) {
 
     for (let i = 0; i < graphs.length; i++) {
         let curr_graph = graphs[i];
-        console.log(curr_graph);
         let chart_div = document.createElement('div');
         chart_div.setAttribute('id', `d3-chart-${i}`);
         let pure_u = document.createElement("div");
@@ -189,7 +200,6 @@ export function create_graph_card(div_id, game) {
         );
 
     }
-
 }
 
 function hue_from_icon(array, cell) {
@@ -468,7 +478,7 @@ function update_battleground(div_id, bg, game) {
 function create_graph(div_id, graph, game) {
     let datas = graph.list_of_values;
     let graph_config = graph.config;
-    // console.log(datas);
+     console.log(datas);
     // set the dimensions and margins of the datas
     const margin = {top: 30, right: 10, bottom: 40, left: 40};
     const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right;
@@ -480,13 +490,13 @@ function create_graph(div_id, graph, game) {
     for (let ds_idx = 0; ds_idx < datas.length; ds_idx++) {
         let coords = [];
         for (let item_idx = 0; item_idx < datas[ds_idx].length; item_idx++) {
-            extent_y[0] = Math.min(extent_y[0], datas[ds_idx][item_idx][0]);
-            extent_y[1] = Math.max(extent_y[1], datas[ds_idx][item_idx][0]);
-            extent_x[0] = Math.min(extent_x[0], datas[ds_idx][item_idx][1]);
-            extent_x[1] = Math.max(extent_x[1], datas[ds_idx][item_idx][1]);
+            extent_y[0] = Math.min(extent_y[0], datas[ds_idx][item_idx][1]);
+            extent_y[1] = Math.max(extent_y[1], datas[ds_idx][item_idx][1]);
+            extent_x[0] = Math.min(extent_x[0], datas[ds_idx][item_idx][0]);
+            extent_x[1] = Math.max(extent_x[1], datas[ds_idx][item_idx][0]);
             coords.push({
-                y: datas[ds_idx][item_idx][0],
-                x: datas[ds_idx][item_idx][1],
+                y: datas[ds_idx][item_idx][1],
+                x: datas[ds_idx][item_idx][0],
                 id: `${ds_idx}`
             })
         }
@@ -499,7 +509,6 @@ function create_graph(div_id, graph, game) {
         })
 
     }
-    // console.log(data);
     const xScale = d3.scaleLinear()
         .range([0, width])
         .domain(extent_x);
@@ -524,12 +533,9 @@ function create_graph(div_id, graph, game) {
     const xaxis = d3.axisBottom().scale(xScale);
 
     const lineCreator = d3.line()
-        .x(function (d) {
-            return xScale(d.x);
-        })
-        .y(function (d) {
-            return yScale(d.y);
-        });
+        .y((d) => yScale(d.y))
+        .defined((d) => d.y !== null) // Omit empty values.
+        .x((d) => xScale(d.x));
 
 
     // ----------
@@ -591,17 +597,20 @@ function create_graph(div_id, graph, game) {
         .enter()
         .append("g");
 
+    const cls = (d) => (data.length > 1 ? "bot-id" + d.id : "") + " line should-color";
     lines.append("path")
         .attr("d", d => lineCreator(d.coords))
         .on("mouseout", (mouseEvent, d) => {
-            d3.selectAll(".bot-id" + d.id)
-                .classed("selected", false);
+            if (data.length > 1) {
+                d3.selectAll(".bot-id" + d.id).classed("selected", false);
+            }
         })
         .on("mouseover", (mouseEvent, d) => {
-            d3.selectAll(".bot-id" + d.id)
-                .classed("selected", true);
+            if (data.length > 1) {
+                d3.selectAll(".bot-id" + d.id).classed("selected", true);
+            }
         })
-        .attr("class", (d) => "bot-id" + d.id + " line should-color")
+        .attr("class", cls)
         .style("stroke", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`);
 
     // -------------------------
@@ -615,7 +624,7 @@ function create_graph(div_id, graph, game) {
         legend_entries
             .data(data).enter()
             .append("text")
-            .attr("x", (d) => (d.id * 50))
+            .attr("x", (d) => (d.id * 8 * (d.series_label.length)))
             .attr("y", height + margin.bottom * 0.9)
             .attr("class", (d) => "bot-id" + d.id + " ")
             .style("font-size", "12px")
@@ -632,7 +641,10 @@ function create_graph(div_id, graph, game) {
         legend_entries.data(data).enter().append("circle")
             .attr("class", (d) => "bot-id" + d.id + " should-color")
             .style("fill", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`)
-            .attr("cx", (d) => (d.id * 50) - 5)
+            .attr("cx", (d, i, arr) => {
+                let total_length = arr.filter(e => e.__data__.id <= i).map(e => e.__data__.series_label.length)
+                return (i * 8 * (d.series_label.length)) - 5;
+            })
             .attr("cy", height + margin.bottom * 0.9 - 4)
             .on("mouseout", (mouseEvent, d) => {
                 d3.selectAll(".bot-id" + d.id).classed("selected", false);
