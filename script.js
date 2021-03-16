@@ -177,9 +177,10 @@ export function create_graph_card(div_id, game) {
         let bot = game.bots.find(bot => {
             return bot.bot_url === metrics[i]['identifiers']['bot_url'];
         });
+        console.log(bot);
         curr_graph.series.push({
-            series_url: bot !== undefined ? bot.bot_url : "",
-            series_label: bot !== undefined ? bot.name : `Series ${curr_graph.list_of_values.length}`,
+            series_url: bot !== undefined ? bot.bot_url.split('/').slice(0, -1).join('/') : "",
+            series_label: bot !== undefined ? `${bot.bot_icon} (by ${bot.username})` : `Series ${curr_graph.list_of_values.length}`,
             series_id: `id${curr_graph.list_of_values.length - 1}`,
         });
     }
@@ -480,7 +481,8 @@ function create_graph(div_id, graph, game) {
     let graph_config = graph.config;
      console.log(datas);
     // set the dimensions and margins of the datas
-    const margin = {top: 30, right: 10, bottom: 40, left: 40};
+    const space_for_legend = 10 * datas.length;
+    const margin = {top: 30, right: 10, bottom: 40 + space_for_legend, left: 40};
     const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right;
     const height = 200 - margin.top - margin.bottom;
 
@@ -563,7 +565,7 @@ function create_graph(div_id, graph, game) {
     }
     svg.append("text")
         .attr("transform", "translate(" + (width) + " ," +
-            (height + margin.bottom * 0.9) + ")")
+            (height + (margin.bottom - space_for_legend) * 0.9) + ")")
         .style("text-anchor", "end")
         .style("font-size", "15px")
         .text(x_axis_text);
@@ -624,8 +626,8 @@ function create_graph(div_id, graph, game) {
         legend_entries
             .data(data).enter()
             .append("text")
-            .attr("x", (d) => (d.id * 8 * (d.series_label.length)))
-            .attr("y", height + margin.bottom * 0.9)
+            .attr("x", (d) => 5)
+            .attr("y", (d, i, arr) => height + (margin.bottom-space_for_legend) * 0.9 + i * 10)
             .attr("class", (d) => "bot-id" + d.id + " ")
             .style("font-size", "12px")
             .on("mouseout", (mouseEvent, d) => {
@@ -636,16 +638,16 @@ function create_graph(div_id, graph, game) {
                 d3.selectAll(".bot-id" + d.id)
                     .classed("selected", true);
             })
+            .on("click", (mouseEvent, d) => {
+                window.open(d.series_url, '_blank');
+            })
             .text((d) => d.series_label);
 
         legend_entries.data(data).enter().append("circle")
             .attr("class", (d) => "bot-id" + d.id + " should-color")
             .style("fill", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`)
-            .attr("cx", (d, i, arr) => {
-                let total_length = arr.filter(e => e.__data__.id <= i).map(e => e.__data__.series_label.length)
-                return (i * 8 * (d.series_label.length)) - 5;
-            })
-            .attr("cy", height + margin.bottom * 0.9 - 4)
+            .attr("cx", (d) => 0)
+            .attr("cy", (d, i, arr) => height + (margin.bottom-space_for_legend) * 0.9 + i * 10 - 4)
             .on("mouseout", (mouseEvent, d) => {
                 d3.selectAll(".bot-id" + d.id).classed("selected", false);
             })
