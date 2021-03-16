@@ -3,6 +3,7 @@ from pprint import pprint
 import datetime
 import json
 import os
+import random 
 import requests
 import shutil
 import subprocess
@@ -85,6 +86,9 @@ def main(server_state_path='server_state.json'):
             traceback.print_exc()
             print("Client failed to build, ommiting client at url {} from the game".format(client_obj['url']))
 
+    # Only use 4 random battlegrounds
+    random.shuffle(game.battlegrounds)
+    game.battlegrounds = game.battlegrounds[:4]
     game.init_game()
 
     # copy over the judge system script
