@@ -1,11 +1,12 @@
 #!/usr/bin/python3
+from contextlib import contextmanager
 import copy
-import importlib
 import datetime
+import dill as pickle
 import glob
+import importlib
 import json
 import os
-import dill as pickle
 import random
 import re
 import requests
@@ -20,6 +21,21 @@ import traceback
 genghis_root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(genghis_root_path)
 import util
+
+TIMEOUT_SECONDS = 2
+# Used to timeout the bots if their main() methods take too long to execute
+class TimeoutException(Exception): pass
+
+@contextmanager
+def time_limit(seconds):
+    def timeout_signal_handler(signum, frame):
+        raise TimeoutException("Bot Timed Out!")
+    signal.signal(signal.SIGALRM, timeout_signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
 
 def main():
     def signal_handler(sig, frame):
@@ -43,6 +59,9 @@ def main():
         step(game)
         game.iteration += 1
 
+def timeout_signal_handler(signum, frame):
+    raise Exception("Bot execution timed out")
+
 def step(game):
     # For each bot:
     bot_scripts = []
@@ -57,7 +76,6 @@ def step(game):
 
     for bot, bot_script in zip(game.bots, bot_scripts):
         bot.tt_decision = None
-        start_time = datetime.datetime.now()
         bot_move = {
             'action': '',
             'direction': ''
@@ -72,6 +90,7 @@ def step(game):
             "has_errors": bool(bot.stderr),
             "bot_health": bot.health,
         }
+        start_time = datetime.datetime.now()
         if bot.health > 0:
             game.moving = bot.bot_icon
 
@@ -93,28 +112,36 @@ def step(game):
                     print(util.Colours.OKGREEN,end='')
                     #bot_script = importlib.import_module(module, package=__package__)
                     debug_log["start"] = datetime.datetime.now()
+                    start_time = datetime.datetime.now()
                     # FIXME: This doesn't have any limit on bot execution time
-                    bot_script.main(bot.username, bot.bot_icon, bg_icon)
+                    try:
+                        with time_limit(TIMEOUT_SECONDS):
+                            bot_script.main(bot.username, bot.bot_icon, bg_icon)
+                    except TimeoutException as e:
+                        print("Bot {} took over {}s to execute. The bot will not move this turn.".format(bot.username, TIMEOUT_SECONDS))
+                    end_time = datetime.datetime.now()
                     debug_log["stop"] = datetime.datetime.now()
-                    bot.stderr = "Feature Unimplemented"
-                    bot.stdout = "Feature Unimplemented"
+                    bot.stderr = "Stderr not available for GitHub hosted bots"
+                    bot.stdout = "Stdout not available for GitHub hosted bots"
                     debug_log["ret_code"] = "0"
                     # print("Ran bot {} the proper way".format(module))
-                except IndexError:
+                except (IndexError, AttributeError) as e:
                     print(util.Colours.OKBLUE, end='')
                     os.chdir(bot.username)
 
                     debug_log["start"] = datetime.datetime.now()
+                    start_time = datetime.datetime.now()
                     result = subprocess.run(
                         ['python3', bot.bot_filename,
                         genghis_root_path,
                         bot.bot_icon,
                         bg_icon],
-                        timeout=5,
+                        timeout=TIMEOUT_SECONDS,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                         universal_newlines=True
                     )
+                    end_time = datetime.datetime.now()
                     debug_log["stop"] = datetime.datetime.now()
                     os.chdir(cwd)
                     bot.stdout = result.stdout.strip()
@@ -142,11 +169,11 @@ def step(game):
             bot.perform_action(bot_move, game)
             game.log_state(diff_only=True)
             game.tick += 1
-            delta = datetime.datetime.now() - start_time
+            delta = end_time - start_time
             bot.tt_decision = delta.microseconds / 1000 + delta.seconds * 1000
-            if delta.microseconds/1000000 + delta.seconds < game.turn_time:
-                print('[V] Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
-                time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)
+           # if delta.microseconds/1000000 + delta.seconds < game.turn_time:
+           #     print('[V] Sleeping for {}s'.format(game.turn_time - delta.microseconds/1000000 + delta.seconds))
+           #     time.sleep(game.turn_time - delta.microseconds/1000000 + delta.seconds)
 
         for metric in game.metrics:
             metric.compute_and_add(game)
