@@ -6,6 +6,8 @@ multiple different battlegrounds.
 See the [Genghis Client](https://github.com/beyarkay/genghis_client) to get started.
 
 ## Work in progress:
+* Get Docker containers working
+* Timebox the execution time of modules
 * remove the different values of coins, it adds nothing.
 * Maybe allow each bot to make 2 actions per turn? (allows more tactics to be involved?)
 * Metrics, and meta-game analysis
