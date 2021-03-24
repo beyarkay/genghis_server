@@ -14,6 +14,20 @@ export function get_param(param, defaultvalue) {
     return defaultvalue;
 }
 
+//#export function bot_to_colours(bot) {
+//#    if (bot.commit_data !== null && bot.commit_data.length > 0){
+//#        bot.commit_data.sort((a, b) => a[0] < b[0])
+//#        let colours = []
+//#        let last_i = 0;
+//#        for (let i = 6; i < bot.commit_data[0][1].length; i+= 6) {
+//#            colours.push("#" + bot.commit_data[0][1].substring(last_i, i)))
+//#            last_i = i;
+//#        }
+//#        return colours;
+//#    }
+//#    return null;
+//#}
+
 export function create_bg_card(div_id, game) {
     //      1st unit: pure-u-lg-8-24 pure-u-md-12-24 pure-u-1-1
     //      2nd unit: pure-u-lg-8-24 pure-u-md-12-24 pure-u-12-24
@@ -115,21 +129,24 @@ export function create_graph_card(div_id, game) {
     let metrics = game['metrics'];
 
     const graph_details = {
-        "game.totals.coins": {
-            title: "Total Coins in the Game",
+        "bot.totals.health": {
+            order: 1,
+            title: "Health per Bot over time",
             x_axis_label: "Game ticks",
             x_axis_units: "",
-            y_axis_label: "Number of Coins",
+            y_axis_label: "Bot Health",
             y_axis_units: ""
         },
-        "game.totals.bots": {
-            title: "Total Bots in the Game",
+        "bot.totals.damage_delt": {
+            order: 2,
+            title: "Damage Delt per Bot over time",
             x_axis_label: "Game ticks",
             x_axis_units: "",
-            y_axis_label: "Number of Bots",
+            y_axis_label: "Damage Delt",
             y_axis_units: ""
         },
         "bot.totals.ttdecision": {
+            order: 4,
             title: "Time to decision for each Bot",
             x_axis_label: "Game tick",
             x_axis_units: "",
@@ -137,55 +154,67 @@ export function create_graph_card(div_id, game) {
             y_axis_units: "ms"
         },
         "bot.totals.coins": {
+            order: 5,
             title: "Coins per Bot over time",
             x_axis_label: "Game ticks",
             x_axis_units: "",
             y_axis_label: "Number of Coins",
             y_axis_units: ""
         },
-        "bot.totals.dt_closest_bot": {
-            title: "Distance to the closest Bot",
-            x_axis_label: "Game tick",
-            x_axis_units: "",
-            y_axis_label: "Distance",
-            y_axis_units: "Blocks"
-        },
-        "bot.totals.health": {
-            title: "Health per Bot over time",
+        "game.totals.coins": {
+            order: 6,
+            title: "Total Coins in the Game",
             x_axis_label: "Game ticks",
             x_axis_units: "",
-            y_axis_label: "Bot Health",
+            y_axis_label: "Number of Coins",
+            y_axis_units: ""
+        },
+        "game.totals.bots": {
+            order: 10,
+            title: "Total Bots in the Game",
+            x_axis_label: "Game ticks",
+            x_axis_units: "",
+            y_axis_label: "Number of Bots",
             y_axis_units: ""
         },
     };
 
     let graphs = [];
 
+    
     for (let i = 0; i < metrics.length; i++) {
-        if (!graphs.map(e => e.name).includes(metrics[i]['name'])) {
-            graphs.push({
-                name: metrics[i]['name'],
-                list_of_values: [],
-                config: graph_details[metrics[i]['name']],
-                series: []
+        let should_metric_be_in_graphs = Object.keys(graph_details).includes(metrics[i]['name'])
+        if (should_metric_be_in_graphs) {
+            let is_metric_in_graphs = graphs.map(e => e.name).includes(metrics[i]['name'])
+            if (!is_metric_in_graphs) {
+                console.log(metrics[i]['name'])
+                graphs.push({
+                    name: metrics[i]['name'],
+                    list_of_values: [],
+                    config: graph_details[metrics[i]['name']],
+                    series: []
+                });
+            }
+            let curr_graph = graphs.find(e => e.name === metrics[i]['name']);
+            curr_graph.list_of_values.push(
+                metrics[i]['values']
+            );
+            let bot = game.bots.find(bot => {
+                return bot.bot_url === metrics[i]['identifiers']['bot_url'];
+            });
+            //console.log(bot);
+            curr_graph.series.push({
+                series_url: bot !== undefined ? bot.bot_url.split('/').slice(0, -1).join('/') : "",
+                series_label: bot !== undefined ? `${bot.bot_icon} (by ${bot.username})` : `Series ${curr_graph.list_of_values.length}`,
+                series_id: `id${curr_graph.list_of_values.length - 1}`,
             });
         }
-        let curr_graph = graphs.find(e => e.name === metrics[i]['name']);
-        curr_graph.list_of_values.push(
-            metrics[i]['values']
-        );
-        let bot = game.bots.find(bot => {
-            return bot.bot_url === metrics[i]['identifiers']['bot_url'];
-        });
-        console.log(bot);
-        curr_graph.series.push({
-            series_url: bot !== undefined ? bot.bot_url.split('/').slice(0, -1).join('/') : "",
-            series_label: bot !== undefined ? `${bot.bot_icon} (by ${bot.username})` : `Series ${curr_graph.list_of_values.length}`,
-            series_id: `id${curr_graph.list_of_values.length - 1}`,
-        });
     }
 
 
+    console.log(graphs)
+    graphs.sort((a, b) => a.config.order > b.config.order ? 1 : -1 )
+    console.log(graphs)
     for (let i = 0; i < graphs.length; i++) {
         let curr_graph = graphs[i];
         let chart_div = document.createElement('div');
@@ -479,7 +508,7 @@ function update_battleground(div_id, bg, game) {
 function create_graph(div_id, graph, game) {
     let datas = graph.list_of_values;
     let graph_config = graph.config;
-     console.log(datas);
+    console.log(graph_config);
     // set the dimensions and margins of the datas
     const space_for_legend = 10 * datas.length;
     const margin = {top: 30, right: 10, bottom: 40 + space_for_legend, left: 40};

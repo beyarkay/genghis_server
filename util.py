@@ -305,6 +305,29 @@ class Game:
         self.metrics.append(bots_counts)
 
         for bot in self.bots:
+            # ==============================================================
+            # Compute metrics about how much damage has been delt by the bot
+            # ==============================================================
+            def compute_bot_total_damage_delt(game, identifiers):
+                bot_url = identifiers.get('bot_url')
+                curr_bot = [bot for bot in game.bots if bot.bot_url == identifiers.get('bot_url')]
+                if bot_url and curr_bot:
+                    curr_bot = curr_bot[0]
+                    return (curr_bot.damage_delt, game.tick)
+                else:
+                    return (None, game.tick)
+
+            metric = MetricSeries(
+                units=MetricSeries.UNITS_HEALTH,
+                game_dir=self.game_dir,
+                name='bot.totals.damage_delt',
+                description='The total damage delt by bot {} at url {}'.format(bot.name, bot.bot_url),
+                identifiers={"bot_url": bot.bot_url},
+                compute_metric=compute_bot_total_damage_delt
+            )
+            metric.compute_and_add(self)
+            self.metrics.append(metric)
+
             # =======================================================
             # Compute metrics about the bot's time to make a decision
             # =======================================================
@@ -475,6 +498,7 @@ class Bot:
         self.coin_icon = ""
         self.coins = []  # an array of Coin objects
         self.commit_data = commit_data 
+        self.damage_delt = 0
         self.game_dir = game_dir
         self.health = 100
         self.move_dict = {}
@@ -509,6 +533,7 @@ class Bot:
         d['coin_icon'] = self.coin_icon
         d['coins'] = [coin.to_dict() for coin in self.coins]
         d['commit_data'] = self.commit_data
+        d['damage_delt'] = self.damage_delt
         d['game_dir'] = self.game_dir
         d['health'] = self.health
         d['len(coins)'] = len(self.coins)
@@ -643,6 +668,7 @@ class Bot:
                 if defender.health > 0:
                     # Remove health from the defender
                     defender.health -= attacker.attack_strength
+                    attacker.damage_delt += attacker.attack_strength
                 if defender.health <= 0:
                     print('[D] Bot {} has been killed by bot {}'.format(defender_icon, attacker_icon))
                     # Give all the defender's coins to the attacker

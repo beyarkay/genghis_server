@@ -22,6 +22,7 @@ SERVER_STATE_FILE = 'server_state.json'
 # TODO: This file doesn't know about the new clients.json file
 #       Which is where all the clients should be added to.
 #       Rather refactor to not have to override existing client files
+# FIXME: Why are all the bots being duplicated?
 
 def main():
     """
