@@ -140,6 +140,7 @@ MM.    `7MMF'8M""""""   MM    MM   WmmmP"     MM    MM    MM  `YMMMa.
                                   6'     dP                           
    Genghis Bot Battle System      Ybmmmd'                             
    View the main game at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/
+   You can also run this with commandline arguments: `python3 build_test_server {} {}`
 
 ===============================================================================
 To view your game:
@@ -148,7 +149,7 @@ To view your game:
     3. Go back to Chrome and reload the page.
     4. Click on the first red link that appears once the page has loaded.
 
-    '''.format(GAME_PORT))
+    '''.format(genghis_client_dir, repetitions, GAME_PORT))
     input("When you're ready, press any key to begin.\n".format(GAME_PORT))
 
     import build_game
