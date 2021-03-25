@@ -14,19 +14,21 @@ export function get_param(param, defaultvalue) {
     return defaultvalue;
 }
 
-//#export function bot_to_colours(bot) {
-//#    if (bot.commit_data !== null && bot.commit_data.length > 0){
-//#        bot.commit_data.sort((a, b) => a[0] < b[0])
-//#        let colours = []
-//#        let last_i = 0;
-//#        for (let i = 6; i < bot.commit_data[0][1].length; i+= 6) {
-//#            colours.push("#" + bot.commit_data[0][1].substring(last_i, i)))
-//#            last_i = i;
-//#        }
-//#        return colours;
-//#    }
-//#    return null;
-//#}
+export function bot_to_colours(bot) {
+    console.log(bot);
+    if (bot.commit_data !== null && bot.commit_data.length > 0){
+        bot.commit_data.sort((a, b) => a[0] < b[0])
+        let colours = []
+        let last_i = 0;
+        for (let i = 6; i < bot.commit_data[0][1].length; i+= 6) {
+            colours.push("#" + bot.commit_data[0][1].substring(i, last_i))
+            last_i = i;
+        }
+        console.log(colours);
+        return colours;
+    }
+    return null;
+}
 
 export function create_bg_card(div_id, game) {
     //      1st unit: pure-u-lg-8-24 pure-u-md-12-24 pure-u-1-1
@@ -212,9 +214,7 @@ export function create_graph_card(div_id, game) {
     }
 
 
-    console.log(graphs)
     graphs.sort((a, b) => a.config.order > b.config.order ? 1 : -1 )
-    console.log(graphs)
     for (let i = 0; i < graphs.length; i++) {
         let curr_graph = graphs[i];
         let chart_div = document.createElement('div');
@@ -268,16 +268,17 @@ function update_battleground(div_id, bg, game) {
         if (cell === '#') {
             return "#333333";
         } else if (game['bot_icons'].indexOf(cell) >= 0) {
+            let bot = game.bots.find(bot => bot.bot_icon === cell)
+            if (bot !== null) {
+                let colour = bot_to_colours(bot)[0]
+                if (colour !== null) {
+                    return colour
+                }
+            } 
             let hue = hue_from_icon(game['bot_icons'], cell);
             return `hsl(${hue}, 100%, 50%)`;
-        } else if (game['port_icons'].indexOf(cell) >= 0) {
-            let hue = hue_from_icon(game['port_icons'], cell);
-            return `hsl(${hue}, 100%, 25%)`;
-        } else if (game['coin_icons'].indexOf(cell) >= 0) {
-            let hue = hue_from_icon(game['coin_icons'], cell);
-            return `hsl(${hue}, 100%, 50%)`;
         } else {
-            return "#dddddd";
+            return "#d0d0d0";
         }
     };
     const rect_fill_from_cell = (cell) => {
@@ -519,9 +520,9 @@ function create_graph(div_id, graph, game) {
     console.log(graph_config);
     // set the dimensions and margins of the datas
     const space_for_legend = 10 * datas.length;
-    const margin = {top: 30, right: 10, bottom: 40 + space_for_legend, left: 40};
+    const margin = {top: 30, right: 10, bottom: 40 + space_for_legend, left: 50};
     const width = document.getElementById(div_id).offsetWidth - margin.left - margin.right;
-    const height = 200 - margin.top - margin.bottom;
+    const height = 250 - margin.top - margin.bottom;
 
     let data = [];
     let extent_x = [0, 0];
@@ -583,6 +584,7 @@ function create_graph(div_id, graph, game) {
     svg.append("text")
         .attr("transform", "translate(" + (width / 2) + " ," +
             (-margin.top * 0.2) + ")")
+        .attr("class", "graph")
         .style("text-anchor", "middle")
         .style("font-weight", "middle")
         .style("font-size", "18px")
@@ -605,6 +607,7 @@ function create_graph(div_id, graph, game) {
         .attr("transform", "translate(" + (width) + " ," +
             (height + (margin.bottom - space_for_legend) * 0.9) + ")")
         .style("text-anchor", "end")
+        .attr("class", "graph")
         .style("font-size", "15px")
         .text(x_axis_text);
 
@@ -624,6 +627,7 @@ function create_graph(div_id, graph, game) {
         .attr("y", 0 - margin.left)
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
+        .attr("class", "graph")
         .style("text-anchor", "middle")
         .style("font-size", "15px")
         .text(y_axis_text);
@@ -638,6 +642,14 @@ function create_graph(div_id, graph, game) {
         .append("g");
 
     const cls = (d) => (data.length > 1 ? "bot-id" + d.id : "") + " line should-color";
+    const colour_if_commit = (d) => {
+        if (d.series_url !== "" && d.series_url.includes('https://github.com') ) {
+            const bot = game.bots.find(e => e.bot_url.includes(d.series_url))
+            return bot_to_colours(bot)[0]
+        } else {
+            return `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`
+        }
+    }
     lines.append("path")
         .attr("d", d => lineCreator(d.coords))
         .on("mouseout", (mouseEvent, d) => {
@@ -651,7 +663,7 @@ function create_graph(div_id, graph, game) {
             }
         })
         .attr("class", cls)
-        .style("stroke", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`);
+        .style("stroke", colour_if_commit);
 
     // -------------------------
     // Legend and legend entries
@@ -666,7 +678,7 @@ function create_graph(div_id, graph, game) {
             .append("text")
             .attr("x", (d) => 5)
             .attr("y", (d, i, arr) => height + (margin.bottom-space_for_legend) * 0.9 + i * 10)
-            .attr("class", (d) => "bot-id" + d.id + " ")
+            .attr("class", (d) => "bot-id" + d.id + " graph ")
             .style("font-size", "12px")
             .on("mouseout", (mouseEvent, d) => {
                 d3.selectAll(".bot-id" + d.id)
@@ -683,7 +695,7 @@ function create_graph(div_id, graph, game) {
 
         legend_entries.data(data).enter().append("circle")
             .attr("class", (d) => "bot-id" + d.id + " should-color")
-            .style("fill", (d) => `hsl(${hue_from_icon(data.map(e => e.id), d.id)}, 100%, 50%)`)
+            .style("fill", colour_if_commit)
             .attr("cx", (d) => 0)
             .attr("cy", (d, i, arr) => height + (margin.bottom-space_for_legend) * 0.9 + i * 10 - 4)
             .on("mouseout", (mouseEvent, d) => {
