@@ -266,7 +266,7 @@ function update_battleground(div_id, bg, game) {
 
     const text_fill_from_cell = (cell) => {
         if (cell === '#') {
-            return "#626262";
+            return "#333333";
         } else if (game['bot_icons'].indexOf(cell) >= 0) {
             let hue = hue_from_icon(game['bot_icons'], cell);
             return `hsl(${hue}, 100%, 50%)`;
@@ -277,14 +277,14 @@ function update_battleground(div_id, bg, game) {
             let hue = hue_from_icon(game['coin_icons'], cell);
             return `hsl(${hue}, 100%, 50%)`;
         } else {
-            return "#000000";
+            return "#dddddd";
         }
     };
     const rect_fill_from_cell = (cell) => {
         if (cell === '#') {
             return text_fill_from_cell(cell);
         } else {
-            return "#d9d9d9"
+            return "#626262"
         }
     };
     const rect_stroke_from_cell = (cell) => {
@@ -293,7 +293,7 @@ function update_battleground(div_id, bg, game) {
         } else if (cell_width < 10) {
             return rect_fill_from_cell(cell);
         } else {
-            return "#cbcbcb"
+            return "#666";
         }
     };
     const text_font_weight_from_cell = (cell) => {
@@ -419,6 +419,14 @@ function update_battleground(div_id, bg, game) {
                 rect_fill: rect_fill_from_cell(curr_item),
                 rect_stroke: rect_stroke_from_cell(curr_item)
             });
+            let content = curr_item.toUpperCase() === curr_item ? curr_item : "💰"
+            if (curr_item === '#') {
+                content = '';
+            } else if (curr_item.toUpperCase() === curr_item) {
+                content = curr_item;
+            } else {
+                content = '💰';
+            }
             bot_data[col].push({
                 key: (game['bot_icons'].includes(curr_item)) ? curr_item : `${bg["port_icon"]}-${col}-${row}`,
                 map_port_icon: bg['port_icon'],
@@ -431,7 +439,7 @@ function update_battleground(div_id, bg, game) {
                 rect_height: cell_height,
                 rect_fill: rect_fill_from_cell(curr_item),
                 rect_stroke: rect_stroke_from_cell(curr_item),
-                text_content: curr_item.toUpperCase() === curr_item ? curr_item : "💰",
+                text_content: content,
                 text_fill: text_fill_from_cell(curr_item),
                 text_font_weight: text_font_weight_from_cell(curr_item),
                 mouseover: mouseover_from_cell(curr_item),
@@ -578,6 +586,7 @@ function create_graph(div_id, graph, game) {
         .style("text-anchor", "middle")
         .style("font-weight", "middle")
         .style("font-size", "18px")
+        .style("fill", "#dbdbdb")
         .text(graph_config.title);
 
     // ---------------------
