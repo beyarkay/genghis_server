@@ -62,11 +62,15 @@ def main(server_state_path='server_state.json'):
     iso_str = datetime.datetime.now().isoformat()
     game = util.Game(os.path.join("games", iso_str), server_state['endpoint'])
 
-    # TODO if there are more than 4 battlegrounds / bots, split them off to seperate games
     clients = []
     all_clients = server_state.get('clients', []) + clients_json
     print("Processing {} clients:".format(len(all_clients)))
+    usernames = [c.get('username') for c in all_clients]
+    urls = [c.get('url') for c in all_clients]
     for client_obj in all_clients:
+        # Exclude duplicated bots
+        if urls.count(client_obj.get('url')) > 1 and usernames.count(client_obj.get('username')) > 1:
+            continue
         try:
             c = util.Client(
                 client_obj.get('username'),

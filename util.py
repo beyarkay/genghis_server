@@ -403,6 +403,7 @@ class Game:
                                     bot_loc = (row_idx, col_idx)
                                 elif item.lower() != item:
                                     other_locs.append((row_idx, col_idx))
+                        assert bot_loc[0] is not None and bot_loc[1] is not None, '\n'.join([''.join(l) for l in curr_bg.bg_map])
                         deltas = [(abs(bot_loc[0] - loc[0]), abs(bot_loc[1] - loc[1])) for loc in other_locs]
                         distances = [max(delta[0], delta[1]) for delta in deltas]
                         return (min(distances), game.tick)
@@ -1052,8 +1053,11 @@ class MetricSeries:
         self.values.append((tick, value))
     
     def compute_and_add(self, game):
-        computed_metric, tick = self.compute_metric(game, self.identifiers)
-        self.add(computed_metric, tick)
+        try:
+            computed_metric, tick = self.compute_metric(game, self.identifiers)
+            self.add(computed_metric, tick)
+        except Exception as e:
+            print("Error processing metric")
 
 
 

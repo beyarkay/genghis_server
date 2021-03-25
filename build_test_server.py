@@ -90,8 +90,8 @@ def main():
     CLIENT_PORT = 4000
     process_client = multiprocessing.Process(target=start_server, kwargs={'directory':genghis_client_dir, 'PORT':CLIENT_PORT})
 
-    process_game.start()
     process_client.start()
+    process_game.start()
 
     with open('clients.json', 'r') as clients_file:
         clients_dict = json.load(clients_file)
@@ -102,8 +102,8 @@ def main():
     with open(os.path.join(genghis_client_dir, 'config.json'), 'r') as client_config:
         c_config = json.load(client_config)
 
-    server_state['clients'] = []
     clients_dict['clients'] = []
+    server_state['clients'] = []
     server_state['games'] = []
     for i in range(int(repetitions)):
         clients_dict['clients'].append({
@@ -111,17 +111,16 @@ def main():
             "abbreviations": c_config.get('abbreviations', list(c_config['username'])),
             "url": 'http://localhost:' + str(CLIENT_PORT) 
         })
-        server_state['clients'].append({
-            "username": c_config['username'] + "_" + str(i),
-            "abbreviations": c_config.get('abbreviations', list(c_config['username'])),
-            "url": 'http://localhost:' + str(CLIENT_PORT) 
-        })
+        # server_state['clients'].append({
+        #     "username": c_config['username'] + "_" + str(i),
+        #     "abbreviations": c_config.get('abbreviations', list(c_config['username'])),
+        #     "url": 'http://localhost:' + str(CLIENT_PORT) 
+        # })
     
     print(clients_dict.get('clients', []))
     with open('clients.json', 'w+') as clients_file:
         json.dump(clients_dict, clients_file, indent=2)
 
-    print(server_state.get('clients', []))
     with open(SERVER_STATE_FILE, 'w+') as server_state_file:
         json.dump(server_state, server_state_file, indent=2)
 
@@ -143,15 +142,23 @@ MM.    `7MMF'8M""""""   MM    MM   WmmmP"     MM    MM    MM  `YMMMa.
    View the main game at https://people.cs.uct.ac.za/~KNXBOY001/genghis_server/
 
 ===============================================================================
-     
-    ''')
-    input("You can view your game at http://localhost:{}.\nWhen you're ready, press any key to begin.\n".format(GAME_PORT))
+To view your game:
+    1. Load up http://localhost:{} in Chrome (Other browsers may not work).
+    2. Come back to this screen and press <ENTER>.
+    3. Go back to Chrome and reload the page.
+    4. Click on the first red link that appears once the page has loaded.
+
+    '''.format(GAME_PORT))
+    input("When you're ready, press any key to begin.\n".format(GAME_PORT))
 
     import build_game
     build_game.main(SERVER_STATE_FILE)
+    print("Game has finished")
 
     process_client.join()
+   #  print("Client Server has finished")
     process_game.join()
+   #  print("Game Server has finished")
 
 def start_server(directory='', PORT=8000):
     old_dir = os.path.dirname(__file__)
@@ -467,18 +474,20 @@ def start_server(directory='', PORT=8000):
         except OSError:
             attempts += 1
 
-    print("serving at port {} on directory {}".format(PORT, directory))
+    print("Server created at http://localhost:{}/ on directory {}".format(PORT, directory))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
+    print("Server closed at http://localhost:{}/ on directory {}".format(PORT, directory))
     os.chdir(old_dir)
 
     
 if __name__ == '__main__':
     try:
         main()
+        sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(1)
 
